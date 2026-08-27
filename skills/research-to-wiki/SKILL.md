@@ -29,7 +29,8 @@ Read `~/.config/research-tools/profile.md` and the [Karpathy-wiki contract](../.
 ### 0. Restore workflow context
 
 Read the configured session cache and the recent operation log before selecting
-sources. Apply the profile body's local entry formats and task-routing rules.
+sources. Apply the profile body's local entry formats and wiki follow-up routing
+rules from `wiki_followup_destination`.
 
 ### 1. Confirm the subset
 
@@ -50,7 +51,7 @@ Update each touched topic `_index.md`; update `wiki/_master-index.md` when a top
 
 ### 4. Finish
 
-Report articles created or updated, source dispositions, tensions, gaps, and proposed hubs. After a non-exploratory approved run, update the configured session cache and append an operation entry to the configured operation log. Record approved taxonomy or policy decisions in the configured decision log; route actionable follow-ups to the configured task destination. Commit the knowledge-base work according to its local rules.
+Report articles created or updated, source dispositions, tensions, gaps, and proposed hubs. After a non-exploratory approved run, update the configured session cache and append an operation entry to the configured operation log. Record approved taxonomy or policy decisions in the configured decision log; route actionable wiki-maintenance follow-ups to `wiki_followup_destination`. Commit the knowledge-base work according to its local rules.
 
 ## Special source types
 

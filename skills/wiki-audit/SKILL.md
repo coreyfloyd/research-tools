@@ -73,7 +73,7 @@ Write `output/YYYY-MM-DD-wiki-audit.md` with:
 4. tension and gap findings, including sampling coverage;
 5. Must / Should / Can priorities and proposed follow-up actions.
 
-Propose an entry for the configured operation log and route actionable findings to the configured task destination; do not write either. State every proposed file move, split, or taxonomy change for approval. Record no decision directly because the audit is read-only.
+Propose an entry for the configured operation log and route actionable wiki-maintenance findings to `wiki_followup_destination`; do not write either. State every proposed file move, split, or taxonomy change for approval. Record no decision directly because the audit is read-only.
 
 ## Does not do
 

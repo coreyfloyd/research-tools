@@ -19,13 +19,15 @@ archive.
 
 The artifact must include one row per actionable result, using this shape:
 
-   | ID | Evidence | Destination and action | Target | Preconditions | Terminal disposition |
-   |----|----------|------------------------|--------|---------------|----------------------|
-   | D1 | source-backed finding | stage source then compile | named knowledge base area | approval; target available | integrated |
+   | ID | Evidence | Destination and action | Target | Task route | Preconditions | Terminal disposition |
+   |----|----------|------------------------|--------|------------|---------------|----------------------|
+   | D1 | source-backed finding | stage source then compile | named knowledge base area | — | approval; target available | integrated |
 
    `Destination and action` must say whether the result needs source staging,
-   synthesis, direct document update, or a follow-up task. A wiki row names
-   the supporting external source(s), not the report as raw input.
+   synthesis, direct document update, or a follow-up task. A follow-up task
+   row must name `artifact_followup_destination`, not the wiki-maintenance
+   destination. A wiki row names the supporting external source(s), not the
+   report as raw input.
 
 ## Lifecycle invariants
 

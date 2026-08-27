@@ -11,7 +11,7 @@ When a supplied demo, talk, or video is material evidence, invoke `transcribe` t
 
 Use Firecrawl first for web search and page extraction when it is available. If it is unavailable or blocked for a source, use native web tools and state that fallback in the report.
 
-Read `~/.config/research-tools/profile.md` before selecting the durable output location. This skill is read-only except for its required research artifact.
+Read `~/.config/research-tools/profile.md` before selecting the durable output location. This skill is read-only except for its required research artifact. Any proposed follow-up task uses `artifact_followup_destination`, never the wiki-maintenance route.
 
 ## Execution Modes
 

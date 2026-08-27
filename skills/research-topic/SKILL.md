@@ -7,7 +7,7 @@ description: "Conduct deep, persistent topic-first research with NotebookLM: gat
 
 Conduct topic-first research with NotebookLM as the persistent source and synthesis layer. Use `research-sources` instead when the caller already supplies the evidence or asks to improve a named collection.
 
-Before choosing sources, a durable output location, or local follow-up policy, read `~/.config/research-tools/profile.md`.
+Before choosing sources, a durable output location, or local follow-up policy, read `~/.config/research-tools/profile.md`. Any proposed follow-up task in the artifact uses `artifact_followup_destination`, never the wiki-maintenance route.
 
 ## Scope and source set
 

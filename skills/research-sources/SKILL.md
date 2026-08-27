@@ -7,7 +7,7 @@ description: Investigate supplied sources, improve an insufficient evidence set,
 
 Turn supplied evidence into a durable, source-grounded research artifact. This skill may analyze a fixed evidence set, improve an incomplete one, or prepare a proposal for an existing target. It does not directly promote knowledge or mutate a target without explicit authorization.
 
-Before selecting an output location, read `~/.config/research-tools/profile.md`. Without a valid profile, ask before writing.
+Before selecting an output location, read `~/.config/research-tools/profile.md`. Without a valid profile, ask before writing. Any proposed follow-up task in the artifact uses `artifact_followup_destination`, never the wiki-maintenance route.
 
 ## Modes
 

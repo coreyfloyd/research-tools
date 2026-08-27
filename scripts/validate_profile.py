@@ -6,7 +6,7 @@ import sys
 TOP_LEVEL_FIELDS = {
     "profile_version", "knowledge_root", "raw_dir", "wiki_dir", "output_dir",
     "docs_dir", "hot_file", "operation_log_file", "decision_log_file",
-    "task_destination", "capabilities",
+    "wiki_followup_destination", "artifact_followup_destination", "capabilities",
 }
 CAPABILITIES = {"firecrawl", "apple_speech"}
 
@@ -90,8 +90,8 @@ def main():
     if len(sys.argv) != 2:
         fail("usage: validate_profile.py PROFILE")
     values, capabilities = parse(pathlib.Path(sys.argv[1]))
-    if values.get("profile_version") != "2":
-        fail("profile_version must be 2")
+    if values.get("profile_version") != "3":
+        fail("profile_version must be 3")
     root_value = values.get("knowledge_root")
     if not root_value or not pathlib.Path(root_value).is_absolute():
         fail("knowledge_root must be an absolute path")
@@ -109,8 +109,9 @@ def main():
         contained(root, root / child, key)
     for key in ("hot_file", "operation_log_file", "decision_log_file"):
         contained_file(root, values.get(key), key)
-    if not values.get("task_destination"):
-        fail("missing task_destination")
+    for key in ("wiki_followup_destination", "artifact_followup_destination"):
+        if not values.get(key):
+            fail(f"missing {key}")
     print(root)
 
 

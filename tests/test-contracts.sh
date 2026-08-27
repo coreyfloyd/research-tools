@@ -12,11 +12,13 @@ grep -Fq 'never a backlog sweep' "$CONTRACT"
 grep -Fq 'Reports are not raw compiler input' "$CONTRACT"
 grep -Fq 'blind draft' "$CONTRACT"
 grep -Fq 'read-only' "$CONTRACT"
-grep -Fxq 'profile_version: 2' "$PROFILE"
+grep -Fxq 'profile_version: 3' "$PROFILE"
 grep -Fxq 'hot_file: wiki/hot.md' "$PROFILE"
 grep -Fxq 'operation_log_file: docs/log.md' "$PROFILE"
 grep -Fxq 'decision_log_file: docs/DECISIONS.md' "$PROFILE"
-grep -Fq 'task_destination:' "$PROFILE"
+grep -Fq 'wiki_followup_destination:' "$PROFILE"
+grep -Fq 'artifact_followup_destination:' "$PROFILE"
+if grep -Fq 'task_destination:' "$PROFILE"; then exit 1; fi
 PROFILE_ROOT="$(mktemp -d)"
 trap 'rm -rf "$PROFILE_ROOT"' EXIT
 mkdir -p "$PROFILE_ROOT/root/raw" "$PROFILE_ROOT/root/wiki" "$PROFILE_ROOT/root/output" "$PROFILE_ROOT/root/docs"
@@ -31,8 +33,8 @@ if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/unknown-field.md";
 sed '/^capabilities:$/a\
   unsupported_capability: true' "$PROFILE_ROOT/valid.md" > "$PROFILE_ROOT/unknown-capability.md"
 if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/unknown-capability.md"; then exit 1; fi
-sed '/hot_file:/d' "$PROFILE_ROOT/valid.md" > "$PROFILE_ROOT/missing-hot-file.md"
-if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/missing-hot-file.md"; then exit 1; fi
+sed '/wiki_followup_destination:/d' "$PROFILE_ROOT/valid.md" > "$PROFILE_ROOT/missing-wiki-followup.md"
+if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/missing-wiki-followup.md"; then exit 1; fi
 for skill in research-to-wiki wiki-audit; do
   grep -Fq 'Karpathy-wiki contract' "$ROOT/skills/$skill/SKILL.md" || exit 1
   grep -Fq '~/.config/research-tools/profile.md' "$ROOT/skills/$skill/SKILL.md" || exit 1
@@ -41,8 +43,17 @@ grep -Fq 'free-form local policy body' "$PROFILE"
 grep -Fq 'free-form local policy body' "$ROOT/contracts/karpathy-wiki.md"
 grep -Fq 'Obsidian-style wikilinks' "$CONTRACT"
 grep -Fq 'session cache' "$CONTRACT"
-grep -Fq 'task destination' "$CONTRACT"
+grep -Fq 'wiki follow-up destination' "$CONTRACT"
+grep -Fq 'artifact follow-up destination' "$CONTRACT"
+grep -Fq 'must not infer' "$CONTRACT"
 grep -Fq 'Andrej Karpathy' "$CONTRACT"
+for skill in research-sources research-topic research-feature research-feedback research-absorb; do
+  grep -Fq 'artifact_followup_destination' "$ROOT/skills/$skill/SKILL.md" || exit 1
+done
+grep -Fq 'artifact_followup_destination' "$ROOT/skills/knowledge-capture/SKILL.md"
+for skill in research-to-wiki wiki-audit; do
+  grep -Fq 'wiki_followup_destination' "$ROOT/skills/$skill/SKILL.md" || exit 1
+done
 if rg -n 'unified Obsidian vault|AI-vault|writing-corpus|R-004|wiki/people/' "$ROOT/skills" "$ROOT/contracts" "$ROOT/profiles" "$ROOT/README.md"; then
   exit 1
 fi

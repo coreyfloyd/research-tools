@@ -2,10 +2,11 @@
 
 ## Scope
 
-`0.2.0` release of the approved research-to-knowledge system. It formalizes
-portable workflow state—session cache, operation history, decisions, and task
-routing—with per-installation locations and supports safe upgrades from a
-previous package-owned release without changing unrelated skill links.
+`0.3.0` release of the approved research-to-knowledge system. It formalizes
+portable workflow state—session cache, operation history, decisions, and two
+independent follow-up routes—with per-installation locations and supports safe
+upgrades from a previous package-owned release without changing unrelated skill
+links.
 
 ## Included
 
@@ -15,7 +16,7 @@ previous package-owned release without changing unrelated skill links.
 - Apache-2.0 license.
 - Verified release archive path: GPG detached signature + SHA-256, archive
   extraction, then installation into immutable versioned user storage.
-- Profile validator enforcing version 2, an absolute existing knowledge root,
+- Profile validator enforcing version 3, an absolute existing knowledge root,
   existing raw/wiki/output/docs directories contained beneath it, and declared
   session-cache, operation-log, and decision-log files.
 - Migration contract requiring exact legacy-target replacement and matching
@@ -28,14 +29,15 @@ previous package-owned release without changing unrelated skill links.
 - Signing-key pinning: archive verification requires an independently known
   maintainer fingerprint and rejects an otherwise valid archive signed by a
   different key.
-- Strict version-2 profile schema and a reusable, read-only migration-handoff
+- Strict version-3 profile schema and a reusable, read-only migration-handoff
   verifier with exact-link and dual-client-convergence fixtures.
 - A free-form profile body for source routing, output policy, taxonomy, and
   local entry formats; portable YAML remains the validated profile contract.
 - A Karpathy-wiki workflow contract: topic folders are optional navigation,
   wikilinks are a Markdown convention rather than an application dependency,
-  every installation declares session cache/log/decision/task routing, and the
-  package credits the original LLM Wiki gist.
+  every installation declares session cache/log/decision plus separate wiki
+  maintenance and research-artifact follow-up routing, and the package credits
+  the original LLM Wiki gist.
 - Package-owned release-link upgrades, while preserving collision refusal for
   all non-package skill links.
 
@@ -77,5 +79,5 @@ two-key attacker-signature regression.
 
 ## Release status
 
-Version `0.1.0` is published and installed for local validation. Publish
-`0.2.0` only after this release's verification evidence has been reviewed.
+Versions `0.1.0` and `0.2.0` are published. Publish `0.3.0` only after this
+release's verification evidence has been reviewed.

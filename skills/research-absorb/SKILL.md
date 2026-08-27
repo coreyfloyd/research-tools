@@ -8,7 +8,8 @@ description: Validate and execute the approved distribution plan in a durable re
 Process one research artifact through its existing proposed distribution plan.
 The artifact is coordination material, not an archive: it must reach terminal
 dispositions and then be deleted. Read [the artifact contract](references/artifact-contract.md)
-before acting.
+and `~/.config/research-tools/profile.md` before acting. Research-derived tasks
+use `artifact_followup_destination`, never the wiki-maintenance route.
 
 ## Interface
 
@@ -43,8 +44,8 @@ filed follow-up task should own.
 - Update an explicitly named target document only when the approved row permits
   it and the target's own rules allow the mutation.
 - File a research-derived follow-up task when the plan calls for future work.
-  File it in the appropriate tracker with its evidence; do not perform the
-  implementation in this workflow.
+  File it through `artifact_followup_destination` with its evidence; do not
+  perform the implementation in this workflow.
 - Mark the actual terminal disposition for every row: integrated, target
   document updated, task filed, or explicitly discarded. If any row cannot
   reach a terminal disposition, the artifact is blocked unresolved work until

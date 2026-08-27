@@ -27,15 +27,18 @@ provide Obsidian's native link resolution or graph view.
 ## Workflow state and routing
 
 Every profile declares root-relative files for a session cache, operation log,
-and decision log, plus a non-empty task destination. At the start of a wiki
+and decision log, plus independent wiki follow-up destination and artifact
+follow-up destination declarations. At the start of a wiki
 operation, read the session cache and recent operation history. After an
 approved non-exploratory compile, update the session cache and append an
 operation entry. Record an approved taxonomy or policy decision in the decision
-log. Route an actionable follow-up according to the configured task
-destination; a roadmap is one possible task system, not a requirement.
+log. Route an actionable wiki-maintenance follow-up according to the configured
+wiki follow-up destination; a roadmap is one possible task system, not a
+requirement. Research-derived follow-ups use the artifact follow-up destination.
+The package must not infer that the two destinations are the same.
 
 The profile body may define the precise entry formats and routing distinctions.
-An audit remains read-only: it proposes its operation entry and follow-up
+An audit remains read-only: it proposes its operation entry and wiki follow-up
 routes, then waits for the authorized writer.
 
 ## Attribution
