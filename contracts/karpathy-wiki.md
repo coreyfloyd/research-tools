@@ -5,6 +5,25 @@
 A knowledge root contains `raw/`, `wiki/`, `output/`, and `docs/`. A valid
 profile resolves each configured directory beneath the canonicalized root.
 
+The profile's YAML frontmatter is the portable, validated topology contract.
+After the closing frontmatter delimiter, it may contain a free-form local policy body. Skills that consult the profile read the whole file and apply that
+body only to the configured knowledge root. The body can declare a personal
+taxonomy, local operations conventions, or optional source-library routing; it
+is deliberately local configuration, not package content.
+
+## Navigation and links
+
+Topic folders are optional navigation units, not a prescribed taxonomy. A
+knowledge base may add a topic folder only when its local policy or a human
+approval calls for one; each used topic folder has an `_index.md`, and
+`wiki/_master-index.md` describes the topic inventory. Articles are flat within
+a topic folder and connect across topics through links.
+
+The contract uses Obsidian-style wikilinks (`[[title]]` and
+`[[path/title]]`) as a portable Markdown convention. The files do not require
+the Obsidian application, but clients that do not understand wikilinks will not
+provide Obsidian's native link resolution or graph view.
+
 ## Curated compilation
 
 Humans select a coherent raw-source subset. `research-to-wiki` compiles only

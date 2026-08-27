@@ -2,9 +2,9 @@
 
 ## Scope
 
-Local-only `0.1.0` extraction of the approved research-to-knowledge
-system. It has not been published and has not changed the installed dotfiles
-workflow.
+`0.1.1` patch release of the approved research-to-knowledge system. It
+formalizes the private profile-body boundary and supports safe upgrades from a
+previous package-owned release without changing unrelated skill links.
 
 ## Included
 
@@ -28,13 +28,21 @@ workflow.
   different key.
 - Strict version-1 profile schema and a reusable, read-only migration-handoff
   verifier with exact-link and dual-client-convergence fixtures.
+- A free-form, local-only profile body for private source routing, output
+  policy, and knowledge-base taxonomy; portable YAML remains the validated
+  profile contract.
+- A generic Karpathy-wiki contract: topic folders are optional navigation,
+  wikilinks are a Markdown convention rather than an application dependency,
+  and audit taxonomy rules come only from local policy.
+- Package-owned release-link upgrades, while preserving collision refusal for
+  all non-package skill links.
 
 ## Verification
 
 - `bash tests/test-contracts.sh`
 - `bash tests/test-install.sh` (clean install, repeat install, concurrent
-  install, runtime closure, tamper detection, non-mutating foreign-link
-  collision, and profile validation)
+  install, package-owned upgrade, runtime closure, tamper detection,
+  non-mutating foreign-link collision, and profile validation)
 - `bash tests/test-release.sh` (temporary-key signature and checksum verification,
   maintainer-fingerprint pinning, repeated verified-archive installation from
   separate extractions, and tamper rejection)
@@ -65,8 +73,7 @@ expected key appeared first. It now binds GPG's `VALIDSIG` primary signer
 fingerprint to the expected fingerprint; an independent re-review passed the
 two-key attacker-signature regression.
 
-## Held actions
+## Release status
 
-Do not create/push the public GitHub repository, generate the maintainer
-signing key, publish a release, or migrate the existing dotfiles installation
-until this candidate is reviewed.
+Version `0.1.0` is published and installed for local validation. Publish
+`0.1.1` only after this patch's verification evidence has been reviewed.

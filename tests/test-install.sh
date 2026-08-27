@@ -10,7 +10,7 @@ mkdir -p "$(dirname "$BUILD_SENTINEL")"
 touch "$BUILD_SENTINEL"
 cleanup() {
   status=$?
-  rm -rf "$TEST_HOME" "${COLLISION_HOME:-}" "${PROFILE_HOME:-}" "${CONCURRENT_HOME:-}" "${TAMPER_HOME:-}" "$BUILD_SENTINEL"
+  rm -rf "$TEST_HOME" "${COLLISION_HOME:-}" "${PROFILE_HOME:-}" "${CONCURRENT_HOME:-}" "${TAMPER_HOME:-}" "${UPGRADE_HOME:-}" "$BUILD_SENTINEL"
   exit "$status"
 }
 trap cleanup EXIT
@@ -61,6 +61,22 @@ wait "$ONE_PID"
 wait "$TWO_PID"
 HOME="$CONCURRENT_HOME" CODEX_HOME="$CONCURRENT_HOME/.codex" bash "$SOURCE_ROOT/install.sh" --verify
 rm -rf "$CONCURRENT_HOME"
+
+UPGRADE_HOME="$(mktemp -d)"
+for skill in "$ROOT"/skills/*; do
+  test -f "$skill/SKILL.md" || continue
+  name="$(basename "$skill")"
+  mkdir -p "$UPGRADE_HOME/.local/share/research-tools/releases/0.0.9/skills/$name" "$UPGRADE_HOME/.claude/skills" "$UPGRADE_HOME/.codex/skills"
+  ln -s "$UPGRADE_HOME/.local/share/research-tools/releases/0.0.9/skills/$name" "$UPGRADE_HOME/.claude/skills/$name"
+  ln -s "$UPGRADE_HOME/.local/share/research-tools/releases/0.0.9/skills/$name" "$UPGRADE_HOME/.codex/skills/$name"
+done
+HOME="$UPGRADE_HOME" CODEX_HOME="$UPGRADE_HOME/.codex" bash "$SOURCE_ROOT/install.sh"
+for skill in "$ROOT"/skills/*; do
+  test -f "$skill/SKILL.md" || continue
+  name="$(basename "$skill")"
+  test "$(readlink "$UPGRADE_HOME/.claude/skills/$name")" = "$UPGRADE_HOME/.local/share/research-tools/releases/$VERSION/skills/$name"
+  test "$(readlink "$UPGRADE_HOME/.codex/skills/$name")" = "$UPGRADE_HOME/.local/share/research-tools/releases/$VERSION/skills/$name"
+done
 
 TAMPER_HOME="$(mktemp -d)"
 HOME="$TAMPER_HOME" CODEX_HOME="$TAMPER_HOME/.codex" bash "$SOURCE_ROOT/install.sh"

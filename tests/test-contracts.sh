@@ -28,7 +28,14 @@ sed '9i\
 if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/unknown-capability.md"; then exit 1; fi
 for skill in research-to-wiki wiki-audit; do
   grep -Fq 'Karpathy-wiki contract' "$ROOT/skills/$skill/SKILL.md" || exit 1
+  grep -Fq '~/.config/research-tools/profile.md' "$ROOT/skills/$skill/SKILL.md" || exit 1
 done
+grep -Fq 'free-form local policy body' "$PROFILE"
+grep -Fq 'free-form local policy body' "$ROOT/contracts/karpathy-wiki.md"
+grep -Fq 'Obsidian-style wikilinks' "$CONTRACT"
+if rg -n 'unified Obsidian vault|AI-vault|writing-corpus|R-004|wiki/people/' "$ROOT/skills" "$ROOT/contracts" "$ROOT/profiles" "$ROOT/README.md"; then
+  exit 1
+fi
 if rg -n 'claude-dotfiles|research-skills|~/Obsidian|Corey|~/.claude/skills|~/Development|wiki/CLAUDE\.md|wiki/AGENTS\.md' "$ROOT/skills" "$ROOT/contracts" "$ROOT/profiles" "$ROOT/README.md" --glob '!*.swift'; then
   exit 1
 fi

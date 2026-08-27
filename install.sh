@@ -30,6 +30,16 @@ copy_release_tree() {
   )
 }
 
+is_package_release_link() {
+  target="$1"
+  skill="$2"
+  [ -L "$target" ] || return 1
+  case "$(readlink "$target")" in
+    "$RELEASE_ROOT"/*/skills/"$skill") return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
 LOCK_HELD=0
 release_lock() {
   if [ "$LOCK_HELD" = "1" ]; then
@@ -73,6 +83,9 @@ for name in "$ROOT"/skills/*; do
       if [ -L "$target" ] && [ "$(readlink "$target")" = "$RELEASE_DIR/skills/$skill" ]; then
         continue
       fi
+      if is_package_release_link "$target" "$skill"; then
+        continue
+      fi
       echo "collision: $target" >&2
       exit 1
     fi
@@ -106,6 +119,12 @@ fi
 for name in "$RELEASE_DIR"/skills/*; do
   [ -f "$name/SKILL.md" ] || continue
   skill="$(basename "$name")"
-  [ -L "$CLAUDE_DIR/$skill" ] || ln -s "$name" "$CLAUDE_DIR/$skill"
-  [ -L "$CODEX_DIR/$skill" ] || ln -s "$name" "$CODEX_DIR/$skill"
+  for target in "$CLAUDE_DIR/$skill" "$CODEX_DIR/$skill"; do
+    if [ -L "$target" ] && [ "$(readlink "$target")" != "$name" ]; then
+      if is_package_release_link "$target" "$skill"; then
+        unlink "$target"
+      fi
+    fi
+    [ -L "$target" ] || ln -s "$name" "$target"
+  done
 done

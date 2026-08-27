@@ -2,7 +2,7 @@
 
 Portable research-to-knowledge skills for Agent Skills-compatible clients.
 
-The package supports durable research, explicit artifact disposition, curated Karpathy-wiki compilation, read-only audit, and optional local Apple Speech transcription. Configure a knowledge root with `profiles/karpathy-wiki.example.md`; personal paths and policies stay outside this repository.
+The package supports durable research, explicit artifact disposition, curated Karpathy-wiki compilation, read-only audit, and optional local Apple Speech transcription. Configure a knowledge root with `profiles/karpathy-wiki.example.md`; its validated YAML frontmatter defines portable topology and its free-form body holds personal paths and policies outside this repository.
 
 ## Local release-candidate verification
 

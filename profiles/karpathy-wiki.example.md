@@ -11,3 +11,10 @@ capabilities:
 ---
 
 Copy to `~/.config/research-tools/profile.md` and set `knowledge_root`.
+
+## Optional local policy
+
+This body is intentionally free-form and remains outside the public package.
+Use it for personal taxonomy, source-library routing, output conventions, and
+knowledge-base operation rules. Skills that read the profile read this
+free-form local policy body after the validated YAML frontmatter.

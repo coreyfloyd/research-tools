@@ -1,13 +1,13 @@
 ---
 name: research-to-wiki
-description: Compile a curated raw source subset into wiki articles in the unified Obsidian vault. Use for “add this to the wiki” or selected raw research/archive material; not for auditing, session capture, or sweeping all uncompiled raw content.
+description: Compile a curated raw source subset into a configured Karpathy-wiki knowledge base. Use for “add this to the wiki” or selected raw research/archive material; not for auditing, session capture, or sweeping all uncompiled raw content.
 ---
 
 # Research to Wiki
 
 Compile a caller-selected, curated source subset from `raw/` into atomic wiki articles. This skill is deliberately not a raw-backlog sweep: select a coherent subset first, then compile it. It writes wiki content and ingestion tracking; it never substitutes a research report for its underlying source material.
 
-Read the [Karpathy-wiki contract](../../contracts/karpathy-wiki.md) before the first pass. `wiki-audit` remains the read-only quality audit companion.
+Read `~/.config/research-tools/profile.md` and the [Karpathy-wiki contract](../../contracts/karpathy-wiki.md) before the first pass. Use the configured directories and apply any free-form local policy body only to that knowledge root. `wiki-audit` remains the read-only quality audit companion.
 
 ## Inputs and routing
 
