@@ -42,6 +42,6 @@ installer. It writes an immutable per-version release tree under
 and Codex. A repeated install of the same content is safe; a same-version,
 different-content collision fails.
 
-The `0.1.0` candidate does not include a maintainer signing key or a published
-release. Creating the key, recording its fingerprint, and publishing those
-assets are held for maintainer review.
+The current release-signing public key is
+[`keys/research-tools-release.asc`](keys/research-tools-release.asc). Its
+fingerprint is `09674AFF392661238F4ACBD9F32B3A412CD5EFC5`.
