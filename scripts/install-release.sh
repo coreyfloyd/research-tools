@@ -1,0 +1,16 @@
+#!/bin/bash
+set -euo pipefail
+
+ARCHIVE="${1:?usage: install-release.sh ARCHIVE KEYRING EXPECTED_FINGERPRINT}"
+KEYRING="${2:?usage: install-release.sh ARCHIVE KEYRING EXPECTED_FINGERPRINT}"
+EXPECTED_FINGERPRINT="${3:?usage: install-release.sh ARCHIVE KEYRING EXPECTED_FINGERPRINT}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+WORK="$(mktemp -d)"
+trap 'rm -rf "$WORK"' EXIT
+
+bash "$SCRIPT_DIR/verify-release.sh" "$ARCHIVE" "$KEYRING" "$EXPECTED_FINGERPRINT"
+tar -xzf "$ARCHIVE" -C "$WORK"
+PAYLOAD="$(find "$WORK" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+test -f "$PAYLOAD/VERSION"
+test -f "$PAYLOAD/install.sh"
+bash "$PAYLOAD/install.sh"

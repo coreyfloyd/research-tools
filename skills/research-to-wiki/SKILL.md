@@ -1,0 +1,63 @@
+---
+name: research-to-wiki
+description: Compile a curated raw source subset into wiki articles in the unified Obsidian vault. Use for “add this to the wiki” or selected raw research/archive material; not for auditing, session capture, or sweeping all uncompiled raw content.
+---
+
+# Research to Wiki
+
+Compile a caller-selected, curated source subset from `raw/` into atomic wiki articles. This skill is deliberately not a raw-backlog sweep: select a coherent subset first, then compile it. It writes wiki content and ingestion tracking; it never substitutes a research report for its underlying source material.
+
+Read the [Karpathy-wiki contract](../../contracts/karpathy-wiki.md) before the first pass. `wiki-audit` remains the read-only quality audit companion.
+
+## Inputs and routing
+
+- Accept a selected subset already in `raw/research/`, `raw/archive/`, or another valid raw location. If sources are already raw, skip staging.
+- When an approved research artifact identifies external sources for the wiki, `research-absorb` stages their provenance in `raw/research/` and invokes this skill with only that subset. The artifact itself is not compile input.
+- When a source set is insufficiently grounded, use `research-sources` in **Improve evidence** mode before compiling. Compile from the evaluated source set, not an unsupported transcript alone.
+- Exclude corpora marked `compile_exclude` or `compile_mode: exclude`; route `compile_mode: update` sources through their targeted update workflow.
+
+## Stance
+
+- **Compile blind.** Read raw sources before existing wiki synthesis; compare against existing knowledge only after drafting to find tensions and gaps.
+- **Route before creating.** Search alternate concept names in `wiki/`; merge only when the referent is the same.
+- **Write claims, not source summaries.** Attribution belongs in `## Sources`.
+- **Quality at compile time.** Apply the wiki 5-signal checklist, atomicity, precise article naming, and dense inline links before marking work complete.
+- **Do not create entity or concept hubs unilaterally.** Propose candidates.
+
+## Procedure
+
+### 1. Confirm the subset
+
+State each source and why it is included. For every file, decide only topic assignment and whether to skip it (too thin, truncated, off-scope, registry, bookmark, already ingested, or excluded). Do not synthesize during triage.
+
+### 2. Compile each source
+
+1. Read the raw source fully before writing.
+2. Create or update the appropriate topic article. Follow the public Karpathy-wiki contract: one concept per article, bullet-forward prose, dense wikilinks, meaningful title, `## Key Takeaways`, and `## Sources` with vault-root-relative paths.
+3. Keep ordinary articles at or below 120 lines; document `length_justified:` when substance requires more than 200.
+4. After the blind draft, compare its key claims with the 1–3 closest existing wiki articles. Record real contradictions in `## Tensions` and missing prerequisite knowledge in `## Gaps`; do not blend incompatible assertions.
+5. Before merging into an existing article, compare claims first. A conflict becomes a tension, not a silent blend.
+6. Update the source's `ingestion_status` and `ingested_at` only after its actual compilation result is known.
+
+### 3. Maintain navigation
+
+Update each touched topic `_index.md`; update `wiki/_master-index.md` when a topic is added or its description materially changes. Search for recurring, load-bearing people or concepts after each topic and surface hub candidates for approval.
+
+### 4. Finish
+
+Report articles created or updated, source dispositions, tensions, gaps, and proposed hubs. Append a `research-to-wiki` operation entry to `docs/log.md` after a non-exploratory approved run. Commit the vault work according to vault rules.
+
+## Special source types
+
+- `kind: registry` — compile links and descriptions, not prose.
+- `kind: bookmark` — add a concise reference to the relevant article or index.
+- Private sources — paraphrase only and use `draws_from_private: true` on resulting articles.
+- Cross-topic source — create distinct topic articles and link them; do not force unrelated concepts into one article.
+
+## Does not do
+
+- Audit the wiki (`wiki-audit`)
+- Capture or process current conversation knowledge (`knowledge-capture`)
+- Stage sources or execute an artifact distribution plan (`research-absorb`)
+- Sweep all uncompiled raw material
+- Move or delete raw sources, create unapproved hubs, resolve tensions, or perform unrelated follow-up implementation

@@ -1,0 +1,41 @@
+---
+name: research-topic
+description: "Conduct deep, persistent topic-first research with NotebookLM: gather and index sources, resolve evidence gaps, verify claims, and produce a distribution-ready artifact. Use for substantial research or research verification, not quick lookups or supplied-source analysis."
+---
+
+# Research Topic
+
+Conduct topic-first research with NotebookLM as the persistent source and synthesis layer. Use `research-sources` instead when the caller already supplies the evidence or asks to improve a named collection.
+
+Before choosing sources, a durable output location, or local follow-up policy, read `~/.config/research-tools/profile.md`.
+
+## Scope and source set
+
+1. Establish the research question, decision it informs, and material constraints. Ask for caller-held sources before discovery; they take priority.
+2. Check for a related NotebookLM notebook. Ask before adding to an existing notebook; otherwise create one and preserve its ID.
+3. Use Firecrawl first, when available, for discovery and complete-page extraction. Use native web tools for sources it cannot reach and record that fallback.
+4. Add user-provided and discovered sources to NotebookLM, retaining original URLs or paths. Invoke `transcribe` for material audio or video; prefer native YouTube indexing when it suffices.
+5. Wait until sources are indexed before synthesis.
+
+## Analyze and improve evidence
+
+Query the notebook for key findings, source agreement, contradictions, evidence gaps, and support for each actionable claim. Classify claims as verified, unverified, contradicted, or overstated.
+
+When evidence is incomplete, identify the specific gap and add the smallest useful set of sources. Use [the evidence-improvement procedure](../research-sources/references/improve-evidence.md) for source discovery and categorization. Re-run synthesis and claim verification after adding sources.
+
+Prefer primary sources. Distinguish source-grounded findings from reasonable inference, disagreements, and open questions.
+
+## Artifact
+
+Write one durable artifact using [the shared research artifact contract](../research-absorb/references/artifact-contract.md). It must include the research question, source inventory and notebook ID, findings, claim verification, contradictions, gaps, and a **Proposed distribution plan**.
+
+Optional NotebookLM outputs such as reports, tables, or mind maps support the artifact; do not substitute them for it. Store generated files only in the configured durable destination, not scratch.
+
+At completion, report the artifact path and its proposed plan. The caller may invoke `research-absorb`; do not automatically distribute, promote, or archive the artifact.
+
+## Boundaries
+
+- `research-quick` and `research-dev` remain inline research paths.
+- `research-feature` covers competitor UX and established patterns.
+- `research-feedback` covers lived community experience.
+- This skill does not execute a distribution plan or sweep uncompiled knowledge.
