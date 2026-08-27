@@ -8,5 +8,5 @@ KEY="${RESEARCH_TOOLS_GPG_KEY:?set RESEARCH_TOOLS_GPG_KEY to the signing key fin
 mkdir -p "$OUT"
 ARCHIVE="$OUT/research-tools-$VERSION.tar.gz"
 tar --exclude='.git' --exclude='dist' --exclude='.build' -czf "$ARCHIVE" -C "$(dirname "$ROOT")" "$(basename "$ROOT")"
-shasum -a 256 "$ARCHIVE" > "$ARCHIVE.sha256"
+(cd "$OUT" && shasum -a 256 "$(basename "$ARCHIVE")") > "$ARCHIVE.sha256"
 gpg --batch --yes --local-user "$KEY" --detach-sign --armor --output "$ARCHIVE.asc" "$ARCHIVE.sha256"
