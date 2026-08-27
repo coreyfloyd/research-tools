@@ -18,3 +18,21 @@ Use `scripts/verify-migration-handoff.sh` with that private manifest before
 changing links (`--preflight`) and after (`--verify`). The verifier is read-only:
 it checks every manifest skill in both client directories, rejects collisions,
 and confirms final convergence on the specified release directory.
+
+## Profile version 2
+
+Before installing a version-2 profile release with profile validation enabled,
+add these root-relative fields to `~/.config/research-tools/profile.md` and
+ensure the three files already exist:
+
+```yaml
+profile_version: 2
+hot_file: wiki/hot.md
+operation_log_file: docs/log.md
+decision_log_file: docs/DECISIONS.md
+task_destination: Describe the task system and routing rule for this knowledge base.
+```
+
+The task destination may name an external system. The profile body defines
+entry formats and any routing distinctions. Do not change paths merely to match
+this example; choose locations appropriate to the configured knowledge root.

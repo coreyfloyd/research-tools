@@ -25,6 +25,7 @@ if bash "$ROOT/scripts/verify-release.sh" "$OTHER_ARCHIVE" "$TEST_DIR/two-keys.a
 fi
 INSTALL_HOME="$TEST_DIR/install-home"
 mkdir -p "$INSTALL_HOME/knowledge/raw" "$INSTALL_HOME/knowledge/wiki" "$INSTALL_HOME/knowledge/output" "$INSTALL_HOME/knowledge/docs" "$INSTALL_HOME/.config/research-tools"
+touch "$INSTALL_HOME/knowledge/wiki/hot.md" "$INSTALL_HOME/knowledge/docs/log.md" "$INSTALL_HOME/knowledge/docs/DECISIONS.md"
 sed "s|/absolute/path/to/knowledge|$INSTALL_HOME/knowledge|" "$ROOT/profiles/karpathy-wiki.example.md" > "$INSTALL_HOME/.config/research-tools/profile.md"
 HOME="$INSTALL_HOME" CODEX_HOME="$INSTALL_HOME/.codex" RESEARCH_TOOLS_VALIDATE_PROFILE=1 bash "$ROOT/scripts/install-release.sh" "$ARCHIVE" "$TEST_DIR/public.asc" "$KEY"
 HOME="$INSTALL_HOME" CODEX_HOME="$INSTALL_HOME/.codex" RESEARCH_TOOLS_VALIDATE_PROFILE=1 bash "$ROOT/scripts/install-release.sh" "$ARCHIVE" "$TEST_DIR/public.asc" "$KEY"

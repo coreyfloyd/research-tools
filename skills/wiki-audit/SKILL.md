@@ -27,7 +27,7 @@ The audit is opt-in; it never runs merely because a wiki changed.
 
 ### 1. Scope
 
-Count articles under the configured `wiki_dir`, excluding `_index.md` and `_master-index.md`. State the count and the directories in scope before starting.
+Read the configured session cache and recent operation history. Count articles under the configured `wiki_dir`, excluding `_index.md` and `_master-index.md`. State the count and the directories in scope before starting.
 
 ### 2. Missing-page lint
 
@@ -73,7 +73,7 @@ Write `output/YYYY-MM-DD-wiki-audit.md` with:
 4. tension and gap findings, including sampling coverage;
 5. Must / Should / Can priorities and proposed follow-up actions.
 
-Report a proposed log entry only if the local policy defines one; do not append it. State every proposed file move, split, or taxonomy change for approval.
+Propose an entry for the configured operation log and route actionable findings to the configured task destination; do not write either. State every proposed file move, split, or taxonomy change for approval. Record no decision directly because the audit is read-only.
 
 ## Does not do
 

@@ -26,6 +26,11 @@ Read `~/.config/research-tools/profile.md` and the [Karpathy-wiki contract](../.
 
 ## Procedure
 
+### 0. Restore workflow context
+
+Read the configured session cache and the recent operation log before selecting
+sources. Apply the profile body's local entry formats and task-routing rules.
+
 ### 1. Confirm the subset
 
 State each source and why it is included. For every file, decide only topic assignment and whether to skip it (too thin, truncated, off-scope, registry, bookmark, already ingested, or excluded). Do not synthesize during triage.
@@ -45,7 +50,7 @@ Update each touched topic `_index.md`; update `wiki/_master-index.md` when a top
 
 ### 4. Finish
 
-Report articles created or updated, source dispositions, tensions, gaps, and proposed hubs. Append a `research-to-wiki` operation entry to `docs/log.md` after a non-exploratory approved run. Commit the vault work according to vault rules.
+Report articles created or updated, source dispositions, tensions, gaps, and proposed hubs. After a non-exploratory approved run, update the configured session cache and append an operation entry to the configured operation log. Record approved taxonomy or policy decisions in the configured decision log; route actionable follow-ups to the configured task destination. Commit the knowledge-base work according to its local rules.
 
 ## Special source types
 

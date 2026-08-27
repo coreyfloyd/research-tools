@@ -48,6 +48,7 @@ test ! -e "$COLLISION_HOME/.local/share/research-tools/releases"
 
 PROFILE_HOME="$(mktemp -d)"
 mkdir -p "$PROFILE_HOME/.config/research-tools" "$PROFILE_HOME/knowledge/raw" "$PROFILE_HOME/knowledge/wiki" "$PROFILE_HOME/knowledge/output" "$PROFILE_HOME/knowledge/docs"
+touch "$PROFILE_HOME/knowledge/wiki/hot.md" "$PROFILE_HOME/knowledge/docs/log.md" "$PROFILE_HOME/knowledge/docs/DECISIONS.md"
 sed "s|/absolute/path/to/knowledge|$PROFILE_HOME/knowledge|" "$ROOT/profiles/karpathy-wiki.example.md" > "$PROFILE_HOME/.config/research-tools/profile.md"
 HOME="$PROFILE_HOME" CODEX_HOME="$PROFILE_HOME/.codex" RESEARCH_TOOLS_VALIDATE_PROFILE=1 bash "$SOURCE_ROOT/install.sh"
 HOME="$PROFILE_HOME" CODEX_HOME="$PROFILE_HOME/.codex" bash "$SOURCE_ROOT/install.sh" --verify

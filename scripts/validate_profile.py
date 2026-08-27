@@ -5,7 +5,8 @@ import sys
 
 TOP_LEVEL_FIELDS = {
     "profile_version", "knowledge_root", "raw_dir", "wiki_dir", "output_dir",
-    "docs_dir", "capabilities",
+    "docs_dir", "hot_file", "operation_log_file", "decision_log_file",
+    "task_destination", "capabilities",
 }
 CAPABILITIES = {"firecrawl", "apple_speech"}
 
@@ -69,12 +70,28 @@ def contained(root, candidate, label):
     return resolved
 
 
+def contained_file(root, value, label):
+    if not value:
+        fail(f"missing {label}")
+    candidate = pathlib.Path(value)
+    if candidate.is_absolute():
+        fail(f"{label} must be relative to knowledge_root")
+    resolved = (root / candidate).resolve()
+    try:
+        resolved.relative_to(root)
+    except ValueError:
+        fail(f"{label} escapes knowledge_root")
+    if not resolved.is_file():
+        fail(f"{label} is not an existing file")
+    return resolved
+
+
 def main():
     if len(sys.argv) != 2:
         fail("usage: validate_profile.py PROFILE")
     values, capabilities = parse(pathlib.Path(sys.argv[1]))
-    if values.get("profile_version") != "1":
-        fail("profile_version must be 1")
+    if values.get("profile_version") != "2":
+        fail("profile_version must be 2")
     root_value = values.get("knowledge_root")
     if not root_value or not pathlib.Path(root_value).is_absolute():
         fail("knowledge_root must be an absolute path")
@@ -90,6 +107,10 @@ def main():
         if child.is_absolute():
             fail(f"{key} must be relative to knowledge_root")
         contained(root, root / child, key)
+    for key in ("hot_file", "operation_log_file", "decision_log_file"):
+        contained_file(root, values.get(key), key)
+    if not values.get("task_destination"):
+        fail("missing task_destination")
     print(root)
 
 

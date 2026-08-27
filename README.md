@@ -2,6 +2,8 @@
 
 Portable research-to-knowledge skills for Agent Skills-compatible clients.
 
+Inspired by [Andrej Karpathy's LLM Wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+
 The package supports durable research, explicit artifact disposition, curated Karpathy-wiki compilation, read-only audit, and optional local Apple Speech transcription. Configure a knowledge root with `profiles/karpathy-wiki.example.md`; its validated YAML frontmatter defines portable topology and its free-form body holds personal paths and policies outside this repository.
 
 ## Local release-candidate verification

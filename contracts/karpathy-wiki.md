@@ -24,6 +24,26 @@ The contract uses Obsidian-style wikilinks (`[[title]]` and
 the Obsidian application, but clients that do not understand wikilinks will not
 provide Obsidian's native link resolution or graph view.
 
+## Workflow state and routing
+
+Every profile declares root-relative files for a session cache, operation log,
+and decision log, plus a non-empty task destination. At the start of a wiki
+operation, read the session cache and recent operation history. After an
+approved non-exploratory compile, update the session cache and append an
+operation entry. Record an approved taxonomy or policy decision in the decision
+log. Route an actionable follow-up according to the configured task
+destination; a roadmap is one possible task system, not a requirement.
+
+The profile body may define the precise entry formats and routing distinctions.
+An audit remains read-only: it proposes its operation entry and follow-up
+routes, then waits for the authorized writer.
+
+## Attribution
+
+This package is an independent implementation inspired by
+[Andrej Karpathy's LLM Wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+It adds its own portable profile, installation, research, and audit contracts.
+
 ## Curated compilation
 
 Humans select a coherent raw-source subset. `research-to-wiki` compiles only
