@@ -29,6 +29,18 @@ The artifact must include one row per actionable result, using this shape:
    destination. A wiki row names the supporting external source(s), not the
    report as raw input.
 
+### Named referents
+
+Evidence may introduce a **named referent** — a person, organization, product,
+or concept — that the material establishes as a load-bearing subject rather than
+an incidental mention. A source's own author or subject counts, even when no
+other source in the set names them. When a referent clears that bar, emit a
+distribution row for it: it is a distinct actionable result from the findings it
+appears in, and the producer is the only stage holding both the evidence and the
+authority to propose it. Resolve its destination and page conventions from local
+policy; do not invent a taxonomy. Emit no row when nothing clears the bar — a
+considered-and-rejected note is not a row.
+
 ## Lifecycle invariants
 
 - The producer proposes the plan; `research-absorb` validates and executes an

@@ -11,8 +11,9 @@ Turn conversation knowledge into an explicit, complete disposition. Before propo
 
 1. Inventory external sources, synthesized claims, and generated outputs from the conversation.
 2. Classify each: discard; retain in `output/`; capture external provenance in `raw/research/`; preserve a reusable synthesis in `raw/derived/`; or compile into wiki knowledge.
-3. Reconcile those items with the conversation's decisions and existing knowledge. Present one approval table. Every wiki recommendation is a complete action: capture required provenance **and run `research-to-wiki`**. Never stop at raw staging. A proposed cross-project follow-up names `artifact_followup_destination`.
-4. After explicit approval, perform the approved captures and dispatch potentially lengthy `research-to-wiki` work headlessly. Report articles created/updated and the final disposition of every item.
+3. Inventory **named referents** — a person, organization, product, or concept the conversation established as a load-bearing subject rather than an incidental mention. Propose an entity page for each that clears that bar, resolving its destination and page conventions from local policy; do not invent a taxonomy. Propose nothing when nothing clears the bar.
+4. Reconcile those items with the conversation's decisions and existing knowledge. Present one approval table. Every wiki recommendation is a complete action: capture required provenance **and run `research-to-wiki`**. Never stop at raw staging. A proposed cross-project follow-up names `artifact_followup_destination`.
+5. After explicit approval, perform the approved captures and dispatch potentially lengthy `research-to-wiki` work headlessly. Report articles created/updated and the final disposition of every item.
 
 ## Boundaries
 
