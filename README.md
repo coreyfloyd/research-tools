@@ -5,12 +5,23 @@ Claude Code and Codex. It provides skills for multiple types of research and wor
 
 This is the system I developed for my own personal research - much of it was built to learn about AI itself. My favorite use case is ingesting knowledge from YouTube videos and my favorite podcasts in order to plan improvements to my AI systems.
 
+**Everything the system produces is plain Markdown files on your disk.** Research artifacts, wiki articles, indexes, and operation logs are all `.md` files under one knowledge root you choose. There is no database, no proprietary format, and no lock-in. That is a deliberate assumption about how you work: you own the files, read and edit them in any editor, browse them in [Obsidian][7] or a Git host, version-control them, and keep them long after the conversation that produced them is gone. The same files are the AI's working set and yours.
+
 The system is based around a workflow with three types of activity:
 
 1. **Research** gathers and evaluates evidence. Quick work stays in the
    conversation; substantial work produces a durable research artifact.
 2. **Knowledge Distribution & Follow Up** updates existing documents and your personal AI context, or creates todos from useful knowledge in the current conversation.
 3. **Personal Knowledge Curation** turns selected sources into atomic, linked wiki articles — for both yourself and your agents.
+
+Substantial research is grounded in **Gemini Notebook** (Google's product
+formerly named NotebookLM). This is a deliberate design choice, not just a
+convenience. Gemini Notebook answers only from the sources you give it and cites
+the exact passage behind every claim, instead of blending in a chat model's
+training data or opinions. Analyzing your evidence there keeps the synthesis
+tied to what your sources actually say, with far less outside influence and far
+less room for confident invention. `research-sources` and `research-topic` build
+their artifacts on top of that grounded layer.
 
 After installation, start with `research-tools-set-up`. It walks you through the
 knowledge-store structure, local policy, and follow-up routing, then shows the
@@ -70,7 +81,19 @@ The directory names are part of the public
 [Karpathy-wiki contract][2]. The organization of the `wiki/`is customizable,
 but relies on internal wikilinks for traversal by AI and wikilink-aware tools.
 
-The wiki also comes with a  `wiki/hot.md` file that makes finding recent content quicker.
+### Index files
+
+The wiki maintains three kinds of Markdown index so an agent (or you) can find the
+right article without scanning every file. This keeps context small and searches
+fast as the wiki grows:
+
+- `wiki/hot.md` — the recent-context entry point. Lists the latest and most
+  active content, so a session starts from what changed instead of the whole wiki.
+- `wiki/<topic>/_index.md` — one per topic folder, listing that topic's articles.
+- `wiki/_master-index.md` — the top-level map of every topic.
+
+The skills update these indexes automatically as articles are created or changed,
+so the fast-search entry points stay current without manual upkeep.
 
 ### Audit Tracking
 
@@ -170,12 +193,15 @@ Audit the configured wiki with wiki-audit. Do not modify it.
 
 ## External and optional integrations
 
-- **NotebookLM** is the persistent source and synthesis layer used by
-  `research-sources` and `research-topic`. Agent access is provided by the
-  third-party [notebooklm-py][4] CLI and its `notebooklm` Agent Skill, not by
-  Google or this package. `research-dev` also uses that CLI when it is
-  available. This package does not install it, authenticate it, or validate
-  the integration.
+- **Gemini Notebook** (formerly **NotebookLM** — Google renamed it in July 2026;
+  the CLI and skill below still carry the old name) is the persistent source and
+  synthesis layer used by `research-sources` and `research-topic`. Its
+  source-grounded answers and inline citations are what keep this system's
+  analysis tied to your evidence rather than a model's training data. Agent
+  access is provided by the third-party [notebooklm-py][4] CLI and its
+  `notebooklm` Agent Skill, not by Google or this package. `research-dev` also
+  uses that CLI when it is available. This package does not install it,
+  authenticate it, or validate the integration.
 - **YouTube library search** is an optional upstream source-discovery step. A
   separate `youtube` Agent Skill can use the third-party [yt-dlp][5] CLI to
   inspect public playlists or retrieve subtitles, then hand selected URLs to
@@ -206,3 +232,4 @@ manual configuration, and verification commands.
 [4]:	https://github.com/teng-lin/notebooklm-py
 [5]:	https://github.com/yt-dlp/yt-dlp
 [6]:	INSTALLATION.md
+[7]:	https://obsidian.md
