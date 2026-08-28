@@ -3,7 +3,7 @@
 `research-tools` is an opinionated research and knowledge system for
 Claude Code and Codex. It provides skills for multiple types of research and workflows that span quick, in-chat research, reports, updating existing documentation, and creating a curated Karpathy-style wiki. It works with documents, websites, videos, and audio (Podcasts).
 
-This is the system I developed for my own personal research - much of it was built to learn about AI itself. My favorite use case is ingesting knowledge from YouTube videos and my favorite podcasts in order to plan improvements to my AI systems.
+This is the system I developed for my own personal research - much of it was built to learn about AI itself. My favorite use case is ingesting knowledge from YouTube videos and podcasts in order to plan improvements to my AI systems.
 
 **Everything the system produces is plain Markdown files on your disk.** Research artifacts, wiki articles, indexes, and operation logs are all `.md` files under one knowledge root you choose. There is no database, no proprietary format, and no lock-in. That is a deliberate assumption about how you work: you own the files, read and edit them in any editor, browse them in [Obsidian][7] or a Git host, version-control them, and keep them long after the conversation that produced them is gone. The same files are the AI's working set and yours.
 
@@ -27,7 +27,7 @@ After installation, start with `research-tools-set-up`. It walks you through the
 knowledge-store structure, local policy, and follow-up routing, then shows the
 complete proposed configuration before creating or changing anything.
 
-Major portions are inspired by [Andrej Karpathy's LLM Wiki gist][1], adding a convenient set of tools for capturing knowledge and making sure your research isn’t lost or underutilized.
+This is mostly assembly work. It stands on excellent tools others built — [Gemini Notebook][8] for source-grounded synthesis, [notebooklm-py][4] for agent access to it, [yt-dlp][5] and [Firecrawl][9] for source gathering, Apple Speech for transcription, and [Obsidian][7] for browsing the result — and the wiki design is inspired by [Andrej Karpathy's LLM Wiki gist][1]. What `research-tools` adds is the connective tissue: a set of skills that wrap these pieces into convenient, repeatable workflows so knowledge gets captured and your research isn’t lost or underutilized.
 
 ## Research skills
 
@@ -233,3 +233,5 @@ manual configuration, and verification commands.
 [5]:	https://github.com/yt-dlp/yt-dlp
 [6]:	INSTALLATION.md
 [7]:	https://obsidian.md
+[8]:	https://notebooklm.google.com
+[9]:	https://firecrawl.dev
