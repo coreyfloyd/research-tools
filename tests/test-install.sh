@@ -17,14 +17,22 @@ trap cleanup EXIT
 release_manifest() {
   (
     cd "$1"
-    find skills contracts -type f -not -path '*/.build/*' -exec cksum {} \; | LC_ALL=C sort | cksum | awk '{print $1 ":" $2}'
+    manifest_paths="skills contracts"
+    [ ! -d profiles ] || manifest_paths="$manifest_paths profiles"
+    [ ! -f scripts/validate_profile.py ] || manifest_paths="$manifest_paths scripts/validate_profile.py"
+    find $manifest_paths -type f -not -path '*/.build/*' -exec cksum {} \; | LC_ALL=C sort | cksum | awk '{print $1 ":" $2}'
   )
 }
-if HOME="$TEST_HOME" CODEX_HOME="$TEST_HOME/.codex" bash "$SOURCE_ROOT/install.sh"; then
+HOME="$TEST_HOME" CODEX_HOME="$TEST_HOME/.codex" bash "$SOURCE_ROOT/install.sh"
+if HOME="$TEST_HOME" CODEX_HOME="$TEST_HOME/.codex" bash "$SOURCE_ROOT/install.sh" --verify; then
   exit 1
 fi
 test ! -e "$TEST_HOME/.config/research-tools/profile.md"
-test ! -e "$TEST_HOME/.local/share/research-tools/releases"
+test -L "$TEST_HOME/.local/share/research-tools/current"
+test -L "$TEST_HOME/.claude/skills/research-tools-set-up"
+test -L "$TEST_HOME/.codex/skills/research-tools-set-up"
+test -f "$TEST_HOME/.local/share/research-tools/releases/$VERSION/profiles/karpathy-wiki.example.md"
+test -f "$TEST_HOME/.local/share/research-tools/releases/$VERSION/scripts/validate_profile.py"
 mkdir -p "$TEST_HOME/.config/research-tools" "$TEST_HOME/knowledge/raw" "$TEST_HOME/knowledge/wiki" "$TEST_HOME/knowledge/output" "$TEST_HOME/knowledge/docs"
 touch "$TEST_HOME/knowledge/wiki/hot.md" "$TEST_HOME/knowledge/docs/log.md" "$TEST_HOME/knowledge/docs/DECISIONS.md"
 sed "s|/absolute/path/to/knowledge|$TEST_HOME/knowledge|" "$SOURCE_ROOT/profiles/karpathy-wiki.example.md" > "$TEST_HOME/.config/research-tools/profile.md"
@@ -34,6 +42,8 @@ HOME="$TEST_HOME" CODEX_HOME="$TEST_HOME/.codex" bash "$SOURCE_ROOT/install.sh" 
 test -L "$TEST_HOME/.local/share/research-tools/current"
 test "$(readlink "$TEST_HOME/.local/share/research-tools/current")" = "$TEST_HOME/.local/share/research-tools/releases/$VERSION"
 test -f "$TEST_HOME/.local/share/research-tools/releases/$VERSION/contracts/karpathy-wiki.md"
+test -f "$TEST_HOME/.local/share/research-tools/releases/$VERSION/profiles/karpathy-wiki.example.md"
+test -f "$TEST_HOME/.local/share/research-tools/releases/$VERSION/scripts/validate_profile.py"
 test -x "$TEST_HOME/.local/share/research-tools/releases/$VERSION/skills/research-quick/reddit-read.sh"
 test -x "$TEST_HOME/.local/share/research-tools/releases/$VERSION/skills/transcribe/tools/apple-speech/run-transcribe.sh"
 test ! -e "$TEST_HOME/.local/share/research-tools/releases/$VERSION/skills/transcribe/tools/apple-speech/.build/research-tools-test-sentinel"

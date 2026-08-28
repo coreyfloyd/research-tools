@@ -6,6 +6,7 @@ PROFILE="$ROOT/profiles/karpathy-wiki.example.md"
 test -f "$CONTRACT"
 test -f "$PROFILE"
 test -f "$ROOT/MIGRATION.md"
+test -f "$ROOT/skills/research-tools-set-up/SKILL.md"
 grep -Fq 'published research-tools release' "$ROOT/MIGRATION.md"
 grep -Fq 'does not migrate legacy dotfiles' "$ROOT/MIGRATION.md"
 grep -Fq 'never a backlog sweep' "$CONTRACT"
@@ -63,6 +64,13 @@ for skill in research-sources research-topic research-feature research-feedback 
   grep -Fq 'runtime-detected' "$ROOT/skills/$skill/SKILL.md" || exit 1
 done
 grep -Fq 'runtime-detected' "$ROOT/skills/transcribe/SKILL.md"
+for skill in research-sources research-topic research-feature research-feedback research-absorb knowledge-capture research-to-wiki wiki-audit; do
+  grep -Fq 'scripts/validate_profile.py' "$ROOT/skills/$skill/SKILL.md" || exit 1
+  grep -Fq 'research-tools-set-up' "$ROOT/skills/$skill/SKILL.md" || exit 1
+done
+grep -Fq 'profiles/karpathy-wiki.example.md' "$ROOT/skills/research-tools-set-up/SKILL.md"
+grep -Fq 'scripts/validate_profile.py' "$ROOT/skills/research-tools-set-up/SKILL.md"
+grep -Fq 'Do not write or change configuration until the user approves' "$ROOT/skills/research-tools-set-up/SKILL.md"
 if rg -n 'unified Obsidian vault|AI-vault|writing-corpus|R-004|wiki/people/' "$ROOT/skills" "$ROOT/contracts" "$ROOT/profiles" "$ROOT/README.md"; then
   exit 1
 fi

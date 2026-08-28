@@ -120,12 +120,14 @@ NotebookLM and YouTube tooling used by optional integrations.
 - [x] Make `git diff --check` pass, including the README whitespace cleanup
   (completed 2026-08-27).
 - [ ] Commit the complete candidate and push `main`.
-- [ ] Record the final commit below and rerun every verification command from
-  that exact clean commit.
+- [ ] Capture the final commit in the release-session evidence and rerun every
+  verification command from that exact clean commit.
 - [ ] Follow `RELEASING.md` to create and push the annotated `v0.3.0` tag.
 - [ ] Build, sign, and locally verify the four release assets.
 - [ ] Publish the GitHub release with the reviewed notes above.
 - [ ] Redownload and verify the public assets.
+- [ ] Record the final commit, release URL, and public-asset verification below
+  in a post-publication follow-up commit.
 
 ## Publication record
 

@@ -10,6 +10,9 @@ KEY="$(gpg --batch --with-colons --list-secret-keys | awk -F: '$1 == "fpr" {prin
 gpg --batch --armor --export "$KEY" > "$TEST_DIR/public.asc"
 RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$ROOT/scripts/build-release.sh" "$TEST_DIR/dist"
 ARCHIVE="$TEST_DIR/dist/research-tools-$(tr -d '[:space:]' < "$ROOT/VERSION").tar.gz"
+if tar -tzf "$ARCHIVE" | rg -q '(^|/)\.Ulysses-'; then
+  exit 1
+fi
 bash "$ROOT/scripts/verify-release.sh" "$ARCHIVE" "$TEST_DIR/public.asc" "$KEY"
 gpg --batch --passphrase '' --quick-generate-key 'other test <other@example.invalid>' ed25519 sign 0 >/dev/null 2>&1
 OTHER_KEY="$(gpg --batch --with-colons --list-secret-keys | awk -F: '$1 == "fpr" {last=$10} END {print last}')"
@@ -24,13 +27,16 @@ if bash "$ROOT/scripts/verify-release.sh" "$OTHER_ARCHIVE" "$TEST_DIR/two-keys.a
   exit 1
 fi
 INSTALL_HOME="$TEST_DIR/install-home"
-mkdir -p "$INSTALL_HOME/knowledge/raw" "$INSTALL_HOME/knowledge/wiki" "$INSTALL_HOME/knowledge/output" "$INSTALL_HOME/knowledge/docs" "$INSTALL_HOME/.config/research-tools"
-touch "$INSTALL_HOME/knowledge/wiki/hot.md" "$INSTALL_HOME/knowledge/docs/log.md" "$INSTALL_HOME/knowledge/docs/DECISIONS.md"
-sed "s|/absolute/path/to/knowledge|$INSTALL_HOME/knowledge|" "$ROOT/profiles/karpathy-wiki.example.md" > "$INSTALL_HOME/.config/research-tools/profile.md"
 HOME="$INSTALL_HOME" CODEX_HOME="$INSTALL_HOME/.codex" bash "$ROOT/scripts/install-release.sh" "$ARCHIVE" "$TEST_DIR/public.asc" "$KEY"
 HOME="$INSTALL_HOME" CODEX_HOME="$INSTALL_HOME/.codex" bash "$ROOT/scripts/install-release.sh" "$ARCHIVE" "$TEST_DIR/public.asc" "$KEY"
 test -L "$INSTALL_HOME/.claude/skills/research-topic"
 test -L "$INSTALL_HOME/.codex/skills/research-topic"
+test -L "$INSTALL_HOME/.claude/skills/research-tools-set-up"
+test -f "$INSTALL_HOME/.local/share/research-tools/current/profiles/karpathy-wiki.example.md"
+test -f "$INSTALL_HOME/.local/share/research-tools/current/scripts/validate_profile.py"
+if HOME="$INSTALL_HOME" CODEX_HOME="$INSTALL_HOME/.codex" bash "$ROOT/install.sh" --verify; then
+  exit 1
+fi
 printf x >> "$ARCHIVE"
 if bash "$ROOT/scripts/verify-release.sh" "$ARCHIVE" "$TEST_DIR/public.asc" "$KEY"; then
   exit 1

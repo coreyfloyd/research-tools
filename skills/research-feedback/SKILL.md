@@ -11,7 +11,7 @@ Community-sentiment recon. Answers "what is it actually like to use/run/own this
 
 Firecrawl is a runtime-detected optional integration. Use it first for web search and page extraction when it is available. If it is unavailable or blocked for a source, use native web tools and say so in the report; do not silently reduce community coverage.
 
-Before checking local knowledge, choosing the durable report location, or running distribution, read `~/.config/research-tools/profile.md`. Any proposed follow-up task uses `artifact_followup_destination`, never the wiki-maintenance route.
+Before checking local knowledge, choosing the durable report location, or running distribution, validate `~/.config/research-tools/profile.md` with `../../scripts/validate_profile.py`, resolved relative to this skill. If it is missing or invalid, stop and use `research-tools-set-up`; do not choose a fallback output path. Any proposed follow-up task uses `artifact_followup_destination`, never the wiki-maintenance route.
 
 This is the **experiential/sentiment** sibling of `research-quick`. Use the distinction below to pick the right one.
 

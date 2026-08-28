@@ -14,7 +14,10 @@ manifest_hash() {
   manifest_root="${1:-$ROOT}"
   (
     cd "$manifest_root"
-    find skills contracts -type f -not -path '*/.build/*' -exec cksum {} \; | LC_ALL=C sort | cksum | awk '{print $1 ":" $2}'
+    manifest_paths="skills contracts"
+    [ ! -d profiles ] || manifest_paths="$manifest_paths profiles"
+    [ ! -f scripts/validate_profile.py ] || manifest_paths="$manifest_paths scripts/validate_profile.py"
+    find $manifest_paths -type f -not -path '*/.build/*' -exec cksum {} \; | LC_ALL=C sort | cksum | awk '{print $1 ":" $2}'
   )
 }
 SOURCE_HASH="$(manifest_hash)"
@@ -128,10 +131,14 @@ reject_retired_links() {
 
 validate_profile() {
   if [ ! -f "$PROFILE" ]; then
-    echo "profile missing: create $PROFILE from $ROOT/profiles/karpathy-wiki.example.md before installing" >&2
+    echo "profile missing: run the research-tools-set-up skill after installing" >&2
     return 1
   fi
-  python3 "$ROOT/scripts/validate_profile.py" "$PROFILE" >/dev/null
+  validator="$ROOT/scripts/validate_profile.py"
+  if [ -f "$CURRENT_LINK/scripts/validate_profile.py" ]; then
+    validator="$CURRENT_LINK/scripts/validate_profile.py"
+  fi
+  python3 "$validator" "$PROFILE" >/dev/null
 }
 
 LOCK_HELD=0
@@ -173,11 +180,12 @@ acquire_lock() {
 }
 
 if [ "${1:-}" = "--verify" ]; then
-  validate_profile
   reject_retired_links
   test -L "$CURRENT_LINK"
   test -f "$CURRENT_LINK/manifest"
   test "$(manifest_hash "$CURRENT_LINK")" = "$(cat "$CURRENT_LINK/manifest")"
+  test -f "$CURRENT_LINK/profiles/karpathy-wiki.example.md"
+  test -f "$CURRENT_LINK/scripts/validate_profile.py"
   for name in "$ROOT"/skills/*; do
     [ -f "$name/SKILL.md" ] || continue
     skill="$(basename "$name")"
@@ -187,10 +195,9 @@ if [ "${1:-}" = "--verify" ]; then
     test -L "$CODEX_DIR/$skill"
     test "$(readlink "$CODEX_DIR/$skill")" = "$CURRENT_LINK/skills/$skill"
   done
+  validate_profile
   exit 0
 fi
-
-validate_profile
 
 mkdir -p "$(dirname "$LOCK_DIR")"
 acquire_lock
@@ -250,6 +257,9 @@ rm -rf "$TEMP_RELEASE"
 mkdir -p "$TEMP_RELEASE"
 copy_release_tree "$ROOT/skills" "$TEMP_RELEASE/skills"
 copy_release_tree "$ROOT/contracts" "$TEMP_RELEASE/contracts"
+copy_release_tree "$ROOT/profiles" "$TEMP_RELEASE/profiles"
+mkdir -p "$TEMP_RELEASE/scripts"
+cp -p "$ROOT/scripts/validate_profile.py" "$TEMP_RELEASE/scripts/validate_profile.py"
 if [ ! -d "$RELEASE_DIR" ]; then
   printf '%s\n' "$SOURCE_HASH" > "$TEMP_RELEASE/manifest"
   mv "$TEMP_RELEASE" "$RELEASE_DIR"
@@ -284,3 +294,8 @@ for name in "$RELEASE_DIR"/skills/*; do
   done
 done
 set_current_release "$RELEASE_DIR" "$CURRENT_RELEASE"
+if validate_profile >/dev/null 2>&1; then
+  echo "research-tools $VERSION installed and configured"
+else
+  echo "research-tools $VERSION installed; run the research-tools-set-up skill to configure it"
+fi

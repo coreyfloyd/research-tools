@@ -74,9 +74,10 @@ bash tests/test-release.sh
 )
 ```
 
-Record the commit and results in `RELEASE_CANDIDATE.md`. If the candidate file
-or any other tracked content changes afterward, commit and push it, then rerun
-the checks against the new commit.
+Capture the commit and results in the release-session evidence. A commit cannot
+contain its own SHA, so write the final commit into `RELEASE_CANDIDATE.md` only
+in the post-publication follow-up commit. If any tracked content changes before
+tagging, commit and push it, then rerun the checks against the new commit.
 
 ## Push and tag the exact commit
 
@@ -175,8 +176,8 @@ gh release view "$TAG" \
 ```
 
 Record the tag, commit, release URL, asset inventory, and verification result in
-`RELEASE_CANDIDATE.md`. The temporary verification directory may then be
-removed.
+`RELEASE_CANDIDATE.md` as a post-publication follow-up commit. The temporary
+verification directory may then be removed.
 
 ## Failure and recovery
 

@@ -5,7 +5,7 @@ description: Read-only structural audit of a configured Karpathy-wiki knowledge 
 
 # Wiki Audit
 
-Read `~/.config/research-tools/profile.md` and the [public Karpathy-wiki contract](../../contracts/karpathy-wiki.md) before auditing. Run only against the configured `knowledge_root`, applying any free-form local policy body only within that root. Produce a ranked report in canonical `output/`; modify nothing.
+Validate `~/.config/research-tools/profile.md` with `../../scripts/validate_profile.py`, resolved relative to this skill, and read the [public Karpathy-wiki contract](../../contracts/karpathy-wiki.md) before auditing. If the profile is missing or invalid, stop and use `research-tools-set-up`; do not audit another root or choose a fallback report path. Run only against the configured `knowledge_root`, applying any free-form local policy body only within that root. Produce a ranked report in canonical `output/`; modify nothing.
 
 ## When to use
 
