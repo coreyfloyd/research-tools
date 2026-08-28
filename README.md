@@ -47,14 +47,14 @@ These skills help you get research filed where it belongs.
 | `research-absorb`   | You created a research artifact and you are ready to move the knowledge into permanent locations.       | Executes the approved plan, records a terminal disposition for every row, then deletes the completed artifact.                           |
 | `knowledge-capture` | Useful sources or synthesis exist in the current conversation and need a complete disposition proposal. | Inventories conversation knowledge, asks for approval, then performs only the approved captures. It does not process research artifacts. |
 
-## Personal Knowledge Curation
+## Personal Knowledge Curation skills
 
 | Skill              | Use it when                                                              | Result and next step                                                                             |
 | ------------------ | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
 | `research-to-wiki` | A coherent, caller-selected subset of raw sources is ready to compile.   | Creates or updates atomic wiki articles, source status, indexes, and approved workflow records.  |
 | `wiki-audit`       | You want a structural and source-coverage review of the configured wiki. | Writes a ranked report in `output/` without changing articles, sources, indexes, logs, or tasks. |
 
-## 1. Knowledge store
+## Knowledge store
 
 The system has four built in directories to hold all the created artifacts:
 
