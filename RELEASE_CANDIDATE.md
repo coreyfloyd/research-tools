@@ -119,25 +119,30 @@ NotebookLM and YouTube tooling used by optional integrations.
   (completed 2026-08-27; covered by the signed-release suite).
 - [x] Make `git diff --check` pass, including the README whitespace cleanup
   (completed 2026-08-27).
-- [ ] Commit the complete candidate and push `main`.
-- [ ] Capture the final commit in the release-session evidence and rerun every
-  verification command from that exact clean commit.
-- [ ] Follow `RELEASING.md` to create and push the annotated `v0.3.0` tag.
-- [ ] Build, sign, and locally verify the four release assets.
-- [ ] Publish the GitHub release with the reviewed notes above.
-- [ ] Redownload and verify the public assets.
-- [ ] Record the final commit, release URL, and public-asset verification below
-  in a post-publication follow-up commit.
+- [x] Commit the complete candidate and push `main` (completed 2026-08-27).
+- [x] Capture the final commit in the release-session evidence and rerun every
+  verification command from that exact clean commit (completed 2026-08-27).
+- [x] Follow `RELEASING.md` to create and push the annotated `v0.3.0` tag
+  (completed 2026-08-27).
+- [x] Build, sign, and locally verify the four release assets
+  (completed 2026-08-27).
+- [x] Publish the GitHub release with the reviewed notes above
+  (completed 2026-08-27).
+- [x] Redownload and verify the public assets (completed 2026-08-27).
+- [x] Record the final commit, release URL, and public-asset verification below
+  in a post-publication follow-up commit (completed 2026-08-27).
 
 ## Publication record
 
-- Target commit: pending
-- Tag: `v0.3.0` (pending)
-- Release URL: pending
-- Published asset verification: pending
+- Target commit: `41fdcc4cd78a16c395ca0bfb3051146580ebbbd9`
+- Tag: annotated `v0.3.0`, resolving to the target commit above
+- Release URL:
+  <https://github.com/coreyfloyd/research-tools/releases/tag/v0.3.0>
+- Published asset verification: completed 2026-08-27; all four expected assets
+  were downloaded, the public key byte-matched the repository key, and the
+  detached signature and SHA-256 checksum passed verification.
 
 ## Release status
 
-Versions `0.1.0` and `0.2.0` are published. `0.3.0` is not yet ready to publish:
-the working tree must be cleaned, committed, pushed, and reverified from its
-final release commit before tagging.
+Versions `0.1.0`, `0.2.0`, and `0.3.0` are published. The `v0.3.0` public assets
+were downloaded and verified after publication.
