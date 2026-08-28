@@ -37,7 +37,7 @@ There are three general-purpose skills to get most research questions started:
 | ------------------ | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `research-quick`   | You need a cited answer to a general question.                                                      | Returns findings inline. No notebook or artifact workflow.                                                      |
 | `research-sources` | You already have URLs, files, media, a source collection, or a named target to analyze.             | Produces a source-grounded artifact with a proposed distribution plan. Review it, then use `research-absorb`.   |
-| `research-topic`   | You need substantial topic-first research, persistent sources, gap filling, and claim verification. | Produces a NotebookLM-backed artifact with a proposed distribution plan. Review it, then use `research-absorb`. |
+| `research-topic`   | You need substantial topic-first research, persistent sources, gap filling, and claim verification. | Produces a Gemini Notebook-backed artifact with a proposed distribution plan. Review it, then use `research-absorb`. |
 
 
 In addition, there are three research skills for specific domains:
@@ -205,8 +205,8 @@ Audit the configured wiki with wiki-audit. Do not modify it.
 - **YouTube library search** is an optional upstream source-discovery step. A
   separate `youtube` Agent Skill can use the third-party [yt-dlp][5] CLI to
   inspect public playlists or retrieve subtitles, then hand selected URLs to
-  NotebookLM. Neither that skill nor `yt-dlp` is bundled or required by this
-  package; NotebookLM can index a supplied YouTube URL directly.
+  Gemini Notebook. Neither that skill nor `yt-dlp` is bundled or required by this
+  package; Gemini Notebook can index a supplied YouTube URL directly.
 - **Firecrawl** is optional and detected at runtime. Relevant skills prefer it
   when available and fall back to native web tools when it is unavailable or
   blocked.
