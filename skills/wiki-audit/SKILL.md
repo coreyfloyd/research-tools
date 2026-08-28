@@ -5,7 +5,7 @@ description: Read-only structural audit of a configured Karpathy-wiki knowledge 
 
 # Wiki Audit
 
-Read `~/.config/research-tools/profile.md` and the [public Karpathy-wiki contract](../../contracts/karpathy-wiki.md) before auditing. Run only against the configured `knowledge_root`, applying any free-form local policy body only within that root. Produce a ranked report in the configured `output_dir`; modify nothing.
+Read `~/.config/research-tools/profile.md` and the [public Karpathy-wiki contract](../../contracts/karpathy-wiki.md) before auditing. Run only against the configured `knowledge_root`, applying any free-form local policy body only within that root. Produce a ranked report in canonical `output/`; modify nothing.
 
 ## When to use
 
@@ -27,7 +27,7 @@ The audit is opt-in; it never runs merely because a wiki changed.
 
 ### 1. Scope
 
-Read the configured session cache and recent operation history. Count articles under the configured `wiki_dir`, excluding `_index.md` and `_master-index.md`. State the count and the directories in scope before starting.
+Read the configured session cache and recent operation history. Count articles under canonical `wiki/`, excluding `_index.md` and `_master-index.md`. State the count and the directories in scope before starting.
 
 ### 2. Missing-page lint
 

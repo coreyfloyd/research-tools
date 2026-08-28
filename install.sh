@@ -3,9 +3,11 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 RELEASE_ROOT="$HOME/.local/share/research-tools/releases"
+CURRENT_LINK="$HOME/.local/share/research-tools/current"
+PROFILE="$HOME/.config/research-tools/profile.md"
 VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
 RELEASE_DIR="$RELEASE_ROOT/$VERSION"
-LOCK_DIR="$RELEASE_ROOT/.install-lock"
+LOCK_DIR="$HOME/.config/research-tools/.install-lock"
 CLAUDE_DIR="$HOME/.claude/skills"
 CODEX_DIR="${CODEX_HOME:-$HOME/.codex}/skills"
 manifest_hash() {
@@ -35,20 +37,126 @@ is_package_release_link() {
   skill="$2"
   [ -L "$target" ] || return 1
   case "$(readlink "$target")" in
-    "$RELEASE_ROOT"/*/skills/"$skill") return 0 ;;
+    "$RELEASE_ROOT"/*/skills/"$skill"|"$CURRENT_LINK"/skills/"$skill") return 0 ;;
     *) return 1 ;;
   esac
+}
+
+replace_link() {
+  destination="$1"
+  source="$2"
+  expected="$3"
+  python3 - "$destination" "$source" "$expected" <<'PY'
+import os
+import sys
+
+destination, source, expected = sys.argv[1:]
+if os.path.lexists(destination):
+    if not os.path.islink(destination) or os.readlink(destination) != expected:
+        raise SystemExit(f"collision changed during install: {destination}")
+elif expected != "__absent__":
+    raise SystemExit(f"link disappeared during install: {destination}")
+temporary = f"{destination}.research-tools.{os.getpid()}"
+try:
+    os.unlink(temporary)
+except FileNotFoundError:
+    pass
+os.symlink(source, temporary)
+os.replace(temporary, destination)
+PY
+}
+
+set_current_release() {
+  release="$1"
+  expected="$2"
+  python3 - "$CURRENT_LINK" "$release" "$expected" <<'PY'
+import os
+import sys
+
+current, release, expected = sys.argv[1:]
+if os.path.lexists(current):
+    if not os.path.islink(current) or os.readlink(current) != expected:
+        raise SystemExit(f"current pointer changed during install: {current}")
+elif expected != "__absent__":
+    raise SystemExit(f"current pointer disappeared during install: {current}")
+temporary = f"{current}.research-tools.{os.getpid()}"
+try:
+    os.unlink(temporary)
+except FileNotFoundError:
+    pass
+os.symlink(release, temporary)
+os.replace(temporary, current)
+PY
+}
+
+valid_release() {
+  release="$1"
+  [ "$(dirname "$release")" = "$RELEASE_ROOT" ] || return 1
+  [ -d "$release" ] && [ -f "$release/manifest" ] || return 1
+  [ "$(manifest_hash "$release")" = "$(cat "$release/manifest")" ]
+}
+
+CURRENT_RELEASE=""
+validate_current_pointer() {
+  if [ ! -e "$CURRENT_LINK" ] && [ ! -L "$CURRENT_LINK" ]; then
+    return 0
+  fi
+  if [ ! -L "$CURRENT_LINK" ]; then
+    echo "collision: current pointer is not a symlink" >&2
+    return 1
+  fi
+  CURRENT_RELEASE="$(readlink "$CURRENT_LINK")"
+  if ! valid_release "$CURRENT_RELEASE"; then
+    echo "collision: current pointer is not a valid package release" >&2
+    return 1
+  fi
+}
+
+reject_retired_links() {
+  for client_dir in "$CLAUDE_DIR" "$CODEX_DIR"; do
+    [ -d "$client_dir" ] || continue
+    for target in "$client_dir"/*; do
+      [ -L "$target" ] || continue
+      skill="$(basename "$target")"
+      if is_package_release_link "$target" "$skill" && [ ! -f "$ROOT/skills/$skill/SKILL.md" ]; then
+        echo "retired package skill: $target" >&2
+        return 1
+      fi
+    done
+  done
+}
+
+validate_profile() {
+  if [ ! -f "$PROFILE" ]; then
+    echo "profile missing: create $PROFILE from $ROOT/profiles/karpathy-wiki.example.md before installing" >&2
+    return 1
+  fi
+  python3 "$ROOT/scripts/validate_profile.py" "$PROFILE" >/dev/null
 }
 
 LOCK_HELD=0
 release_lock() {
   if [ "$LOCK_HELD" = "1" ]; then
+    rm -f "$LOCK_DIR/pid"
     rmdir "$LOCK_DIR" 2>/dev/null || true
+    LOCK_HELD=0
   fi
+}
+interrupted() {
+  release_lock
+  trap - EXIT HUP INT TERM
+  exit "$1"
 }
 acquire_lock() {
   attempts=0
   while ! mkdir "$LOCK_DIR" 2>/dev/null; do
+    if [ -f "$LOCK_DIR/pid" ]; then
+      owner="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
+      if [ -n "$owner" ] && ! kill -0 "$owner" 2>/dev/null; then
+        rm -rf "$LOCK_DIR"
+        continue
+      fi
+    fi
     attempts=$((attempts + 1))
     if [ "$attempts" -ge 30 ]; then
       echo "install lock busy: $LOCK_DIR" >&2
@@ -56,25 +164,41 @@ acquire_lock() {
     fi
     sleep 1
   done
+  printf '%s\n' "$$" > "$LOCK_DIR/pid"
   LOCK_HELD=1
-  trap release_lock EXIT HUP INT TERM
+  trap release_lock EXIT
+  trap 'interrupted 129' HUP
+  trap 'interrupted 130' INT
+  trap 'interrupted 143' TERM
 }
 
 if [ "${1:-}" = "--verify" ]; then
-  test -f "$RELEASE_DIR/manifest"
-  test "$(manifest_hash "$RELEASE_DIR")" = "$(cat "$RELEASE_DIR/manifest")"
+  validate_profile
+  reject_retired_links
+  test -L "$CURRENT_LINK"
+  test -f "$CURRENT_LINK/manifest"
+  test "$(manifest_hash "$CURRENT_LINK")" = "$(cat "$CURRENT_LINK/manifest")"
   for name in "$ROOT"/skills/*; do
     [ -f "$name/SKILL.md" ] || continue
     skill="$(basename "$name")"
     test -L "$CLAUDE_DIR/$skill"
-    test "$(readlink "$CLAUDE_DIR/$skill")" = "$RELEASE_DIR/skills/$skill"
-    test -f "$RELEASE_DIR/contracts/karpathy-wiki.md"
+    test "$(readlink "$CLAUDE_DIR/$skill")" = "$CURRENT_LINK/skills/$skill"
+    test -f "$CURRENT_LINK/contracts/karpathy-wiki.md"
     test -L "$CODEX_DIR/$skill"
-    test "$(readlink "$CODEX_DIR/$skill")" = "$RELEASE_DIR/skills/$skill"
+    test "$(readlink "$CODEX_DIR/$skill")" = "$CURRENT_LINK/skills/$skill"
   done
   exit 0
 fi
 
+validate_profile
+
+mkdir -p "$(dirname "$LOCK_DIR")"
+acquire_lock
+validate_current_pointer
+
+OLD_RELEASE=""
+USES_CURRENT=0
+reject_retired_links
 for name in "$ROOT"/skills/*; do
   [ -f "$name/SKILL.md" ] || continue
   skill="$(basename "$name")"
@@ -84,6 +208,26 @@ for name in "$ROOT"/skills/*; do
         continue
       fi
       if is_package_release_link "$target" "$skill"; then
+        existing="$(readlink "$target")"
+        if [ ! -d "$existing" ]; then
+          echo "collision: broken package link $target" >&2
+          exit 1
+        fi
+        case "$existing" in
+          "$CURRENT_LINK"/skills/"$skill") USES_CURRENT=1 ;;
+          "$RELEASE_ROOT"/*/skills/"$skill")
+            candidate="${existing%/skills/$skill}"
+            if ! valid_release "$candidate"; then
+              echo "collision: invalid package release $candidate" >&2
+              exit 1
+            fi
+            if [ -n "$OLD_RELEASE" ] && [ "$OLD_RELEASE" != "$candidate" ]; then
+              echo "package release mismatch: $target" >&2
+              exit 1
+            fi
+            OLD_RELEASE="$candidate"
+            ;;
+        esac
         continue
       fi
       echo "collision: $target" >&2
@@ -92,14 +236,15 @@ for name in "$ROOT"/skills/*; do
     :
   done
 done
-mkdir -p "$CLAUDE_DIR" "$CODEX_DIR" "$HOME/.config/research-tools" "$RELEASE_ROOT"
-acquire_lock
-if [ ! -e "$HOME/.config/research-tools/profile.md" ]; then
-  cp "$ROOT/profiles/karpathy-wiki.example.md" "$HOME/.config/research-tools/profile.md"
+if [ "$USES_CURRENT" = "1" ] && [ -n "$OLD_RELEASE" ]; then
+  echo "package release mismatch: current and direct links mixed" >&2
+  exit 1
 fi
-if [ "${RESEARCH_TOOLS_VALIDATE_PROFILE:-0}" = "1" ]; then
-  python3 "$ROOT/scripts/validate_profile.py" "$HOME/.config/research-tools/profile.md" >/dev/null
+if [ "$USES_CURRENT" = "1" ] && [ -z "$CURRENT_RELEASE" ]; then
+  echo "collision: current skill link without current release" >&2
+  exit 1
 fi
+mkdir -p "$CLAUDE_DIR" "$CODEX_DIR" "$RELEASE_ROOT"
 TEMP_RELEASE="$RELEASE_ROOT/.$VERSION.$$"
 rm -rf "$TEMP_RELEASE"
 mkdir -p "$TEMP_RELEASE"
@@ -109,22 +254,33 @@ if [ ! -d "$RELEASE_DIR" ]; then
   printf '%s\n' "$SOURCE_HASH" > "$TEMP_RELEASE/manifest"
   mv "$TEMP_RELEASE" "$RELEASE_DIR"
 else
-  if [ ! -f "$RELEASE_DIR/manifest" ] || [ "$(cat "$RELEASE_DIR/manifest")" != "$SOURCE_HASH" ]; then
+  if [ ! -f "$RELEASE_DIR/manifest" ] || [ "$(cat "$RELEASE_DIR/manifest")" != "$SOURCE_HASH" ] || [ "$(manifest_hash "$RELEASE_DIR")" != "$SOURCE_HASH" ]; then
     echo "release version collision: $VERSION has different content" >&2
     rm -rf "$TEMP_RELEASE"
     exit 1
   fi
   rm -rf "$TEMP_RELEASE"
 fi
+if [ -n "$OLD_RELEASE" ]; then
+  if [ -z "$CURRENT_RELEASE" ]; then
+    set_current_release "$OLD_RELEASE" "__absent__"
+  elif [ "$CURRENT_RELEASE" != "$OLD_RELEASE" ]; then
+    echo "package release mismatch: current and direct links differ" >&2
+    exit 1
+  fi
+  CURRENT_RELEASE="$OLD_RELEASE"
+elif [ -z "$CURRENT_RELEASE" ]; then
+  set_current_release "$RELEASE_DIR" "__absent__"
+  CURRENT_RELEASE="$RELEASE_DIR"
+fi
 for name in "$RELEASE_DIR"/skills/*; do
   [ -f "$name/SKILL.md" ] || continue
   skill="$(basename "$name")"
   for target in "$CLAUDE_DIR/$skill" "$CODEX_DIR/$skill"; do
-    if [ -L "$target" ] && [ "$(readlink "$target")" != "$name" ]; then
-      if is_package_release_link "$target" "$skill"; then
-        unlink "$target"
-      fi
+    if [ ! -L "$target" ] || [ "$(readlink "$target")" != "$CURRENT_LINK/skills/$skill" ]; then
+      if [ -L "$target" ]; then expected="$(readlink "$target")"; else expected="__absent__"; fi
+      replace_link "$target" "$CURRENT_LINK/skills/$skill" "$expected"
     fi
-    [ -L "$target" ] || ln -s "$name" "$target"
   done
 done
+set_current_release "$RELEASE_DIR" "$CURRENT_RELEASE"

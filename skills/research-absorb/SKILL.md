@@ -38,7 +38,7 @@ filed follow-up task should own.
 ## Execute an approved plan
 
 - For a wiki row, place the selected external source material and provenance in
-  the configured raw location when it is not already there, then invoke
+  canonical `raw/research/` when it is not already there, then invoke
   `research-to-wiki` on that curated subset. Do not send the report itself to
   the compiler.
 - Update an explicitly named target document only when the approved row permits

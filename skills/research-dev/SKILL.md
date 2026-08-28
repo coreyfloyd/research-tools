@@ -9,7 +9,7 @@ Fast, inline research for implementation questions and bug diagnosis. No noteboo
 
 For a supplied recording, conference talk, or video demonstration that is relevant to the diagnosis, invoke `transcribe` to obtain source text before continuing. This remains developer research, not a media-specific workflow.
 
-Use Firecrawl first for web search and page extraction when it is available. If it is unavailable or blocked for a source, use native web tools and state that fallback; do not silently reduce source coverage.
+Firecrawl is a runtime-detected optional integration. Use it first for web search and page extraction when it is available. If it is unavailable or blocked for a source, use native web tools and state that fallback; do not silently reduce source coverage.
 
 Read `~/.config/research-tools/profile.md` before checking local knowledge. Use only the local-preflight policy it provides; this skill remains an inline response.
 

@@ -7,7 +7,7 @@ description: Compile a curated raw source subset into a configured Karpathy-wiki
 
 Compile a caller-selected, curated source subset from `raw/` into atomic wiki articles. This skill is deliberately not a raw-backlog sweep: select a coherent subset first, then compile it. It writes wiki content and ingestion tracking; it never substitutes a research report for its underlying source material.
 
-Read `~/.config/research-tools/profile.md` and the [Karpathy-wiki contract](../../contracts/karpathy-wiki.md) before the first pass. Use the configured directories and apply any free-form local policy body only to that knowledge root. `wiki-audit` remains the read-only quality audit companion.
+Read `~/.config/research-tools/profile.md` and the [Karpathy-wiki contract](../../contracts/karpathy-wiki.md) before the first pass. Use the canonical directories and apply any free-form local policy body only to that knowledge root. `wiki-audit` remains the read-only quality audit companion.
 
 ## Inputs and routing
 

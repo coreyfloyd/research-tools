@@ -38,6 +38,6 @@ The artifact must include one row per actionable result, using this shape:
 - No retain or archive state exists for the artifact. After all rows have a
   terminal disposition, `research-absorb` deletes the artifact.
 - Do not treat a report as a raw wiki source. Preserve selected source
-  provenance in the configured raw area, then use `research-to-wiki` for the
+  provenance in canonical `raw/research/`, then use `research-to-wiki` for the
   curated subset. Promote a report to derived material only when it is itself
   a required durable transformation and approval covers that promotion.

@@ -16,11 +16,11 @@ links.
 - Apache-2.0 license.
 - Verified release archive path: GPG detached signature + SHA-256, archive
   extraction, then installation into immutable versioned user storage.
-- Profile validator enforcing version 3, an absolute existing knowledge root,
-  existing raw/wiki/output/docs directories contained beneath it, and declared
+- Profile validator enforcing version 4, an absolute existing knowledge root,
+  canonical raw/wiki/output/docs directories contained beneath it, and declared
   session-cache, operation-log, and decision-log files.
-- Migration contract requiring exact legacy-target replacement and matching
-  Claude/Codex immutable release links.
+- Public upgrade contract requiring a valid profile and matching Claude/Codex
+  stable-current release links; legacy dotfiles migration stays private.
 - Deterministic transcription launcher and build-artifact-free release staging.
 - Concurrent installer serialization with a bounded 30-second lock wait.
 - Relative-content manifests: repeat installation from separately extracted,
@@ -29,8 +29,8 @@ links.
 - Signing-key pinning: archive verification requires an independently known
   maintainer fingerprint and rejects an otherwise valid archive signed by a
   different key.
-- Strict version-3 profile schema and a reusable, read-only migration-handoff
-  verifier with exact-link and dual-client-convergence fixtures.
+- Strict version-4 profile schema with canonical zones and no inert capability
+  declarations.
 - A free-form profile body for source routing, output policy, taxonomy, and
   local entry formats; portable YAML remains the validated profile contract.
 - A Karpathy-wiki workflow contract: topic folders are optional navigation,
@@ -38,8 +38,8 @@ links.
   every installation declares session cache/log/decision plus separate wiki
   maintenance and research-artifact follow-up routing, and the package credits
   the original LLM Wiki gist.
-- Package-owned release-link upgrades, while preserving collision refusal for
-  all non-package skill links.
+- Atomic package-owned current-pointer upgrades, while preserving collision
+  refusal for all non-package skill links.
 
 ## Verification
 
@@ -50,8 +50,6 @@ links.
 - `bash tests/test-release.sh` (temporary-key signature and checksum verification,
   maintainer-fingerprint pinning, repeated verified-archive installation from
   separate extractions, and tamper rejection)
-- `bash tests/test-migration-contract.sh` (exact legacy-link preflight,
-  dual-client release convergence, and collision rejection)
 - `swift test` in `skills/transcribe/tools/apple-speech` (5 tests)
 - `git diff --check`
 

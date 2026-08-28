@@ -9,7 +9,7 @@ Zero-friction research for non-dev questions. Checks configured local knowledge 
 
 If a supplied audio or video source is needed as evidence, invoke `transcribe` to acquire its text before applying this workflow. The transcript is input evidence; this skill remains inline.
 
-Use Firecrawl first for web search and page extraction when it is available. If it is unavailable or blocked for a source, use native web tools and say so in the response; do not silently reduce source coverage.
+Firecrawl is a runtime-detected optional integration. Use it first for web search and page extraction when it is available. If it is unavailable or blocked for a source, use native web tools and say so in the response; do not silently reduce source coverage.
 
 Read `~/.config/research-tools/profile.md` before checking local knowledge. Use only the local-preflight policy it provides; this skill remains an inline response.
 

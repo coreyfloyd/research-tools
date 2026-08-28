@@ -2,10 +2,13 @@
 
 ## Topology
 
-A knowledge root contains `raw/`, `wiki/`, `output/`, and `docs/`. A valid
-profile resolves each configured directory beneath the canonicalized root.
+A knowledge root contains the canonical directories `raw/`, `wiki/`, `output/`,
+and `docs/`. A valid profile resolves those canonical directories beneath the
+canonicalized root. Their names are part of the supported Karpathy-wiki
+contract, not per-installation topology settings.
 
-The profile's YAML frontmatter is the portable, validated topology contract.
+The profile's YAML frontmatter is the portable, validated root and workflow-state
+contract.
 After the closing frontmatter delimiter, it may contain a free-form local policy body. Skills that consult the profile read the whole file and apply that
 body only to the configured knowledge root. The body can declare a personal
 taxonomy, local operations conventions, or optional source-library routing; it
@@ -40,6 +43,16 @@ The package must not infer that the two destinations are the same.
 The profile body may define the precise entry formats and routing distinctions.
 An audit remains read-only: it proposes its operation entry and wiki follow-up
 routes, then waits for the authorized writer.
+
+## Optional integrations
+
+Firecrawl and local Apple Speech are runtime-detected optional integrations,
+not profile capabilities. A skill checks whether its relevant integration is
+available at the time of use. When Firecrawl is unavailable or blocked, research
+uses native web tools and reports that fallback. When local Apple Speech is
+unsupported or unavailable, `transcribe` selects or reports an appropriate
+alternative input route. A profile never promises that either integration is
+installed or permitted.
 
 ## Attribution
 

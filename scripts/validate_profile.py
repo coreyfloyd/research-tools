@@ -4,11 +4,9 @@ import pathlib
 import sys
 
 TOP_LEVEL_FIELDS = {
-    "profile_version", "knowledge_root", "raw_dir", "wiki_dir", "output_dir",
-    "docs_dir", "hot_file", "operation_log_file", "decision_log_file",
-    "wiki_followup_destination", "artifact_followup_destination", "capabilities",
+    "profile_version", "knowledge_root", "hot_file", "operation_log_file",
+    "decision_log_file", "wiki_followup_destination", "artifact_followup_destination",
 }
-CAPABILITIES = {"firecrawl", "apple_speech"}
 
 
 def fail(message):
@@ -21,25 +19,13 @@ def parse(path):
     if not lines or lines[0] != "---":
         fail("missing YAML frontmatter")
     values = {}
-    capabilities = {}
-    in_capabilities = False
     for line in lines[1:]:
         if line == "---":
-            return values, capabilities
+            return values
         if not line:
             continue
         if line.startswith(" "):
-            if not in_capabilities or not line.startswith("  ") or ":" not in line:
-                fail("invalid nested profile field")
-            key, value = line.strip().split(":", 1)
-            if key not in CAPABILITIES:
-                fail(f"unsupported capability: {key}")
-            if key in capabilities:
-                fail(f"duplicate capability: {key}")
-            if value.strip() not in ("true", "false"):
-                fail(f"capability {key} must be true or false")
-            capabilities[key] = value.strip() == "true"
-            continue
+            fail("nested profile fields are not supported")
         if ":" not in line:
             fail("invalid profile field")
         key, value = line.split(":", 1)
@@ -48,13 +34,6 @@ def parse(path):
             fail(f"unsupported profile field: {key}")
         if key in values:
             fail(f"duplicate profile field: {key}")
-        if key == "capabilities":
-            if value.strip():
-                fail("capabilities must be a mapping")
-            in_capabilities = True
-            values[key] = None
-            continue
-        in_capabilities = False
         values[key] = value.strip()
     fail("unterminated YAML frontmatter")
 
@@ -89,24 +68,17 @@ def contained_file(root, value, label):
 def main():
     if len(sys.argv) != 2:
         fail("usage: validate_profile.py PROFILE")
-    values, capabilities = parse(pathlib.Path(sys.argv[1]))
-    if values.get("profile_version") != "3":
-        fail("profile_version must be 3")
+    values = parse(pathlib.Path(sys.argv[1]))
+    if values.get("profile_version") != "4":
+        fail("profile_version must be 4")
     root_value = values.get("knowledge_root")
     if not root_value or not pathlib.Path(root_value).is_absolute():
         fail("knowledge_root must be an absolute path")
     root = pathlib.Path(root_value).resolve()
     if not root.is_dir():
         fail("knowledge_root is not an existing directory")
-    if set(capabilities) != CAPABILITIES:
-        fail("capabilities must declare firecrawl and apple_speech")
-    for key, default in (("raw_dir", "raw"), ("wiki_dir", "wiki"),
-                         ("output_dir", "output"), ("docs_dir", "docs")):
-        value = values.get(key, default)
-        child = pathlib.Path(value)
-        if child.is_absolute():
-            fail(f"{key} must be relative to knowledge_root")
-        contained(root, root / child, key)
+    for key in ("raw", "wiki", "output", "docs"):
+        contained(root, root / key, key)
     for key in ("hot_file", "operation_log_file", "decision_log_file"):
         contained_file(root, values.get(key), key)
     for key in ("wiki_followup_destination", "artifact_followup_destination"):

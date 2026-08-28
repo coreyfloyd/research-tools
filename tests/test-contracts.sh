@@ -6,13 +6,14 @@ PROFILE="$ROOT/profiles/karpathy-wiki.example.md"
 test -f "$CONTRACT"
 test -f "$PROFILE"
 test -f "$ROOT/MIGRATION.md"
-grep -Fq 'exact legacy source' "$ROOT/MIGRATION.md"
-grep -Fq 'release directory after the handoff' "$ROOT/MIGRATION.md"
+grep -Fq 'published research-tools release' "$ROOT/MIGRATION.md"
+grep -Fq 'does not migrate legacy dotfiles' "$ROOT/MIGRATION.md"
 grep -Fq 'never a backlog sweep' "$CONTRACT"
 grep -Fq 'Reports are not raw compiler input' "$CONTRACT"
 grep -Fq 'blind draft' "$CONTRACT"
 grep -Fq 'read-only' "$CONTRACT"
-grep -Fxq 'profile_version: 3' "$PROFILE"
+grep -Fxq 'profile_version: 4' "$PROFILE"
+if rg -n '^(raw_dir|wiki_dir|output_dir|docs_dir|capabilities):' "$PROFILE"; then exit 1; fi
 grep -Fxq 'hot_file: wiki/hot.md' "$PROFILE"
 grep -Fxq 'operation_log_file: docs/log.md' "$PROFILE"
 grep -Fxq 'decision_log_file: docs/DECISIONS.md' "$PROFILE"
@@ -25,14 +26,16 @@ mkdir -p "$PROFILE_ROOT/root/raw" "$PROFILE_ROOT/root/wiki" "$PROFILE_ROOT/root/
 touch "$PROFILE_ROOT/root/wiki/hot.md" "$PROFILE_ROOT/root/docs/log.md" "$PROFILE_ROOT/root/docs/DECISIONS.md"
 sed "s|/absolute/path/to/knowledge|$PROFILE_ROOT/root|" "$PROFILE" > "$PROFILE_ROOT/valid.md"
 python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/valid.md" >/dev/null
-sed "s|/absolute/path/to/knowledge|$PROFILE_ROOT/root|;s|raw_dir: raw|raw_dir: ../|" "$PROFILE" > "$PROFILE_ROOT/escape.md"
-if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/escape.md"; then exit 1; fi
+sed '5i\
+raw_dir: custom-raw' "$PROFILE_ROOT/valid.md" > "$PROFILE_ROOT/noncanonical-topology.md"
+if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/noncanonical-topology.md"; then exit 1; fi
 sed '5i\
 unknown_field: true' "$PROFILE_ROOT/valid.md" > "$PROFILE_ROOT/unknown-field.md"
 if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/unknown-field.md"; then exit 1; fi
-sed '/^capabilities:$/a\
-  unsupported_capability: true' "$PROFILE_ROOT/valid.md" > "$PROFILE_ROOT/unknown-capability.md"
-if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/unknown-capability.md"; then exit 1; fi
+sed '5i\
+capabilities:\
+  firecrawl: false' "$PROFILE_ROOT/valid.md" > "$PROFILE_ROOT/inert-capabilities.md"
+if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/inert-capabilities.md"; then exit 1; fi
 sed '/wiki_followup_destination:/d' "$PROFILE_ROOT/valid.md" > "$PROFILE_ROOT/missing-wiki-followup.md"
 if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/missing-wiki-followup.md"; then exit 1; fi
 for skill in research-to-wiki wiki-audit; do
@@ -47,6 +50,8 @@ grep -Fq 'wiki follow-up destination' "$CONTRACT"
 grep -Fq 'artifact follow-up destination' "$CONTRACT"
 grep -Fq 'must not infer' "$CONTRACT"
 grep -Fq 'Andrej Karpathy' "$CONTRACT"
+grep -Fq 'canonical directories' "$CONTRACT"
+grep -Fq 'runtime-detected optional integrations' "$CONTRACT"
 for skill in research-sources research-topic research-feature research-feedback research-absorb; do
   grep -Fq 'artifact_followup_destination' "$ROOT/skills/$skill/SKILL.md" || exit 1
 done
@@ -54,6 +59,10 @@ grep -Fq 'artifact_followup_destination' "$ROOT/skills/knowledge-capture/SKILL.m
 for skill in research-to-wiki wiki-audit; do
   grep -Fq 'wiki_followup_destination' "$ROOT/skills/$skill/SKILL.md" || exit 1
 done
+for skill in research-sources research-topic research-feature research-feedback research-dev research-quick; do
+  grep -Fq 'runtime-detected' "$ROOT/skills/$skill/SKILL.md" || exit 1
+done
+grep -Fq 'runtime-detected' "$ROOT/skills/transcribe/SKILL.md"
 if rg -n 'unified Obsidian vault|AI-vault|writing-corpus|R-004|wiki/people/' "$ROOT/skills" "$ROOT/contracts" "$ROOT/profiles" "$ROOT/README.md"; then
   exit 1
 fi

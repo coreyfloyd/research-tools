@@ -4,7 +4,7 @@ Portable research-to-knowledge skills for Agent Skills-compatible clients.
 
 Inspired by [Andrej Karpathy's LLM Wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 
-The package supports durable research, explicit artifact disposition, curated Karpathy-wiki compilation, read-only audit, and optional local Apple Speech transcription. Configure a knowledge root with `profiles/karpathy-wiki.example.md`; its validated YAML frontmatter defines portable topology and its free-form body holds personal paths and policies outside this repository.
+The package supports durable research, explicit artifact disposition, curated Karpathy-wiki compilation, read-only audit, and runtime-detected optional Firecrawl and local Apple Speech integrations. Its canonical knowledge-root shape is `raw/`, `wiki/`, `output/`, and `docs/`; configure the root and local policy with `profiles/karpathy-wiki.example.md`.
 
 ## Local release-candidate verification
 
@@ -16,12 +16,15 @@ bash tests/test-install.sh
 cd skills/transcribe/tools/apple-speech && swift test
 ```
 
-`install.sh` copies the package to a stable per-user release path before
-linking skills into Claude and Codex. It refuses to overwrite an existing skill
-link. Do not run it against an existing personal installation until the
-migration review has approved the ownership handoff.
+Before installing, copy `profiles/karpathy-wiki.example.md` to
+`~/.config/research-tools/profile.md`, set `knowledge_root`, and create the
+canonical directories and declared state files. `install.sh` validates that
+profile before changing any release or skill link. It then copies the package
+to immutable per-user release storage and links skills through a stable
+`~/.local/share/research-tools/current` pointer. It refuses to overwrite a
+foreign skill link.
 
-For the exact migration invariant, see [MIGRATION.md](MIGRATION.md).
+For published-release upgrades, see [MIGRATION.md](MIGRATION.md).
 
 ## Published-release installation
 

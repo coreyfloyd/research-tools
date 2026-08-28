@@ -9,7 +9,7 @@ When a user supplies an audio or video review, interview, or discussion as evide
 
 Community-sentiment recon. Answers "what is it actually like to use/run/own this, according to the people doing it right now?" — and identifies **which communities to watch**. Always hits Reddit; always surfaces a recommended set of topic-appropriate forums and user groups.
 
-Use Firecrawl first for web search and page extraction when it is available. If it is unavailable or blocked for a source, use native web tools and say so in the report; do not silently reduce community coverage.
+Firecrawl is a runtime-detected optional integration. Use it first for web search and page extraction when it is available. If it is unavailable or blocked for a source, use native web tools and say so in the report; do not silently reduce community coverage.
 
 Before checking local knowledge, choosing the durable report location, or running distribution, read `~/.config/research-tools/profile.md`. Any proposed follow-up task uses `artifact_followup_destination`, never the wiki-maintenance route.
 
