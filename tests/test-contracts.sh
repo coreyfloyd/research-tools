@@ -3,6 +3,23 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 CONTRACT="$ROOT/contracts/karpathy-wiki.md"
 PROFILE="$ROOT/profiles/karpathy-wiki.example.md"
+# Leakage guards must FAIL CLOSED. These were written with `rg`, which is not a
+# POSIX tool and is absent from a bare shell: `if rg ...; then exit 1; fi` then
+# returned 127, the guard fell through, and the suite still exited 0 — so the
+# checks protecting a public release from private paths and names passed
+# vacuously. Use grep and treat anything other than a definite "no match" as a
+# failure.
+scan() {
+  local desc="$1"; shift
+  local out status
+  out="$(grep "$@" 2>&1)" && status=0 || status=$?
+  case "$status" in
+    1) return 0 ;;
+    0) printf '%s: leaked\n%s\n' "$desc" "$out" >&2; exit 1 ;;
+    *) printf '%s: scan failed (grep exit %s)\n%s\n' "$desc" "$status" "$out" >&2; exit 1 ;;
+  esac
+}
+
 test -f "$CONTRACT"
 test -f "$PROFILE"
 test -f "$ROOT/MIGRATION.md"
@@ -14,7 +31,7 @@ grep -Fq 'Reports are not raw compiler input' "$CONTRACT"
 grep -Fq 'blind draft' "$CONTRACT"
 grep -Fq 'read-only' "$CONTRACT"
 grep -Fxq 'profile_version: 4' "$PROFILE"
-if rg -n '^(raw_dir|wiki_dir|output_dir|docs_dir|capabilities):' "$PROFILE"; then exit 1; fi
+scan 'retired profile fields' -nE '^(raw_dir|wiki_dir|output_dir|docs_dir|capabilities):' "$PROFILE"
 grep -Fxq 'hot_file: wiki/hot.md' "$PROFILE"
 grep -Fxq 'operation_log_file: docs/log.md' "$PROFILE"
 grep -Fxq 'decision_log_file: docs/DECISIONS.md' "$PROFILE"
@@ -71,9 +88,5 @@ done
 grep -Fq 'profiles/karpathy-wiki.example.md' "$ROOT/skills/research-tools-set-up/SKILL.md"
 grep -Fq 'scripts/validate_profile.py' "$ROOT/skills/research-tools-set-up/SKILL.md"
 grep -Fq 'Do not write or change configuration until the user approves' "$ROOT/skills/research-tools-set-up/SKILL.md"
-if rg -n 'unified Obsidian vault|AI-vault|writing-corpus|R-004|wiki/people/' "$ROOT/skills" "$ROOT/contracts" "$ROOT/profiles" "$ROOT/README.md"; then
-  exit 1
-fi
-if rg -n 'claude-dotfiles|research-skills|~/Obsidian|Corey|~/.claude/skills|~/Development|wiki/CLAUDE\.md|wiki/AGENTS\.md' "$ROOT/skills" "$ROOT/contracts" "$ROOT/profiles" "$ROOT/README.md" --glob '!*.swift'; then
-  exit 1
-fi
+scan 'private vault vocabulary' -rnE 'unified Obsidian vault|AI-vault|writing-corpus|R-004|wiki/people/' "$ROOT/skills" "$ROOT/contracts" "$ROOT/profiles" "$ROOT/README.md"
+scan 'private paths and names' -rnE --exclude='*.swift' 'claude-dotfiles|research-skills|~/Obsidian|Corey|~/[.]claude/skills|~/Development|wiki/CLAUDE[.]md|wiki/AGENTS[.]md' "$ROOT/skills" "$ROOT/contracts" "$ROOT/profiles" "$ROOT/README.md"
