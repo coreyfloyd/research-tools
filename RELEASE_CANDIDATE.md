@@ -115,9 +115,10 @@ NotebookLM and YouTube tooling used by optional integrations.
 
 ## Publication checklist
 
-- [ ] Resolve all untracked release-input files and make `git status --short`
-  empty; the archive builder includes untracked files outside its exclusions.
-- [ ] Make `git diff --check` pass, including the current README whitespace.
+- [x] Ignore `.Ulysses-*` metadata in Git and exclude it from release archives
+  (completed 2026-08-27; covered by the signed-release suite).
+- [x] Make `git diff --check` pass, including the README whitespace cleanup
+  (completed 2026-08-27).
 - [ ] Commit the complete candidate and push `main`.
 - [ ] Record the final commit below and rerun every verification command from
   that exact clean commit.
