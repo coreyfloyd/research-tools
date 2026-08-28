@@ -5,18 +5,18 @@ Claude Code and Codex. It provides skills for multiple types of research and wor
 
 This is the system I developed for my own personal research - much of it was built to learn about AI itself. My favorite use case is ingesting knowledge from YouTube videos and my favorite podcasts in order to plan improvements to my AI systems.
 
-The system is based around a workflow with three types activities:
+The system is based around a workflow with three types of activity:
 
 1. **Research** gathers and evaluates evidence. Quick work stays in the
    conversation; substantial work produces a durable research artifact.
-2. **Knowledge Distribution & Follow Up ** Update existing documents, your personal AI context, or create todos from useful knowledge from the current conversation.
+2. **Knowledge Distribution & Follow Up** updates existing documents and your personal AI context, or creates todos from useful knowledge in the current conversation.
 3. **Personal Knowledge Curation** turns selected sources into atomic, linked wiki articles — for both yourself and your agents.
 
 After installation, start with `research-tools-set-up`. It walks you through the
 knowledge-store structure, local policy, and follow-up routing, then shows the
 complete proposed configuration before creating or changing anything.
 
-Major portions are inspired by [Andrej Karpathy's LLM Wiki gist][1], adding a convenient set of tools for capturing knowledge and making sure you research isn’t lost or underutilized.
+Major portions are inspired by [Andrej Karpathy's LLM Wiki gist][1], adding a convenient set of tools for capturing knowledge and making sure your research isn’t lost or underutilized.
 
 ## Research skills
 
