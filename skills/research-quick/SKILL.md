@@ -47,11 +47,23 @@ Run all searches in parallel.
 1. **Reddit** (always): `firecrawl_search("site:reddit.com <query>")` — pick the 3 most relevant threads
 2. **Domain source 1**: first authoritative source from the table above
 3. **Domain source 2** (if warranted): second source or a broader Firecrawl web search
-4. **Read full Reddit threads**: for the 2-3 most relevant threads, run the helper:
+4. **Read full Reddit threads** through the user's signed-in browser session:
+   Reddit blocks programmatic scrapers but serves the real page to the user's
+   own logged-in browser, so the route is: load the thread in that browser,
+   extract the rendered text. Use the browser route named in the profile's
+   local policy (blocked-channel routes). The bundled helper is the **Safari
+   reference implementation** of that route — background tab, no focus steal,
+   closes its own tab; it requires an interactive macOS session with Safari
+   signed into Reddit:
    ```bash
    ./reddit-read.sh "<thread-url>"
    ```
-   Reddit blocks programmatic scrapers, but serves the real page to the user's logged-in Safari. The helper loads each thread in Safari in the background (no focus steal), extracts the rendered text, and closes its own tab. It requires an interactive macOS session with Safari signed into Reddit; when that is unavailable, check the profile's local policy for a blocked-channel route (for example, delegating the Reddit read to another agent runtime with access) before relying on search-result snippets, and note whichever coverage you ended up with. Scrape non-Reddit sources with `firecrawl_scrape` as normal.
+   Other implementations of the same route (a browser-automation tool the
+   runtime provides, another browser's scripting interface, delegating the
+   read to another agent runtime with access) are equally valid when local
+   policy names them. When no browser route is available, fall back to
+   search-result snippets and note the reduced coverage. Scrape non-Reddit
+   sources with `firecrawl_scrape` as normal.
 5. Call `firecrawl_search_feedback` with the search ID after each search to refund a credit
 
 ## Output Format

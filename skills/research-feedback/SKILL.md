@@ -60,11 +60,11 @@ Run searches in parallel.
 1. **Reddit — always.** `firecrawl_search` with `includeDomains: ["reddit.com"]` (or `site:reddit.com`). Target the decision: e.g. "<subject> stability daily driver worth it", "<subject> problems after a month". Pull the 4-8 most relevant threads.
 2. **Primary community forum** for the topic (from Phase 2).
 3. **Official source for hard constraints** when the decision has a factual gate (system requirements, compatibility, pricing). Sentiment can't override a hard requirement.
-4. **Read full Reddit threads** with the helper — comment bodies are the lived-experience signal this skill exists for:
+4. **Read full Reddit threads** through the user's signed-in browser session — comment bodies are the lived-experience signal this skill exists for. Use the browser route named in the profile's local policy; the bundled Safari reference implementation is:
    ```bash
    ../research-quick/reddit-read.sh "<thread-url>"
    ```
-   Run it on the 3-5 most relevant threads. See `research-quick` Phase 2 step 4 for usage detail; when no interactive Safari session exists, check the profile's local policy for a blocked-channel route (for example, delegating the Reddit read to another agent runtime with access) before settling for snippet-level coverage. Scrape non-Reddit forums with `firecrawl_scrape` as normal.
+   Run it on the 3-5 most relevant threads. See `research-quick` Phase 2 step 4 for the route contract and alternate implementations; when no browser route is available, check local policy for another blocked-channel route (for example, delegating the read to another agent runtime with access) before settling for snippet-level coverage. Scrape non-Reddit forums with `firecrawl_scrape` as normal.
 5. After each `firecrawl_search`, call `firecrawl_search_feedback` with the search ID to refund a credit.
 
 ## Phase 4 — Synthesize (sentiment-weighted)
