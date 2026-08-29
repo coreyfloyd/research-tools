@@ -20,7 +20,15 @@ then be executed and deleted.
 5. **Sources and provenance** — supplied and discovered sources, original URLs
    or paths, relevant extracts/transcripts, retrieval fallback, and any
    notebook ID.
-6. **Evidence gaps** — unanswered questions and sources that could resolve
+6. **Search record** — what was searched for beyond the supplied sources and
+   how each result was used, including searches that returned nothing (a
+   verified negative is evidence and must say how it was verified) and
+   channels that were not searched because the runtime is blocked from them
+   or the cost exceeded the stakes. Distinguish "searched directly and
+   absent" from "absent from indirect search" — they carry different
+   confidence. If local policy names an alternate route for a blocked
+   channel, record whether it was used and why or why not.
+7. **Evidence gaps** — unanswered questions and sources that could resolve
    them.
 
 ### Sizing rule
@@ -34,6 +42,16 @@ cite findings by ID; they do not restate them.
 ## Decisions
 
 Two decision classes. Every actionable result belongs to one of them.
+
+Every decision states its execution route on the decision surface itself, as
+an explicit line: **"Executes as: task filed — another session runs it"** or
+**"Executes as: inline by `research-absorb` on approval."** By default an Act
+decision files a follow-up task for another session, and a Keep decision
+executes inline during absorption. When an Act item is small enough that
+inline execution is tempting, offer inline-vs-task as an explicit option
+inside the decision — never a silent judgment call. The appendix's task-route
+column carries the mechanics; the route the user is approving belongs on the
+surface they judge.
 
 ### Act — does this change a system the user runs?
 

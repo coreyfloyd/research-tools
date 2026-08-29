@@ -51,7 +51,7 @@ Run all searches in parallel.
    ```bash
    ./reddit-read.sh "<thread-url>"
    ```
-   Reddit blocks programmatic scrapers, but serves the real page to the user's logged-in Safari. The helper loads each thread in Safari in the background (no focus steal), extracts the rendered text, and closes its own tab. It requires an interactive macOS session with Safari signed into Reddit; when that is unavailable, rely on search-result snippets and note the reduced Reddit coverage. Scrape non-Reddit sources with `firecrawl_scrape` as normal.
+   Reddit blocks programmatic scrapers, but serves the real page to the user's logged-in Safari. The helper loads each thread in Safari in the background (no focus steal), extracts the rendered text, and closes its own tab. It requires an interactive macOS session with Safari signed into Reddit; when that is unavailable, check the profile's local policy for a blocked-channel route (for example, delegating the Reddit read to another agent runtime with access) before relying on search-result snippets, and note whichever coverage you ended up with. Scrape non-Reddit sources with `firecrawl_scrape` as normal.
 5. Call `firecrawl_search_feedback` with the search ID after each search to refund a credit
 
 ## Output Format

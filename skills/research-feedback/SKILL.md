@@ -64,7 +64,7 @@ Run searches in parallel.
    ```bash
    ../research-quick/reddit-read.sh "<thread-url>"
    ```
-   Run it on the 3-5 most relevant threads. See `research-quick` Phase 2 step 4 for usage detail and the fallback when no interactive Safari session exists. Scrape non-Reddit forums with `firecrawl_scrape` as normal.
+   Run it on the 3-5 most relevant threads. See `research-quick` Phase 2 step 4 for usage detail; when no interactive Safari session exists, check the profile's local policy for a blocked-channel route (for example, delegating the Reddit read to another agent runtime with access) before settling for snippet-level coverage. Scrape non-Reddit forums with `firecrawl_scrape` as normal.
 5. After each `firecrawl_search`, call `firecrawl_search_feedback` with the search ID to refund a credit.
 
 ## Phase 4 — Synthesize (sentiment-weighted)
