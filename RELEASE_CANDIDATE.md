@@ -50,8 +50,8 @@ every `0.4.1` consumer upgrades with no migration.
 - `git diff --check`
 
 On 2026-08-29, all three shell suites, the five Apple Speech tests, and
-`git diff --check` passed from the clean, pushed release commit recorded in the
-publication record below.
+`git diff --check` passed from the clean, pushed release commit
+`2496c0ff7dfcb10b97b2367b15b5101398d074fe` before tagging.
 
 ## Release-note draft
 
@@ -82,23 +82,33 @@ Profiles, installation, and upgrade are unchanged from `0.4.1`.
 
 ## Publication checklist
 
-- [ ] Commit the complete candidate and push `main`.
-- [ ] Capture the final commit in the release-session evidence and rerun every
+- [x] Commit the complete candidate and push `main`.
+- [x] Capture the final commit in the release-session evidence and rerun every
   verification command from that exact clean commit.
-- [ ] Follow `RELEASING.md` to create and push the annotated `v0.4.2` tag.
-- [ ] Build, sign, and locally verify the four release assets.
-- [ ] Publish the GitHub release with the reviewed notes above.
-- [ ] Redownload and verify the public assets.
-- [ ] Record the final commit, release URL, and public-asset verification
+- [x] Follow `RELEASING.md` to create and push the annotated `v0.4.2` tag.
+- [x] Build, sign, and locally verify the four release assets.
+- [x] Publish the GitHub release with the reviewed notes above.
+- [x] Redownload and verify the public assets.
+- [x] Record the final commit, release URL, and public-asset verification
   below in a post-publication follow-up commit.
 
 ## Publication record
 
-- Target commit: recorded after publication
+- Target commit: `2496c0ff7dfcb10b97b2367b15b5101398d074fe`
 - Tag: annotated `v0.4.2`, resolving to the target commit above
-- Release URL: recorded after publication
-- Published asset verification: recorded after publication
+- Release URL:
+  <https://github.com/coreyfloyd/research-tools/releases/tag/v0.4.2>
+- Published asset verification: completed 2026-08-29; all four expected assets
+  were downloaded, the public key byte-matched the repository key, the detached
+  signature and SHA-256 checksum passed verification, and the extracted archive
+  compared equal to `git archive v0.4.2`.
+- Build note: the archive was built from a detached worktree checked out at the
+  tag and written to an output directory outside the packaged tree, so the
+  published payload matches the tagged commit exactly and no build output is
+  packaged into the archive. See the release-integrity follow-up filed against
+  `scripts/build-release.sh`.
 
 ## Release status
 
-Versions `0.1.0` through `0.4.1` are published. `0.4.2` is a candidate.
+Versions `0.1.0` through `0.4.2` are published. The `v0.4.2` public assets
+were downloaded and verified after publication.
