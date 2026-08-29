@@ -68,9 +68,12 @@ source's root-relative path, original provenance, and requested disposition.
 Reports are not raw compiler input. Sources marked `compile_exclude` are
 excluded; `compile_mode: update` requires its targeted update workflow.
 
-The compiler reads selected raw sources before existing wiki synthesis. After a
-blind draft, it compares the closest existing articles and records actual
-tensions or gaps rather than silently merging incompatible assertions. It uses
+The compiler reads selected raw sources and drafts before reading existing wiki
+synthesis. After drafting, it compares the closest existing articles and records
+actual tensions or gaps rather than silently merging incompatible assertions.
+When invoked with an approved distribution plan, disposition decisions made
+upstream — topic assignment, named referents, page conventions — carry into the
+compile; the compiler does not re-derive them. It uses
 root-relative `sources:` paths, maintains affected topic indexes and the master
 index, and records the final source disposition only after the result is known.
 

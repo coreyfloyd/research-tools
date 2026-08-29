@@ -10,7 +10,7 @@ Use this skill only to obtain a transcript. The calling workflow retains ownersh
 ## Choose the lightest source route
 
 - **YouTube research source:** add the URL directly to NotebookLM when its native indexing is sufficient. Do not download merely to create a duplicate transcript.
-- **Video archival:** use `video-ingest` when frames plus a vault raw artifact are required. It prefers native captions and otherwise has its local transcription fallback.
+- **Video archival:** when frames plus a vault raw artifact are required and a `video-ingest` skill is installed, use it; it prefers native captions and has its own transcription fallback. That skill is not part of this package.
 - **Local audio/video, or media without usable captions:** use the standalone CLI below.
 
 ## Local CLI

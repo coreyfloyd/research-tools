@@ -1,6 +1,6 @@
 ---
 name: wiki-audit
-description: Read-only structural audit of a configured Karpathy-wiki knowledge base. It checks atomicity, missing pages, hub coherence, structural health, source coverage, tensions, and gaps without resolving them.
+description: Read-only structural audit of a configured Karpathy-wiki knowledge base. Use when asked to audit the wiki or knowledge base; it checks atomicity, missing pages, hub coherence, structural health, source coverage, tensions, and gaps without resolving them.
 ---
 
 # Wiki Audit
@@ -9,7 +9,7 @@ Validate `~/.config/research-tools/profile.md` with `../../scripts/validate_prof
 
 ## When to use
 
-- “audit the wiki”, “audit the knowledge base”, or “atomicity check”
+- "audit the wiki", "audit the knowledge base", or "atomicity check"
 - After a substantial compile pass
 - Before a proposed taxonomy change
 

@@ -15,24 +15,25 @@ archive.
    NotebookLM notebook ID.
 4. **Evidence gaps** — unanswered questions and sources that could resolve
    them.
+
 ## Proposed distribution plan
 
 The artifact must include one row per actionable result, using this shape:
 
-   | ID | Evidence | Destination and action | Target | Task route | Preconditions | Terminal disposition |
-   |----|----------|------------------------|--------|------------|---------------|----------------------|
-   | D1 | source-backed finding | stage source then compile | named knowledge base area | — | approval; target available | integrated |
+| ID | Evidence | Destination and action | Target | Task route | Preconditions | Terminal disposition |
+|----|----------|------------------------|--------|------------|---------------|----------------------|
+| D1 | source-backed finding | stage source then compile | named knowledge base area | — | approval; target available | integrated |
 
-   `Destination and action` must say whether the result needs source staging,
-   synthesis, direct document update, or a follow-up task. A follow-up task
-   row must name `artifact_followup_destination`, not the wiki-maintenance
-   destination. A wiki row names the supporting external source(s), not the
-   report as raw input.
+`Destination and action` must say whether the result needs source staging,
+synthesis, direct document update, or a follow-up task. A follow-up task
+row must name `artifact_followup_destination`, not the wiki-maintenance
+destination. A wiki row names the supporting external source(s), not the
+report as raw input.
 
 ### Named referents
 
 Evidence may introduce a **named referent** — a person, organization, product,
-or concept — that the material establishes as a load-bearing subject rather than
+or concept — that the material establishes as a substantive subject rather than
 an incidental mention. A source's own author or subject counts, even when no
 other source in the set names them. When a referent clears that bar, emit a
 distribution row for it: it is a distinct actionable result from the findings it

@@ -30,7 +30,7 @@ Validate `~/.config/research-tools/profile.md` with `../../scripts/validate_prof
 ## How to Research
 
 1. Read the requirements to understand what the feature does and who it's for
-2. Use Firecrawl first, when available, to find and extract how 3-5 established products handle this — search for "[feature] UX pattern", "[product] [feature] design". Use WebSearch as supplementary discovery or the fallback when Firecrawl is unavailable or blocked.
+2. Use Firecrawl first, when available, to find and extract how 3-5 established products handle this — search for "[feature] UX pattern", "[product] [feature] design". Use native web search as supplementary discovery or the fallback when Firecrawl is unavailable or blocked.
 3. Check product review sites, Reddit discussions, and design case studies for user feedback
 4. Look for Apple Human Interface Guidelines or platform-specific patterns if building for iOS/macOS
 5. Identify what works, what frustrates users, and what's table stakes vs. differentiating
@@ -52,11 +52,6 @@ Always write a durable artifact using [the shared research artifact contract](..
 - User complaints: [weaknesses]
 
 **[Product B]**
-- How it works: [description]
-- What works well: [strengths]
-- User complaints: [weaknesses]
-
-**[Product C]**
 - How it works: [description]
 - What works well: [strengths]
 - User complaints: [weaknesses]

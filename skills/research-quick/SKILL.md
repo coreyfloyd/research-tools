@@ -5,19 +5,19 @@ description: "Fast inline research on non-development topics—products, places,
 
 # Quick Research
 
-Zero-friction research for non-dev questions. Checks configured local knowledge first, then hits Reddit plus domain-appropriate authoritative sources via Firecrawl, synthesizes inline. No notebooks, no files written.
+Inline research for non-dev questions: check configured local knowledge first, then Reddit plus domain-appropriate authoritative sources, and synthesize in the conversation. No notebooks, no files written.
 
-If a supplied audio or video source is needed as evidence, invoke `transcribe` to acquire its text before applying this workflow. The transcript is input evidence; this skill remains inline.
+Read `~/.config/research-tools/profile.md` before checking local knowledge; use only the local-preflight policy it provides. This skill remains an inline response.
 
-Firecrawl is a runtime-detected optional integration. Use it first for web search and page extraction when it is available. If it is unavailable or blocked for a source, use native web tools and say so in the response; do not silently reduce source coverage.
+If a supplied audio or video source is needed as evidence, invoke `transcribe` to acquire its text first. The transcript is input evidence; the response stays inline.
 
-Read `~/.config/research-tools/profile.md` before checking local knowledge. Use only the local-preflight policy it provides; this skill remains an inline response.
+Firecrawl is a runtime-detected optional integration. Prefer it for web search and page extraction. When it is unavailable or blocked for a source, use native web tools and say so in the response; do not silently reduce source coverage.
 
 ## When NOT to Use
 
 - Code, bugs, library questions → `research-dev`
-- Deep research needing persistent notebooks → `research`
-- Writing/drafting content with citations → `content-research-writer`
+- Deep research needing persistent notebooks and a durable artifact → `research-topic`
+- Community sentiment for an adopt/buy/wait decision → `research-feedback`
 
 ## Phase 0 — Check local knowledge
 
@@ -38,20 +38,20 @@ If the local profile defines a knowledge preflight, run it before web search. Su
 | **Service/company** | brand name, app name, subscription, "is X legit" | Trustpilot, BBB, Reddit |
 | **General/unclear** | anything else | Wikipedia + 2 Firecrawl web searches |
 
-**If the domain is genuinely ambiguous** and the wrong source set would waste the search — ask upfront in one short question: "What kind of angle are you looking for — [option A] or [option B]?" Then go. Don't ask about anything else.
+If the domain is genuinely ambiguous and the wrong source set would waste the search, ask one short question up front: "What kind of angle are you looking for — [option A] or [option B]?" Then go.
 
 ## Phase 2 — Firecrawl Research
 
-Run all searches **in parallel** — don't wait for one before starting the next.
+Run all searches in parallel.
 
 1. **Reddit** (always): `firecrawl_search("site:reddit.com <query>")` — pick the 3 most relevant threads
-2. **Domain source 1**: first authoritative source from table above
+2. **Domain source 1**: first authoritative source from the table above
 3. **Domain source 2** (if warranted): second source or a broader Firecrawl web search
-4. **Read full Reddit threads**: For the 2-3 most relevant Reddit results, run the helper to pull full post + comment text:
+4. **Read full Reddit threads**: for the 2-3 most relevant threads, run the helper:
    ```bash
    ./reddit-read.sh "<thread-url>"
    ```
-   Reddit blocks all programmatic scrapers (`firecrawl_scrape` → unsupported, `.json` → 403, `WebFetch` → blocked), but it serves the real page to the user's logged-in Safari. The helper loads each thread in Safari **in the background** (`open -g`, no focus steal), extracts the rendered text via AppleScript, and closes its own tab. Requires macOS + Safari signed into Reddit (interactive desktop session only — not usable headless/remote). For **non-Reddit** sources, use `firecrawl_scrape` as normal.
+   Reddit blocks programmatic scrapers, but serves the real page to the user's logged-in Safari. The helper loads each thread in Safari in the background (no focus steal), extracts the rendered text, and closes its own tab. It requires an interactive macOS session with Safari signed into Reddit; when that is unavailable, rely on search-result snippets and note the reduced Reddit coverage. Scrape non-Reddit sources with `firecrawl_scrape` as normal.
 5. Call `firecrawl_search_feedback` with the search ID after each search to refund a credit
 
 ## Output Format
@@ -62,20 +62,16 @@ Deliver inline in the conversation. No files, no notebooks.
 **[Topic]** — [2-sentence synthesis of the overall picture]
 
 **What people say (Reddit)**
-- [Finding 1] — [r/subreddit thread title](url)
-- [Finding 2] — [r/subreddit thread title](url)
-- [Finding 3] — [r/subreddit thread title](url)
+- [Finding] — [r/subreddit thread title](url)
+- [Finding] — [r/subreddit thread title](url)
 
 **Key findings**
-- [Point] ([Source](url))
 - [Point] ([Source](url))
 - [Conflicting view or caveat if any] ([Source](url))
 
 **Bottom line**: [1-sentence recommendation or verdict, if the question calls for one]
 ```
 
-Keep it tight. If sources agree, consolidate — don't repeat the same finding three times with three URLs. If they conflict, surface the conflict explicitly.
+If sources agree, consolidate rather than repeating the same finding with multiple URLs. If they conflict, surface the conflict explicitly. Skip sections that don't apply.
 
-If a local profile defines a checklist-time knowledge-capture policy, it may review this research later; this skill itself remains inline.
-
-Skip sections that don't apply (e.g., no "Key findings" section if Reddit threads already cover everything; no "Bottom line" for open-ended conceptual questions).
+If a local profile defines a checklist-time knowledge-capture policy, that policy may review this research later; this skill itself writes nothing.

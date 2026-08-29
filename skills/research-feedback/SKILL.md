@@ -5,15 +5,13 @@ description: "Research lived community experience before adopting, upgrading, bu
 
 # Research Feedback
 
-When a user supplies an audio or video review, interview, or discussion as evidence, invoke `transcribe` before analysis. It only resolves the input; this skill still owns community-research scope and its required durable output.
-
-Community-sentiment recon. Answers "what is it actually like to use/run/own this, according to the people doing it right now?" — and identifies **which communities to watch**. Always hits Reddit; always surfaces a recommended set of topic-appropriate forums and user groups.
-
-Firecrawl is a runtime-detected optional integration. Use it first for web search and page extraction when it is available. If it is unavailable or blocked for a source, use native web tools and say so in the report; do not silently reduce community coverage.
+Community-sentiment recon. Answers "what is it actually like to use/run/own this, according to the people doing it right now?" and identifies which communities to watch. It weights lived experience over authority, always checks Reddit, and always surfaces a recommended set of topic-appropriate forums and user groups.
 
 Before checking local knowledge, choosing the durable report location, or running distribution, validate `~/.config/research-tools/profile.md` with `../../scripts/validate_profile.py`, resolved relative to this skill. If it is missing or invalid, stop and use `research-tools-set-up`; do not choose a fallback output path. Any proposed follow-up task uses `artifact_followup_destination`, never the wiki-maintenance route.
 
-This is the **experiential/sentiment** sibling of `research-quick`. Use the distinction below to pick the right one.
+When a user supplies an audio or video review, interview, or discussion as evidence, invoke `transcribe` before analysis. It only resolves the input; this skill still owns scope and the durable output.
+
+Firecrawl is a runtime-detected optional integration. Prefer it for web search and page extraction. When it is unavailable or blocked for a source, use native web tools and say so in the report; do not silently reduce community coverage.
 
 ## When to Use vs. Not
 
@@ -22,10 +20,8 @@ This is the **experiential/sentiment** sibling of `research-quick`. Use the dist
 | "What's the real-world experience of running X?" | Authoritative facts/specs/how-to → `research-quick` |
 | "Is the new beta/release stable enough to adopt?" | Code/library/bug diagnosis → `research-dev` |
 | "What are people complaining about with X before I commit?" | Deep, persistent, cited report → `research-topic` |
-| Decision gated on peer/community lived experience | Drafting content with citations → `content-research-writer` |
-| The user wants to know **which communities** to follow on a topic | Pure fact lookup with one right answer |
-
-The signature of this skill: it weights **lived experience over authority**, and it **recommends the community landscape**, not just an answer.
+| Decision gated on peer/community lived experience | Pure fact lookup with one right answer |
+| The user wants to know **which communities** to follow on a topic | |
 
 ## Phase 0 — Check local knowledge
 
@@ -36,13 +32,13 @@ If the local profile defines a knowledge preflight, run it before external resea
 From the query, pin down:
 - **Subject** — the thing being evaluated (product, OS/beta, tool, service, practice, place).
 - **Decision context** — what the user is deciding (install / buy / adopt / wait / switch). This sets what "feedback" matters.
-- **Recency sensitivity** — betas, new releases, fast-moving products: feedback older than the current version is noise. Note the version/date in scope.
+- **Recency sensitivity** — for betas, new releases, and fast-moving products, feedback older than the current version is noise. Note the version/date in scope.
 
 Only ask if the wrong read would waste the search. One short question, then go.
 
-## Phase 2 — Map the Community Landscape (REQUIRED, distinctive step)
+## Phase 2 — Map the Community Landscape (required)
 
-Identify the venues where real users of this topic congregate. **Always include Reddit.** Then add the venue types that fit the topic — this list is itself an output the user requested:
+Identify the venues where real users of this topic congregate. Always include Reddit, then add venue types that fit the topic — this list is itself an output the user requested:
 
 | Topic type | Community venues to consider |
 |---|---|
@@ -55,38 +51,36 @@ Identify the venues where real users of this topic congregate. **Always include 
 | **Health / fitness** | Reddit, condition-specific forums, Examine.com community, patient groups |
 | **Finance** | Reddit (r/personalfinance, r/Bogleheads), Bogleheads forum, FairMark |
 
-Pick the 2–4 most relevant venues. Name any **user groups, Discords, or local meetups** worth following if they exist for the topic — this skill always surfaces them.
+Pick the 2-4 most relevant venues. Name any user groups, Discords, or local meetups worth following if they exist for the topic.
 
 ## Phase 3 — Firecrawl Research (parallel)
 
-Run searches in parallel; don't serialize.
+Run searches in parallel.
 
-1. **Reddit — always.** `firecrawl_search` with `includeDomains: ["reddit.com"]` (or `site:reddit.com`). Target the decision: e.g. "<subject> stability daily driver worth it", "<subject> problems after a month". Pull the 4–8 most relevant threads.
-2. **Primary community forum** for the topic (from Phase 2) — e.g. Apple Developer Forums, the product's Discourse, the enthusiast forum.
-3. **Official source for hard constraints** when the decision has a factual gate (system requirements, compatibility, pricing). Sentiment can't override a hard requirement — check it.
+1. **Reddit — always.** `firecrawl_search` with `includeDomains: ["reddit.com"]` (or `site:reddit.com`). Target the decision: e.g. "<subject> stability daily driver worth it", "<subject> problems after a month". Pull the 4-8 most relevant threads.
+2. **Primary community forum** for the topic (from Phase 2).
+3. **Official source for hard constraints** when the decision has a factual gate (system requirements, compatibility, pricing). Sentiment can't override a hard requirement.
 4. **Read full Reddit threads** with the helper — comment bodies are the lived-experience signal this skill exists for:
    ```bash
    ../research-quick/reddit-read.sh "<thread-url>"
    ```
-   Run it on the 3-5 most relevant threads. See `research-quick`'s Phase 2 step 4 for full usage detail (how it works, requirements, fallback). Scrape the **non-Reddit** forums with `firecrawl_scrape` as normal.
+   Run it on the 3-5 most relevant threads. See `research-quick` Phase 2 step 4 for usage detail and the fallback when no interactive Safari session exists. Scrape non-Reddit forums with `firecrawl_scrape` as normal.
 5. After each `firecrawl_search`, call `firecrawl_search_feedback` with the search ID to refund a credit.
 
 ## Phase 4 — Synthesize (sentiment-weighted)
 
 - **Separate consensus from loud minority.** Many threads saying the same thing = signal. One viral complaint = note it, weight it down.
 - **Rank recurring issues** by frequency × severity. Lead with what most affects the user's decision context.
-- **Surface the contrarian + the positive** signal explicitly — don't only report problems.
+- **Surface the contrarian and the positive signal** explicitly — don't only report problems.
 - **Date everything.** For fast-moving topics, tie each finding to the version/build and flag when feedback predates the current release.
 - **Respect hard gates.** If an official requirement blocks the option regardless of sentiment, lead with it.
 
 ## Output
 
-Always write a durable artifact including the format below, all source URLs, recency/version scope, and [the shared research artifact contract](../research-absorb/references/artifact-contract.md). Add evidence gaps and a **Proposed distribution plan**. Use the local profile's destination; without one, ask for the destination before writing. Report the artifact path and plan; the caller may then invoke `research-absorb`.
-
-## Output Format
+Always write a durable artifact using [the shared research artifact contract](../research-absorb/references/artifact-contract.md), including the format below, all source URLs, recency/version scope, evidence gaps, and a **Proposed distribution plan**. Use the local profile's destination. Report the artifact path and plan; the caller may then invoke `research-absorb`.
 
 ```
-**[Subject]** — [1–2 sentence overall read, with the decision verdict up front]
+**[Subject]** — [1-2 sentence overall read, with the decision verdict up front]
 
 🟢/🟡/🔴 **Bottom line**: [recommendation tied to the user's decision context]
 
@@ -95,16 +89,14 @@ Always write a durable artifact including the format below, all source URLs, rec
 
 **What people are saying**
 - [Recurring theme — how widespread] — [r/sub or forum](url)
-- [Second theme] — [source](url)
 - [Contrarian / positive signal] — [source](url)
 
 **Recurring issues, ranked**
 1. [Issue] — [frequency/severity note]
-2. [Issue] — …
 
 **Communities to watch**
 - [Venue] — [why / what's there] (url)
 - [User group / Discord / forum] — (url)
 ```
 
-Keep it tight. Consolidate agreeing sources. Make conflicts explicit. Always end with the **Communities to watch** block — surfacing the right venues is half the value of this skill.
+Consolidate agreeing sources. Make conflicts explicit. Always end with **Communities to watch** — surfacing the right venues is a primary output of this skill.

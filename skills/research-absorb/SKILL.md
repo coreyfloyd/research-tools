@@ -51,9 +51,9 @@ filed follow-up task should own.
   perform the implementation in this workflow.
 - Mark the actual terminal disposition for every row: integrated, target
   document updated, task filed, or explicitly discarded. If any row cannot
-  reach a terminal disposition, the artifact is blocked unresolved work until
-  the blocker is resolved; it has no retain or archive disposition, and the
-  run is not complete.
+  reach a terminal disposition, the artifact stays blocked until the blocker
+  is resolved; it has no retain or archive disposition, and the run is not
+  complete.
 - When every row has a terminal disposition, delete the artifact and report
   what was integrated, updated, filed, or discarded.
 
