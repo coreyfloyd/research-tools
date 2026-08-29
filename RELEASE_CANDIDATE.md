@@ -44,9 +44,9 @@ and upgrade contracts are unchanged from `0.3.0`.
 - `swift test` in `skills/transcribe/tools/apple-speech`
 - `git diff --check`
 
-Rerun every command from the final clean, pushed release commit before
-tagging. Record the exact commit and results below in the post-publication
-follow-up commit.
+On 2026-08-28, all three shell suites, the five Apple Speech tests, and
+`git diff --check` passed from the clean, pushed release commit
+`6e70198efd7206d661630933f8ead6c323909d9a` before tagging.
 
 ## Release-note draft
 
@@ -67,21 +67,30 @@ installation are unchanged from `v0.3.0`.
 
 ## Publication checklist
 
-- [ ] Commit the complete candidate and push `main`.
-- [ ] Capture the final commit in the release-session evidence and rerun every
-  verification command from that exact clean commit.
-- [ ] Follow `RELEASING.md` to create and push the annotated `v0.4.0` tag.
-- [ ] Build, sign, and locally verify the four release assets.
-- [ ] Publish the GitHub release with the reviewed notes above.
-- [ ] Redownload and verify the public assets.
-- [ ] Record the final commit, release URL, and public-asset verification
-  below in a post-publication follow-up commit.
+- [x] Commit the complete candidate and push `main` (completed 2026-08-28).
+- [x] Capture the final commit in the release-session evidence and rerun every
+  verification command from that exact clean commit (completed 2026-08-28).
+- [x] Follow `RELEASING.md` to create and push the annotated `v0.4.0` tag
+  (completed 2026-08-28).
+- [x] Build, sign, and locally verify the four release assets
+  (completed 2026-08-28).
+- [x] Publish the GitHub release with the reviewed notes above
+  (completed 2026-08-28).
+- [x] Redownload and verify the public assets (completed 2026-08-28).
+- [x] Record the final commit, release URL, and public-asset verification
+  below in a post-publication follow-up commit (completed 2026-08-28).
 
 ## Publication record
 
-Pending publication.
+- Target commit: `6e70198efd7206d661630933f8ead6c323909d9a`
+- Tag: annotated `v0.4.0`, resolving to the target commit above
+- Release URL:
+  <https://github.com/coreyfloyd/research-tools/releases/tag/v0.4.0>
+- Published asset verification: completed 2026-08-28; all four expected assets
+  were downloaded, the public key byte-matched the repository key, and the
+  detached signature and SHA-256 checksum passed verification.
 
 ## Release status
 
-Versions `0.1.0`, `0.2.0`, and `0.3.0` are published. `0.4.0` is the current
-candidate.
+Versions `0.1.0`, `0.2.0`, `0.3.0`, and `0.4.0` are published. The `v0.4.0`
+public assets were downloaded and verified after publication.
