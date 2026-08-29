@@ -16,7 +16,7 @@ use `artifact_followup_destination`, never the wiki-maintenance route.
 
 ## Interface
 
-Input: a single durable research artifact with a **Proposed distribution plan**.
+Input: a single durable research artifact with a **Decisions** section and its execution appendix.
 Output: an approved execution summary that names the final disposition of every
 row, then no remaining artifact.
 
@@ -28,11 +28,15 @@ filed follow-up task should own.
 ## Validate before approval
 
 1. Read the artifact and validate the artifact's scope, source provenance,
-   destinations, and each requested target. Correct an invalid plan in the
+   destinations, and each requested target. Every execution row must derive
+   from a decision in the artifact's Decisions section; a row with no parent
+   decision is invalid. Correct an invalid plan in the
    artifact only with the caller's direction; do not silently invent a new
    destination.
 2. Classify each row as ready, blocked, or needing a narrower decision. Present
    the actual changes, raw source staging, and tasks that execution would make.
+   Inline-rejected candidates need no per-item confirmation — approval of the
+   plan is their explicit discard.
 3. Obtain explicit approval before mutations. In HITL, `research-absorb <file>
    and apply all` is sufficient approval only after the caller has seen the
    validated plan. In runtime use, post the artifact link, summary, and its

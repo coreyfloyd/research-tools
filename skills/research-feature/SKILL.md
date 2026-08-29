@@ -37,7 +37,7 @@ Validate `~/.config/research-tools/profile.md` with `../../scripts/validate_prof
 
 ## Research artifact
 
-Always write a durable artifact using [the shared research artifact contract](../research-absorb/references/artifact-contract.md). The feature comparison below supplies the findings section; add source URLs, scope/recency, evidence gaps, and a **Proposed distribution plan**. At completion, report the artifact path and plan. The caller may invoke `research-absorb`; do not distribute or mutate a project directly.
+Always write a durable artifact using [the shared research artifact contract](../research-absorb/references/artifact-contract.md). The feature comparison below supplies the findings section; add source URLs, scope/recency, evidence gaps, and a **Decisions** section with its execution appendix. At completion, report the artifact path and plan. The caller may invoke `research-absorb`; do not distribute or mutate a project directly.
 
 ## Findings format
 

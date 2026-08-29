@@ -27,7 +27,7 @@ Prefer primary sources. Distinguish source-grounded findings from reasonable inf
 
 ## Artifact
 
-Write one durable artifact using [the shared research artifact contract](../research-absorb/references/artifact-contract.md). It must include the research question, source inventory and notebook ID, findings, claim verification, contradictions, gaps, and a **Proposed distribution plan**.
+Write one durable artifact using [the shared research artifact contract](../research-absorb/references/artifact-contract.md). It must include the research question, source inventory and notebook ID, findings, claim verification, contradictions, gaps, and a **Decisions** section with its execution appendix.
 
 Optional NotebookLM outputs such as reports, tables, or mind maps support the artifact; do not substitute them for it. Store generated files only in canonical `output/`, not scratch.
 
