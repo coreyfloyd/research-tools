@@ -27,7 +27,7 @@ After installation, start with `research-tools-set-up`. It walks you through the
 knowledge-store structure, local policy, and follow-up routing, then shows the
 complete proposed configuration before creating or changing anything.
 
-This is mostly assembly work. It stands on excellent tools others built — [Gemini Notebook][8] for source-grounded synthesis, [notebooklm-py][4] for agent access to it, [yt-dlp][5] and [Firecrawl][9] for source gathering, Apple Speech for transcription, and [Obsidian][7] for browsing the result — and the wiki design is inspired by [Andrej Karpathy's LLM Wiki gist][1]. What `research-tools` adds is the connective tissue: a set of skills that wrap these pieces into convenient, repeatable workflows so knowledge gets captured and your research isn’t lost or underutilized.
+The system stands on excellent tools others built — [Gemini Notebook][8] for source-grounded synthesis, [notebooklm-py][4] for agent access to it, [yt-dlp][5] and [Firecrawl][9] for source gathering, Apple Speech for transcription, and [Obsidian][7] for browsing the result — and the wiki design is inspired by [Andrej Karpathy's LLM Wiki gist][1]. What `research-tools` contributes is the system that makes them work as one: the contracts that define how evidence becomes durable knowledge, the decision discipline that makes every report end in choices you can act on rather than a summary you file away, and the lifecycle guarantees that ensure nothing you research is lost, orphaned, or left half-filed. The tools gather and ground the evidence; this system determines what happens to it.
 
 ## Research skills
 
@@ -36,15 +36,15 @@ There are three general-purpose skills to get most research questions started:
 | Skill              | Use it when                                                                                         | Result and next step                                                                                            |
 | ------------------ | --------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | `research-quick`   | You need a cited answer to a general question.                                                      | Returns findings inline. No notebook or artifact workflow.                                                      |
-| `research-sources` | You already have URLs, files, media, a source collection, or a named target to analyze.             | Produces a source-grounded artifact with a proposed distribution plan. Review it, then use `research-absorb`.   |
-| `research-topic`   | You need substantial topic-first research, persistent sources, gap filling, and claim verification. | Produces a Gemini Notebook-backed artifact with a proposed distribution plan. Review it, then use `research-absorb`. |
+| `research-sources` | You already have URLs, files, media, a source collection, or a named target to analyze.             | Produces a source-grounded artifact ending in the decisions it raises. Review them, then use `research-absorb`.   |
+| `research-topic`   | You need substantial topic-first research, persistent sources, gap filling, and claim verification. | Produces a Gemini Notebook-backed artifact ending in the decisions it raises. Review them, then use `research-absorb`. |
 
 
 In addition, there are three research skills for specific domains:
 
 | Skill               | Use it when                                                                                                     | Result and next step                                                                                     |
 | ------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `research-feature`  | You need competitor UX, established patterns, user expectations, or platform conventions before feature design. | Produces a comparison artifact with a proposed distribution plan. Review it, then use `research-absorb`. |
+| `research-feature`  | You need competitor UX, established patterns, user expectations, or platform conventions before feature design. | Produces a comparison artifact ending in the decisions it raises. Review them, then use `research-absorb`. |
 | `research-feedback` | An adoption, purchase, upgrade, or wait decision depends on current community experience.                       | Produces a sentiment-weighted artifact plus communities to watch. Review it, then use `research-absorb`. |
 | `research-dev`      | You are investigating a bug, API behavior, library, or implementation approach.                                 | Returns diagnoses, competing explanations, and sources inline.                                           |
 
@@ -122,13 +122,20 @@ capture task.
 question or supplied evidence
   -> research-sources | research-topic | research-feature | research-feedback
   -> durable research artifact in output/
-  -> review its proposed distribution plan
+  -> review its decisions: Act (change a system you run) and Keep (persist knowledge)
   -> research-absorb approval gate
   -> integrate | update named target | file follow-up task | discard
   -> delete the artifact after every row reaches a terminal disposition
 ```
 
-These four skills share the [research artifact contract][3].
+These four skills share the [research artifact contract][3]. An artifact
+separates findings about the sources from an applicability section that
+measures the evidence against your own systems, and both feed the decisions
+the report exists to enable: **Act** — does this change a system you run
+(your agent harness, a workflow, a standing document) — with options,
+tradeoffs, and a recommendation; and **Keep** — what knowledge persists, with
+the cost of skipping each item. Adoption decisions about third-party work
+require real-world usage and sentiment evidence, not just the source itself.
 The artifact is durable enough to support review and execution, but it is
 coordination material rather than a permanent archive.
 
@@ -175,7 +182,7 @@ Use research-sources to analyze these URLs, identify evidence gaps, and write
 the durable artifact proposed by the skill.
 
 Use research-topic to investigate this question deeply, verify the major
-claims, and produce a proposed distribution plan.
+claims, and end with the decisions the evidence raises.
 
 Use research-feature to compare how established podcast apps handle this
 interaction before we design it.
