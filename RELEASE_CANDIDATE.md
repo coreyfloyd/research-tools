@@ -52,8 +52,9 @@ and upgrade contracts are unchanged from `0.3.0`.
 - `swift test` in `skills/transcribe/tools/apple-speech`
 - `git diff --check`
 
-Verification results for the final release commit are recorded below after
-publication.
+On 2026-08-29, all three shell suites, the five Apple Speech tests, and
+`git diff --check` passed from the clean, pushed release commit
+`51c90412810fff2c9ab582528235dd841de1aa2b` before tagging.
 
 ## Release-note draft
 
@@ -79,21 +80,27 @@ Profiles and installation are unchanged.
 
 ## Publication checklist
 
-- [ ] Commit the complete candidate and push `main`.
-- [ ] Capture the final commit in the release-session evidence and rerun every
+- [x] Commit the complete candidate and push `main`.
+- [x] Capture the final commit in the release-session evidence and rerun every
   verification command from that exact clean commit.
-- [ ] Follow `RELEASING.md` to create and push the annotated `v0.4.1` tag.
-- [ ] Build, sign, and locally verify the four release assets.
-- [ ] Publish the GitHub release with the reviewed notes above.
-- [ ] Redownload and verify the public assets.
-- [ ] Record the final commit, release URL, and public-asset verification
+- [x] Follow `RELEASING.md` to create and push the annotated `v0.4.1` tag.
+- [x] Build, sign, and locally verify the four release assets.
+- [x] Publish the GitHub release with the reviewed notes above.
+- [x] Redownload and verify the public assets.
+- [x] Record the final commit, release URL, and public-asset verification
   below in a post-publication follow-up commit.
 
 ## Publication record
 
-Pending publication.
+- Target commit: `51c90412810fff2c9ab582528235dd841de1aa2b`
+- Tag: annotated `v0.4.1`, resolving to the target commit above
+- Release URL:
+  <https://github.com/coreyfloyd/research-tools/releases/tag/v0.4.1>
+- Published asset verification: completed 2026-08-29; all four expected assets
+  were downloaded, the public key byte-matched the repository key, and the
+  detached signature and SHA-256 checksum passed verification.
 
 ## Release status
 
-Versions `0.1.0`, `0.2.0`, `0.3.0`, and `0.4.0` are published. `0.4.1` is in
-candidate review.
+Versions `0.1.0` through `0.4.1` are published. The `v0.4.1` public assets
+were downloaded and verified after publication.
