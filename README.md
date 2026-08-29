@@ -138,6 +138,7 @@ output/2026-08-28-example.md
 ├── Applicability          # the evidence measured against your own systems
 ├── Decisions              # what the report exists to enable (below)
 ├── Sources and provenance # supplied + discovered sources, notebook ID
+├── Search record          # what was searched, what came back empty, what was skipped
 ├── Evidence gaps          # what remains unanswered, and what would close it
 └── Execution appendix     # machine-actionable rows for research-absorb
 ```

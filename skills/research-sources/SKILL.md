@@ -31,7 +31,7 @@ For supplied audio or video, invoke `transcribe` to choose the input route. Pref
 
 ## Research artifact
 
-Write one durable output using [the shared research artifact contract](../research-absorb/references/artifact-contract.md): question/scope, source findings, applicability against the user's existing systems, decisions, source provenance, and evidence gaps. If evidence was improved, record every added source and the precise gap it closed.
+Write one durable output using [the shared research artifact contract](../research-absorb/references/artifact-contract.md): question/scope, source findings, applicability against the user's existing systems, decisions, source provenance, the search record, and evidence gaps. If evidence was improved, record every added source and the precise gap it closed.
 
 Before writing the decisions, apply the contract's evidence-sufficiency check: when a decision asks whether to adopt or act on supplied third-party work, the supplied source alone cannot answer it — use **Improve evidence** to gather real-world usage, sentiment, and maintenance signals, bounded to what would change the choice. This is not a topic search; it is the smallest evidence set that makes the decision choosable.
 
