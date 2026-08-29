@@ -22,6 +22,26 @@ fingerprint is stored in `RELEASE_SIGNING_FINGERPRINT`; the matching public key
 is `keys/research-tools-release.asc`. Never replace that public key as part of a
 routine release. Key rotation requires a separately reviewed transition.
 
+## Signing is a manual maintainer step
+
+**The maintainer signs. An agent must never attempt it.** Signing is the one
+step in this runbook that is not delegable: it is what binds a human decision to
+the published artifact, and an agent that could sign unattended would remove that
+binding.
+
+An agent running this runbook stops at the build-and-sign step, hands the exact
+command to the maintainer, and resumes at verification once the signed assets
+exist. This is a deliberate gate, not an environment limitation to work around.
+Do not attempt `gpg --pinentry-mode loopback`, do not pipe a passphrase from a
+file or environment variable, and do not propose installing a GUI pinentry so the
+prompt can be answered from an agent session. Every one of those defeats the
+gate.
+
+Mechanically, the signing key's passphrase is held by a TTY-bound pinentry, so an
+agent session has no path to it and the attempt fails with
+`gpg: signing failed: Inappropriate ioctl for device`. Treat that message as the
+gate working, not as a problem to solve.
+
 ## Prerequisites
 
 - Run from the repository root on a trusted machine with the release secret key
@@ -109,12 +129,24 @@ release-integrity incident requiring an explicit maintainer decision.
 
 ## Build, sign, and verify
 
-Build only after the clean checkout, pushed commit, and remote tag agree:
+Build only after the clean checkout, pushed commit, and remote tag agree.
+
+**Maintainer runs this step** — it signs, and per the signing gate above an agent
+must not run it. Run it from an interactive terminal so pinentry can prompt:
 
 ```bash
+export GPG_TTY="$(tty)"
 FINGERPRINT="$(tr -d '[:space:]' < RELEASE_SIGNING_FINGERPRINT)"
 RESEARCH_TOOLS_GPG_KEY="$FINGERPRINT" bash scripts/build-release.sh dist
+```
 
+An agent driving the release stops here, hands the maintainer the command above,
+and waits for the three `dist/` files to exist before continuing. Everything from
+verification onward is agent-safe:
+
+```bash
+VERSION_VALUE="$(tr -d '[:space:]' < VERSION)"
+FINGERPRINT="$(tr -d '[:space:]' < RELEASE_SIGNING_FINGERPRINT)"
 bash scripts/verify-release.sh \
   "dist/research-tools-$VERSION_VALUE.tar.gz" \
   keys/research-tools-release.asc \
