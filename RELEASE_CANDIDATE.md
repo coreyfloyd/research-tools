@@ -2,36 +2,44 @@
 
 ## Scope
 
-`0.4.0` release of the research and knowledge system. It requires research
-producers to propose named referents in the artifact distribution plan,
-carries upstream disposition decisions into wiki compilation instead of
-re-deriving them, slims and de-slops the skill set for cross-runtime
-portability, reworks the README around Markdown output and Gemini Notebook
-grounding, and makes the release leakage guards fail closed.
+`0.4.1` release of the research and knowledge system. It rewrites the shared
+research artifact contract around the decisions the user must make: a new
+required report shape, a two-class decision taxonomy, an evidence-sufficiency
+rule for adoption decisions, defined trial options, and demotion of the
+mechanics table to an execution appendix.
 
 ## Included
 
-- **Named referents in the artifact contract**: evidence that establishes a
-  person, organization, product, or concept as a substantive subject now emits
-  its own distribution-plan row from the producer, which holds both the
-  evidence and the authority to propose it. `knowledge-capture` applies the
-  same bar to conversation subjects.
-- **Upstream disposition carried into compilation**: `research-to-wiki`
-  honors topic assignment, approved named referents, and page conventions
-  decided by `research-absorb` or `knowledge-capture`; it re-derives routing
-  only on direct invocation with no upstream plan. The former "blind compile"
-  stance is reframed as draft-from-sources-first, preserving the
-  anti-anchoring rule (draft before reading existing wiki synthesis).
-- **Skill slimming and portability**: stale references removed
-  (`research`, `content-research-writer`, `/dev-research`), Claude-Code tool
-  names replaced with portable wording, external-skill references qualified,
-  curly punctuation normalized, and the older research skills trimmed of
-  filler while preserving procedures, tables, and output formats.
-- **README rework**: Markdown-files-on-disk framing, wiki index files,
-  Gemini Notebook (formerly NotebookLM) grounding rationale, and tool-assembly
-  credits.
-- **Release-guard hardening**: `tests/test-contracts.sh` leakage scans fail
-  closed with POSIX grep instead of passing vacuously when `rg` is absent.
+- **Report shape**: required sections become question/scope, source findings,
+  applicability (evidence measured against the user's existing systems via
+  local policy), decisions, provenance, and evidence gaps. A sizing rule ties
+  report depth to the decision set — one finding per claim that changes a
+  decision; successful verification collapses to provenance lines.
+- **Decision taxonomy**: two classes. **Act** is triggered by operational
+  implication (any change to a system the user runs), not installability, and
+  carries 2–4 options with tradeoffs plus a recommendation. **Keep** items
+  state what is gained, what skipping loses, the step, confidence, and cost.
+  Rejected candidates are recorded inline in their parent decision; plan
+  approval covers discards, and no standalone drop-confirmation section
+  exists.
+- **Evidence sufficiency**: derived from the decision set, not source count.
+  An Act decision about adopting third-party work requires real-world usage,
+  sentiment, and maintenance evidence gathered through the producer's
+  evidence-improvement path. A "gather more evidence" recommendation means the
+  research stopped early, with named exceptions for first-party-only evidence
+  and cost exceeding stakes.
+- **Trial options**: a trial must use the source's own adoption mechanism
+  (deviating only for a stated risk) and define success criteria, a review
+  date, and a removal path; otherwise it is a deferral, not an option.
+- **Execution appendix**: the seven-column mechanics table is no longer the
+  decision surface. Rows are machine-actionable, keyed by decision ID, and
+  invalid without a parent decision. `research-absorb` validates that
+  derivation and treats plan approval as the explicit discard for
+  inline-rejected candidates.
+- **Producer alignment**: `research-sources` gains the evidence-sufficiency
+  trigger; `research-feature`, `research-feedback`, and `research-topic`
+  reference the Decisions section in place of the former "Proposed
+  distribution plan".
 
 No profile schema change: version-4 profiles remain valid, and installation
 and upgrade contracts are unchanged from `0.3.0`.
@@ -44,53 +52,48 @@ and upgrade contracts are unchanged from `0.3.0`.
 - `swift test` in `skills/transcribe/tools/apple-speech`
 - `git diff --check`
 
-On 2026-08-28, all three shell suites, the five Apple Speech tests, and
-`git diff --check` passed from the clean, pushed release commit
-`6e70198efd7206d661630933f8ead6c323909d9a` before tagging.
+Verification results for the final release commit are recorded below after
+publication.
 
 ## Release-note draft
 
-`v0.4.0` tightens how research findings reach durable knowledge. Research
-producers now propose named referents — people, organizations, products, and
-concepts that the evidence establishes as substantive subjects — as
-first-class rows in the artifact distribution plan, and `research-to-wiki`
-honors disposition decisions approved upstream instead of re-deriving them at
-compile time. The compile stance is now draft-from-sources-first: the compiler
-still drafts from raw sources before reading existing wiki synthesis, then
-compares for tensions and gaps.
+`v0.4.1` rewrites the research artifact contract around the decisions research
+exists to enable. Reports now separate findings about the sources from an
+applicability section that measures the evidence against the user's own
+systems, and report depth scales with the decision set rather than with source
+volume or analysis effort.
 
-The skills are also slimmed for cross-runtime portability: stale skill and
-tool references are gone, wording is runtime-neutral for Claude Code and
-Codex, and the README now leads with the plain-Markdown knowledge store and
-Gemini Notebook grounding. Release leakage guards fail closed. Profiles and
-installation are unchanged from `v0.3.0`.
+Decisions come in two classes: **Act** (does this change a system you run —
+triggered by operational implication, not installability) with 2–4 options,
+tradeoffs, and a recommendation; and **Keep** (what knowledge persists) with
+explicit skip-cost, confidence, and execution cost per item. Considered-and-
+rejected candidates stay inline, so approving the plan covers the discards.
+
+Adoption decisions about third-party work now require evidence the primary
+source cannot contain — real-world usage, sentiment, and maintenance signals —
+and a recommendation that amounts to "gather more evidence" is defined as
+research that stopped early. Trial options must name success criteria, a
+review date, and a removal path. The execution mechanics table moves to an
+appendix keyed by decision IDs for `research-absorb` to validate and run.
+Profiles and installation are unchanged.
 
 ## Publication checklist
 
-- [x] Commit the complete candidate and push `main` (completed 2026-08-28).
-- [x] Capture the final commit in the release-session evidence and rerun every
-  verification command from that exact clean commit (completed 2026-08-28).
-- [x] Follow `RELEASING.md` to create and push the annotated `v0.4.0` tag
-  (completed 2026-08-28).
-- [x] Build, sign, and locally verify the four release assets
-  (completed 2026-08-28).
-- [x] Publish the GitHub release with the reviewed notes above
-  (completed 2026-08-28).
-- [x] Redownload and verify the public assets (completed 2026-08-28).
-- [x] Record the final commit, release URL, and public-asset verification
-  below in a post-publication follow-up commit (completed 2026-08-28).
+- [ ] Commit the complete candidate and push `main`.
+- [ ] Capture the final commit in the release-session evidence and rerun every
+  verification command from that exact clean commit.
+- [ ] Follow `RELEASING.md` to create and push the annotated `v0.4.1` tag.
+- [ ] Build, sign, and locally verify the four release assets.
+- [ ] Publish the GitHub release with the reviewed notes above.
+- [ ] Redownload and verify the public assets.
+- [ ] Record the final commit, release URL, and public-asset verification
+  below in a post-publication follow-up commit.
 
 ## Publication record
 
-- Target commit: `6e70198efd7206d661630933f8ead6c323909d9a`
-- Tag: annotated `v0.4.0`, resolving to the target commit above
-- Release URL:
-  <https://github.com/coreyfloyd/research-tools/releases/tag/v0.4.0>
-- Published asset verification: completed 2026-08-28; all four expected assets
-  were downloaded, the public key byte-matched the repository key, and the
-  detached signature and SHA-256 checksum passed verification.
+Pending publication.
 
 ## Release status
 
-Versions `0.1.0`, `0.2.0`, `0.3.0`, and `0.4.0` are published. The `v0.4.0`
-public assets were downloaded and verified after publication.
+Versions `0.1.0`, `0.2.0`, `0.3.0`, and `0.4.0` are published. `0.4.1` is in
+candidate review.
