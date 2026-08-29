@@ -128,14 +128,26 @@ question or supplied evidence
   -> delete the artifact after every row reaches a terminal disposition
 ```
 
-These four skills share the [research artifact contract][3]. An artifact
-separates findings about the sources from an applicability section that
-measures the evidence against your own systems, and both feed the decisions
-the report exists to enable: **Act** — does this change a system you run
-(your agent harness, a workflow, a standing document) — with options,
-tradeoffs, and a recommendation; and **Keep** — what knowledge persists, with
-the cost of skipping each item. Adoption decisions about third-party work
-require real-world usage and sentiment evidence, not just the source itself.
+These four skills share the [research artifact contract][3]. Every artifact
+is one Markdown file in `output/` with the same documented structure:
+
+```text
+output/2026-08-28-example.md
+├── Question and scope     # the decision, target, or question addressed
+├── Source findings        # claims about the sources, with confidence
+├── Applicability          # the evidence measured against your own systems
+├── Decisions              # what the report exists to enable (below)
+├── Sources and provenance # supplied + discovered sources, notebook ID
+├── Evidence gaps          # what remains unanswered, and what would close it
+└── Execution appendix     # machine-actionable rows for research-absorb
+```
+
+The findings and applicability sections feed the decisions, which come in two
+classes: **Act** — does this change a system you run (your agent harness, a
+workflow, a standing document) — with options, tradeoffs, and a
+recommendation; and **Keep** — what knowledge persists, with the cost of
+skipping each item. Adoption decisions about third-party work require
+real-world usage and sentiment evidence, not just the source itself.
 The artifact is durable enough to support review and execution, but it is
 coordination material rather than a permanent archive.
 
