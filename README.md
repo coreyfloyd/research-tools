@@ -159,10 +159,46 @@ external sources and their provenance under `raw/research/`, then invokes
 `research-to-wiki` on that curated subset. The research report itself is never
 raw compiler input.
 
-`research-feature` and `research-feedback` sit outside this lifecycle. Each
-produces a deliverable defined in its own SKILL.md: a design input document
-filed in the project beside the requirements it answers, or a decision memo
-read once and then deleted or filed with the project it serves.
+### Deliverables that are not absorbed
+
+`research-feature` and `research-feedback` sit outside that lifecycle. Neither
+uses the artifact contract and neither goes through `research-absorb`; each
+writes a document with its own structure, defined in its own SKILL.md.
+
+`research-feature` produces a **design input document**. It feeds the feature's
+design and spec, and is written into the project repo beside the requirements
+it answers:
+
+```text
+# Feature research: <feature>
+├── Comparison           # per product: how it works, strengths, complaints
+│                        # plus a requirement x product matrix for 3+ products
+├── Common patterns      # what most products do, and why it works
+├── Novel approaches     # unusual approaches worth knowing about
+├── Table stakes         # what users expect based on market norms
+├── Platform conventions # HIG, Material, or other platform guidance
+├── Implications         # what this suggests for your design
+└── Sources              # ID, product, type, link, date, version observed
+```
+
+Every claim cites a source row by ID.
+
+`research-feedback` produces a **decision memo**. It answers one adopt, buy,
+upgrade, switch, or wait question, and is read once and then deleted, or filed
+with the project it serves:
+
+```text
+# <subject> — <decision>
+├── Bottom line          # the verdict, tied to your decision context
+├── Hard constraints     # requirements and compatibility gates, or "none"
+├── What people are saying   # recurring themes, dated against the version in scope
+├── Recurring issues, ranked # by frequency and severity
+├── Communities to watch # the venues worth following afterward
+└── Sources              # thread, date, poster's version, how it was read
+```
+
+**Communities to watch** always closes the body before the sources, because
+surfacing the right venues is a primary output rather than a footnote.
 
 ### Capture knowledge from a conversation
 

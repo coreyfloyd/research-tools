@@ -52,7 +52,10 @@ absorption lifecycle and define their own deliverables.
 - **One definition of the section list**: producer skills no longer restate it.
   Four partial copies had already drifted from the contract.
 - **Documentation alignment**: the README's artifact-structure diagram, its
-  workflow steps, and its decision-class prose match the restructured contract.
+  workflow steps, and its decision-class prose match the restructured contract,
+  and a new section shows the `research-feature` and `research-feedback`
+  document structures the same way — previously the README detailed one
+  deliverable shape and left the other two to the skill files.
 - **Feature and feedback research are deliverables, not handoffs**:
   `research-feature` writes a design input document into the project beside
   the requirements it answers, with a per-claim sources table. `research-feedback`
