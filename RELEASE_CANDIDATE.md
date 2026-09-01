@@ -68,11 +68,20 @@ absorption lifecycle and define their own deliverables.
 No profile schema change and no installation or upgrade change: version-4
 profiles remain valid and every `0.4.2` installation upgrades with no migration.
 
-One consumer-visible break. `research-absorb` now validates against a **How to
-Absorb** section, so a research artifact written under `0.4.2` or earlier — one
-carrying a **Decisions** section — is no longer a valid input. Absorb any
-in-flight artifact before upgrading, or reshape it to the new contract
-afterward. Artifacts produced by `0.5.0` are unaffected.
+Two consumer-visible breaks, both affecting artifacts already sitting in
+`output/` rather than the installation itself.
+
+`research-absorb` now validates against a **How to Absorb** section, so a
+research artifact written under `0.4.2` or earlier — one carrying a
+**Decisions** section — is no longer a valid input. Absorb any in-flight
+artifact before upgrading, or reshape it to the new contract afterward.
+
+`research-feature` and `research-feedback` output is no longer absorbable at
+all. Their `0.4.2` artifacts went through `research-absorb`; their `0.5.0`
+deliverables are read and filed or deleted. An in-flight artifact from either
+skill should be absorbed before upgrading, or handled by hand afterward.
+
+Artifacts produced by `0.5.0` are unaffected by both.
 
 ## Verification
 
