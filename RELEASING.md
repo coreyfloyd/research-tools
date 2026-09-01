@@ -99,6 +99,70 @@ contain its own SHA, so write the final commit into `RELEASE_CANDIDATE.md` only
 in the post-publication follow-up commit. If any tracked content changes before
 tagging, commit and push it, then rerun the checks against the new commit.
 
+## Sweep the documentation before tagging
+
+The test suites verify behavior. They verify nothing about whether the prose
+still describes it. The `0.5.0` release turned up four documentation defects
+with every suite green: a README section list naming sections the contract had
+renamed, a compatibility section claiming one break when there were two, a
+README that documented one deliverable's structure in full and left two others
+to a prose sentence, and a release-note draft contradicting the compatibility
+section beside it.
+
+Only the first was caught before tagging. The structural-parity defect cost a
+tag deletion and a second signing round from the maintainer; the other two were
+caught late enough to be luck rather than process. Each was findable by reading
+the documentation against the diff, which is what this step is.
+
+Run this sweep against the candidate commit, before pushing the tag. It is a
+required step, not a courtesy pass.
+
+**Sweep mechanically; do not re-read.** Re-reading a document finds what you
+expect it to say. Extract each claim-bearing construct and check it against
+the source of truth.
+
+1. **Renamed or removed identifiers.** For every section name, field name, or
+   term the release changes, grep the whole tree for the *old* name. A hit
+   outside `RELEASE_CANDIDATE.md` is drift; a hit inside it is usually
+   deliberate history, so read it rather than assuming either way.
+
+   ```bash
+   git diff --stat "$(git describe --tags --abbrev=0 HEAD^)"..HEAD
+   grep -rn -E '<old name>|<other old name>' --include='*.md' .
+   ```
+
+2. **Counting and absolute claims.** Grep for `never`, `always`, `only`, `all`,
+   `cannot`, `unique`, and number words, then check each against what the
+   release actually does. "One break" was wrong the moment a second one landed.
+
+   ```bash
+   grep -rn -E '\b(one|two|three|only|never|always|all|cannot|unique)\b' \
+     README.md RELEASE_CANDIDATE.md
+   ```
+
+3. **Internal agreement within `RELEASE_CANDIDATE.md`.** Scope, Included,
+   Compatibility, and the release-note draft each restate the same facts for a
+   different audience. Read them against each other, not in sequence — the
+   draft is published verbatim, so a contradiction there ships.
+
+4. **Structural parity.** When the release changes what a skill produces, check
+   that the README documents the new shape at the same depth as the shapes
+   already there. A prose sentence beside a full section diagram reads as an
+   afterthought and hides the change the release exists to make.
+
+5. **Stale links and paths.** Confirm every relative link still resolves after
+   any file moves in this release.
+
+   ```bash
+   grep -rn -oE '\]\([^)#][^)]*\)' README.md | sed 's/.*(\(.*\))/\1/' \
+     | grep -v '^http' | while read -r f; do test -e "$f" || echo "missing: $f"; done
+   ```
+
+Fix anything the sweep finds, commit, push, and rerun both the suites and this
+sweep against the new commit. The sweep is cheap before the tag exists and
+expensive afterward: a tag that has been published cannot move, and one that
+has not still costs a deletion and another signing round from the maintainer.
+
 ## Push and tag the exact commit
 
 Push `main` first and confirm the remote branch resolves to the same commit:
