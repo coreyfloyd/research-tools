@@ -77,7 +77,7 @@ Run searches in parallel.
 
 ## Output
 
-Always write a durable artifact using [the shared research artifact contract](../research-absorb/references/artifact-contract.md), including the format below, all source URLs, recency/version scope, evidence gaps, and a **Decisions** section with its execution appendix. Use the local profile's destination. Report the artifact path and plan; the caller may then invoke `research-absorb`.
+Always write a durable artifact using [the shared research artifact contract](../research-absorb/references/artifact-contract.md), which defines the artifact's sections. The format below supplies its Source Summary; record source URLs and recency or version scope in the Evidence Record. Use the local profile's destination. Report the artifact path and plan; the caller may then invoke `research-absorb`.
 
 ```
 **[Subject]** — [1-2 sentence overall read, with the decision verdict up front]

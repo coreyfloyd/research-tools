@@ -31,10 +31,10 @@ For supplied audio or video, invoke `transcribe` to choose the input route. Pref
 
 ## Research artifact
 
-Write one durable output using [the shared research artifact contract](../research-absorb/references/artifact-contract.md): question/scope, source findings, applicability against the user's existing systems, decisions, source provenance, the search record, and evidence gaps. If evidence was improved, record every added source and the precise gap it closed.
+Write one durable output using [the shared research artifact contract](../research-absorb/references/artifact-contract.md), which defines the artifact's sections. If evidence was improved, record every added source and the precise gap it closed.
 
-Before writing the decisions, apply the contract's evidence-sufficiency check: when a decision asks whether to adopt or act on supplied third-party work, the supplied source alone cannot answer it — use **Improve evidence** to gather real-world usage, sentiment, and maintenance signals, bounded to what would change the choice. This is not a topic search; it is the smallest evidence set that makes the decision choosable.
+Before writing How to Absorb, apply the contract's evidence-sufficiency check: when a decision asks whether to adopt or act on supplied third-party work, the supplied source alone cannot answer it — use **Improve evidence** to gather real-world usage, sentiment, and maintenance signals, bounded to what would change the choice. This is not a topic search; it is the smallest evidence set that makes the decision choosable.
 
-When the current runtime is blocked from a channel the evidence needs (a community forum, a login-walled site), check the profile's local policy for a blocked-channel route — an alternate retrieval path, such as delegating the read to another agent runtime that has access — before accepting reduced coverage. Record the channel, the route taken or skipped, and why in the artifact's search record.
+When the current runtime is blocked from a channel the evidence needs (a community forum, a login-walled site), check the profile's local policy for a blocked-channel route — an alternate retrieval path, such as delegating the read to another agent runtime that has access — before accepting reduced coverage. Record the channel, the route taken or skipped, and why in the artifact's Evidence Record.
 
 At completion, report the artifact path and its proposed plan. The caller may then invoke `research-absorb`; do not invoke it automatically or treat the artifact as raw wiki input.
