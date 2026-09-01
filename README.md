@@ -122,7 +122,7 @@ capture task.
 question or supplied evidence
   -> research-sources | research-topic | research-feature | research-feedback
   -> durable research artifact in output/
-  -> review its decisions: Act (change a system you run) and Keep (persist knowledge)
+  -> review its absorption plan: Actions, Wiki Additions, and Document Updates
   -> research-absorb approval gate
   -> integrate | update named target | file follow-up task | discard
   -> delete the artifact after every row reaches a terminal disposition
@@ -133,21 +133,23 @@ is one Markdown file in `output/` with the same documented structure:
 
 ```text
 output/2026-08-28-example.md
-├── Question and scope     # the decision, target, or question addressed
-├── Source findings        # claims about the sources, with confidence
-├── Applicability          # the evidence measured against your own systems
-├── Decisions              # what the report exists to enable (below)
-├── Sources and provenance # supplied + discovered sources, notebook ID
-├── Search record          # what was searched, what came back empty, what was skipped
-├── Evidence gaps          # what remains unanswered, and what would close it
-└── Execution appendix     # machine-actionable rows for research-absorb
+├── Question and Scope   # the decision, target, or question addressed
+├── Source Summary       # what the sources actually say, in enough detail to judge
+├── Source Assessment    # whether those sources can be trusted
+├── How to Absorb        # what the report exists to enable (below)
+├── Evidence Record      # one entry per source, plus what was searched and skipped
+├── Evidence Gaps        # what remains unanswered, and the follow-up that closes it
+└── Execution Appendix   # machine-actionable rows for research-absorb
 ```
 
-The findings and applicability sections feed the decisions, which come in two
-classes: **Act** — does this change a system you run (your agent harness, a
-workflow, a standing document) — with options, tradeoffs, and a
-recommendation; and **Keep** — what knowledge persists, with the cost of
-skipping each item. Adoption decisions about third-party work require
+The summary and assessment sections feed the absorption plan, whose items are
+split by what the result touches: **Actions** — anything that is not a document,
+such as installing a skill or changing a workflow; **Wiki Additions** — the
+compiled knowledge base only; and **Document Updates** — context files, project
+briefs, standing documents, repository docs. Every item states what exists now,
+the change, why it matters, and how much to trust it, with options and a
+recommendation when a genuine choice exists. Nothing may be merely staged:
+absorb it or discard it. Adoption decisions about third-party work require
 real-world usage and sentiment evidence, not just the source itself.
 The artifact is durable enough to support review and execution, but it is
 coordination material rather than a permanent archive.
