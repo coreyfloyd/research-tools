@@ -94,6 +94,10 @@ Artifacts produced by `0.5.0` are unaffected by both.
 - `swift test` in `skills/transcribe/tools/apple-speech`
 - `git diff --check`
 
+On 2026-08-31, all three shell suites, the five Apple Speech tests, and
+`git diff --check` passed from the clean, pushed release commit
+`9e014c263cb382e897e92b0401cfef7f5756963e` before tagging.
+
 ## Release-note draft
 
 `v0.5.0` restructures the research artifact around three questions: what the
@@ -129,28 +133,46 @@ Feature research is a design input document written into the project beside
 its requirements; feedback research is a decision memo read once and deleted,
 or filed with the project it serves. Neither goes through `research-absorb`.
 
-Profiles, installation, and upgrade are unchanged from `0.4.2`. One break:
-`research-absorb` validates against **How to Absorb**, so an un-absorbed
-artifact written under `0.4.2` is no longer valid input — absorb it before
-upgrading, or reshape it afterward.
+Profiles, installation, and upgrade are unchanged from `0.4.2`. Two breaks,
+both affecting artifacts already sitting in `output/` rather than the
+installation itself. `research-absorb` validates against **How to Absorb**, so
+an un-absorbed artifact written under `0.4.2` is no longer valid input. And
+`research-feature` and `research-feedback` output is no longer absorbable at
+all — their `0.4.2` artifacts went through `research-absorb`, their `0.5.0`
+deliverables are read and filed or deleted. Absorb any in-flight artifact
+before upgrading, or handle it by hand afterward.
 
 ## Publication checklist
 
-- [ ] Commit the complete candidate and push `main`.
-- [ ] Capture the final commit in the release-session evidence and rerun every
+- [x] Commit the complete candidate and push `main`.
+- [x] Capture the final commit in the release-session evidence and rerun every
   verification command from that exact clean commit.
-- [ ] Follow `RELEASING.md` to create and push the annotated `v0.5.0` tag.
-- [ ] Build, sign, and locally verify the four release assets.
-- [ ] Publish the GitHub release with the reviewed notes above.
-- [ ] Redownload and verify the public assets.
-- [ ] Record the final commit, release URL, and public-asset verification
+- [x] Follow `RELEASING.md` to create and push the annotated `v0.5.0` tag.
+- [x] Build, sign, and locally verify the four release assets.
+- [x] Publish the GitHub release with the reviewed notes above.
+- [x] Redownload and verify the public assets.
+- [x] Record the final commit, release URL, and public-asset verification
   below in a post-publication follow-up commit.
 
 ## Publication record
 
-Pending. Recorded in a post-publication follow-up commit.
+- Target commit: `9e014c263cb382e897e92b0401cfef7f5756963e`
+- Tag: annotated `v0.5.0`, resolving to the target commit above
+- Release URL:
+  <https://github.com/coreyfloyd/research-tools/releases/tag/v0.5.0>
+- Published asset verification: completed 2026-08-31; all four expected assets
+  were downloaded, the public key byte-matched the repository key, the detached
+  signature and SHA-256 checksum passed verification, and the extracted archive
+  compared equal to `git archive v0.5.0`.
+- Tag history: `v0.5.0` was created and deleted twice before publication, at
+  `7f7ddce` and `b22eb4b`, because further changes landed after each tagging.
+  No GitHub release existed at either point, and `gh release view` was re-run
+  immediately before each deletion. The published tag has not moved.
+- Release-note correction: the draft above originally said "One break" while
+  the Compatibility section said two. The published notes carry the corrected
+  two-break text; the draft is corrected here to match.
 
 ## Release status
 
-Versions `0.1.0` through `0.4.2` are published. `0.5.0` is an unpublished
-candidate.
+Versions `0.1.0` through `0.5.0` are published. The `v0.5.0` public assets
+were downloaded and verified after publication.
