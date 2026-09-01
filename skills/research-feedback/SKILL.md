@@ -7,7 +7,7 @@ description: "Research lived community experience before adopting, upgrading, bu
 
 Community-sentiment recon. Answers "what is it actually like to use/run/own this, according to the people doing it right now?" and identifies which communities to watch. It weights lived experience over authority, always checks Reddit, and always surfaces a recommended set of topic-appropriate forums and user groups.
 
-Before checking local knowledge, choosing the durable report location, or running distribution, validate `~/.config/research-tools/profile.md` with `../../scripts/validate_profile.py`, resolved relative to this skill. If it is missing or invalid, stop and use `research-tools-set-up`; do not choose a fallback output path. Any proposed follow-up task uses `artifact_followup_destination`, never the wiki-maintenance route.
+Before checking local knowledge or choosing where the memo is written, validate `~/.config/research-tools/profile.md` with `../../scripts/validate_profile.py`, resolved relative to this skill. If it is missing or invalid, stop and use `research-tools-set-up`; do not choose a fallback output path. Any proposed follow-up task uses `artifact_followup_destination`, never the wiki-maintenance route.
 
 When a user supplies an audio or video review, interview, or discussion as evidence, invoke `transcribe` before analysis. It only resolves the input; this skill still owns scope and the durable output.
 
@@ -77,26 +77,39 @@ Run searches in parallel.
 
 ## Output
 
-Always write a durable artifact using [the shared research artifact contract](../research-absorb/references/artifact-contract.md), which defines the artifact's sections. The format below supplies its Source Summary; record source URLs and recency or version scope in the Evidence Record. Use the local profile's destination. Report the artifact path and plan; the caller may then invoke `research-absorb`.
+Write a decision memo. It exists to be read once and acted on, not absorbed
+into a knowledge base: `research-absorb` does not apply. Placement: when the
+subject is a competitor or the research otherwise serves a project, write the
+memo into that project at the path the caller names; otherwise write it to the
+local profile's destination, where it is deleted once the decision is made.
+Report the path at completion.
 
-```
-**[Subject]** — [1-2 sentence overall read, with the decision verdict up front]
+```markdown
+# [Subject] — [decision: install / buy / adopt / wait / switch]
+Scope: [version or date range the feedback covers]   Researched: [date]
 
-🟢/🟡/🔴 **Bottom line**: [recommendation tied to the user's decision context]
+🟢/🟡/🔴 **Bottom line**: [verdict tied to the user's decision context]
 
-**Hard constraints** (only if any)
-- [Requirement / compatibility / gate] ([official source](url))
+## Hard constraints
+- [Requirement / compatibility / gate] ([official source](url)) — or "none"
 
-**What people are saying**
-- [Recurring theme — how widespread] — [r/sub or forum](url)
+## What people are saying
+- [Recurring theme — how widespread, dated against the version in scope] — [r/sub or forum](url)
 - [Contrarian / positive signal] — [source](url)
 
-**Recurring issues, ranked**
-1. [Issue] — [frequency/severity note]
+## Recurring issues, ranked
+1. [Issue] — [frequency × severity note]
 
-**Communities to watch**
+## Communities to watch
 - [Venue] — [why / what's there] (url)
 - [User group / Discord / forum] — (url)
+
+## Sources
+- [Thread or page](url) — [date] — [poster's version] — [read via browser / Firecrawl / snippet only]
 ```
 
-Consolidate agreeing sources. Make conflicts explicit. Always end with **Communities to watch** — surfacing the right venues is a primary output of this skill.
+Consolidate agreeing sources. Make conflicts explicit. **Communities to watch**
+always closes the body, directly before **Sources** — surfacing the right venues
+is a primary output of this skill. When the decision should be revisited (a
+release ships, a beta exits), file that as a follow-up task through
+`artifact_followup_destination` and name it in the memo's last line.

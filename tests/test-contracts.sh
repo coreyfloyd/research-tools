@@ -74,6 +74,15 @@ for skill in research-sources research-topic research-feature research-feedback 
   grep -Fq 'artifact_followup_destination' "$ROOT/skills/$skill/SKILL.md" || exit 1
 done
 grep -Fq 'artifact_followup_destination' "$ROOT/skills/knowledge-capture/SKILL.md"
+# research-feature and research-feedback produce deliverables, not absorb handoffs.
+for skill in research-feature research-feedback; do
+  grep -Fq 'research-absorb` does not apply' "$ROOT/skills/$skill/SKILL.md" || exit 1
+  if grep -Fq 'artifact-contract.md' "$ROOT/skills/$skill/SKILL.md"; then exit 1; fi
+  if grep -Fq 'Findings format' "$ROOT/skills/$skill/SKILL.md"; then exit 1; fi
+done
+grep -Fq '## Sources' "$ROOT/skills/research-feature/SKILL.md"
+grep -Fq '## Communities to watch' "$ROOT/skills/research-feedback/SKILL.md"
+if grep -Fq 'research-feature, or research-feedback' "$ROOT/skills/research-absorb/SKILL.md"; then exit 1; fi
 for skill in research-to-wiki wiki-audit; do
   grep -Fq 'wiki_followup_destination' "$ROOT/skills/$skill/SKILL.md" || exit 1
 done

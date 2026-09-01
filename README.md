@@ -44,8 +44,8 @@ In addition, there are three research skills for specific domains:
 
 | Skill               | Use it when                                                                                                     | Result and next step                                                                                     |
 | ------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `research-feature`  | You need competitor UX, established patterns, user expectations, or platform conventions before feature design. | Produces a comparison artifact ending in the decisions it raises. Review them, then use `research-absorb`. |
-| `research-feedback` | An adoption, purchase, upgrade, or wait decision depends on current community experience.                       | Produces a sentiment-weighted artifact plus communities to watch. Review it, then use `research-absorb`. |
+| `research-feature`  | You need competitor UX, established patterns, user expectations, or platform conventions before feature design. | Produces a design input document filed with the project, beside the requirements it answers. Not absorbed. |
+| `research-feedback` | An adoption, purchase, upgrade, or wait decision depends on current community experience.                       | Produces a decision memo with communities to watch. Read it, act, delete it (or file it with the project it serves). Not absorbed. |
 | `research-dev`      | You are investigating a bug, API behavior, library, or implementation approach.                                 | Returns diagnoses, competing explanations, and sources inline.                                           |
 
 
@@ -120,7 +120,7 @@ capture task.
 
 ```text
 question or supplied evidence
-  -> research-sources | research-topic | research-feature | research-feedback
+  -> research-sources | research-topic
   -> durable research artifact in output/
   -> review its absorption plan: Actions, Wiki Additions, and Document Updates
   -> research-absorb approval gate
@@ -128,7 +128,7 @@ question or supplied evidence
   -> delete the artifact after every row reaches a terminal disposition
 ```
 
-These four skills share the [research artifact contract][3]. Every artifact
+These two skills share the [research artifact contract][3]. Every artifact
 is one Markdown file in `output/` with the same documented structure:
 
 ```text
@@ -158,6 +158,11 @@ If an approved row belongs in the wiki, `research-absorb` stages the selected
 external sources and their provenance under `raw/research/`, then invokes
 `research-to-wiki` on that curated subset. The research report itself is never
 raw compiler input.
+
+`research-feature` and `research-feedback` sit outside this lifecycle. Each
+produces a deliverable defined in its own SKILL.md: a design input document
+filed in the project beside the requirements it answers, or a decision memo
+read once and then deleted or filed with the project it serves.
 
 ### Capture knowledge from a conversation
 

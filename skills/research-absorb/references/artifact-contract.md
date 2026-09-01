@@ -1,8 +1,9 @@
 # Research artifact contract
 
-Every durable artifact produced by `research-sources`, `research-topic`,
-`research-feature`, or `research-feedback` is a transient, evidence-grounded
-handoff to `research-absorb`. It is not raw wiki input and it is not a final
+Every durable artifact produced by `research-sources` or `research-topic` is a
+transient, evidence-grounded handoff to `research-absorb`. (`research-feature`
+and `research-feedback` produce deliverables that are read and filed or
+deleted, not absorbed; each defines its own document in its SKILL.md.) It is not raw wiki input and it is not a final
 archive. Its purpose is to let the user make the decisions the evidence raises,
 then be executed and deleted.
 

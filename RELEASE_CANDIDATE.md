@@ -7,7 +7,8 @@ shared research artifact around three questions — what the sources say, whethe
 they can be trusted, and what to do with them — and replaces the two-class
 decision surface with three absorption classes split by what the result
 touches. `research-absorb` follows the restructured artifact and refuses
-staging as an outcome.
+staging as an outcome. `research-feature` and `research-feedback` leave the
+absorption lifecycle and define their own deliverables.
 
 ## Included
 
@@ -52,6 +53,15 @@ staging as an outcome.
   Four partial copies had already drifted from the contract.
 - **Documentation alignment**: the README's artifact-structure diagram, its
   workflow steps, and its decision-class prose match the restructured contract.
+- **Feature and feedback research are deliverables, not handoffs**:
+  `research-feature` writes a design input document into the project beside
+  the requirements it answers, with a per-claim sources table. `research-feedback`
+  writes a decision memo — bottom line, hard constraints, community read,
+  ranked issues, communities to watch, sources — that is read once and deleted,
+  or filed with the project it serves (competitor research). Neither uses the
+  shared artifact contract or `research-absorb`; each defines its document in
+  its own SKILL.md, so the section list still lives in exactly one place per
+  type.
 
 ## Compatibility
 
@@ -101,6 +111,11 @@ document that does.
 **Evidence Record** with one entry per source, so no retrieval fact is written
 twice. Every evidence gap must name the follow-up that would close it, including
 an explicit *none* with its reason.
+
+`research-feature` and `research-feedback` leave the absorption lifecycle.
+Feature research is a design input document written into the project beside
+its requirements; feedback research is a decision memo read once and deleted,
+or filed with the project it serves. Neither goes through `research-absorb`.
 
 Profiles, installation, and upgrade are unchanged from `0.4.2`. One break:
 `research-absorb` validates against **How to Absorb**, so an un-absorbed

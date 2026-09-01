@@ -1,6 +1,6 @@
 ---
 name: research-absorb
-description: Validate and execute the approved distribution plan in a durable research artifact. Use after research-sources, research-topic, research-feature, or research-feedback; not for capturing a chat session or routine task closeout.
+description: Validate and execute the approved distribution plan in a durable research artifact. Use after research-sources or research-topic; not for research-feature or research-feedback deliverables, capturing a chat session, or routine task closeout.
 ---
 
 # Research Absorb

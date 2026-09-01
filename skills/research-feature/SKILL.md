@@ -1,6 +1,6 @@
 ---
 name: research-feature
-description: "Research competitor UX and established patterns before feature design, producing a durable distribution-ready artifact. Use for 'how do other apps handle X?' or standard-pattern research."
+description: "Research competitor UX and established patterns before feature design, producing a design input document filed with the project. Use for 'how do other apps handle X?' or standard-pattern research."
 ---
 
 # Feature Research
@@ -11,12 +11,12 @@ When a supplied demo, talk, or video is material evidence, invoke `transcribe` t
 
 Firecrawl is a runtime-detected optional integration. Use it first for web search and page extraction when it is available. If it is unavailable or blocked for a source, use native web tools and state that fallback in the report.
 
-Validate `~/.config/research-tools/profile.md` with `../../scripts/validate_profile.py`, resolved relative to this skill, before selecting the durable output location. If it is missing or invalid, stop and use `research-tools-set-up`; do not choose a fallback output path. This skill is read-only except for its required research artifact. Any proposed follow-up task uses `artifact_followup_destination`, never the wiki-maintenance route.
+Validate `~/.config/research-tools/profile.md` with `../../scripts/validate_profile.py`, resolved relative to this skill, before writing the document. If it is missing or invalid, stop and use `research-tools-set-up`; do not choose a fallback output path. This skill is read-only except for its required research artifact. Any proposed follow-up task uses `artifact_followup_destination`, never the wiki-maintenance route.
 
 ## Execution Modes
 
 - **Current session** — create the durable artifact after research.
-- **Dispatched** — when an orchestrator needs the work off its context, pass the requirements and durable destination. The worker must still create the same artifact rather than leaving search dumps in scratch.
+- **Dispatched** — when an orchestrator needs the work off its context, pass the requirements and the destination path. The worker must still create the same artifact rather than leaving search dumps in scratch.
 
 ## What to Investigate
 
@@ -37,41 +37,56 @@ Validate `~/.config/research-tools/profile.md` with `../../scripts/validate_prof
 
 ## Research artifact
 
-Always write a durable artifact using [the shared research artifact contract](../research-absorb/references/artifact-contract.md), which defines the artifact's sections. The feature comparison below supplies its Source Summary; record scope and recency in the Evidence Record. At completion, report the artifact path and plan. The caller may invoke `research-absorb`; do not distribute or mutate a project directly.
+Write a design input document. It feeds the feature's design and spec and stays
+with the project: write it into the project repo at the path the caller names,
+beside the requirements it answers. When no project path is named, write it to
+the local profile's destination and say so. It is not absorbed into a knowledge
+base; `research-absorb` does not apply. Report the path at completion.
 
-## Findings format
+## Artifact body
 
 ```markdown
-## Feature Research: [Feature Name]
+# Feature research: [Feature name]
+Requirements: [link or path]   Platform: [iOS / macOS / web]   Researched: [date]
 
-### How Others Do It
+## Comparison
 
-**[Product A]**
+**[Product A]** (S1)
 - How it works: [description]
 - What works well: [strengths]
 - User complaints: [weaknesses]
 
-**[Product B]**
-- How it works: [description]
-- What works well: [strengths]
-- User complaints: [weaknesses]
+**[Product B]** (S2)
+- ...
 
-### Common Patterns
-- [Pattern 1]: Used by [products]. [Why it works.]
-- [Pattern 2]: Used by [products]. [Why it works.]
+| Requirement | Product A | Product B | Product C |
+|---|---|---|---|
+| [requirement] | [short value] | [short value] | [short value] |
 
-### Novel Approaches
-- [Approach]: [Product] does [X]. [Why it's interesting.]
+## Common patterns
+- [Pattern]: used by [products]. [Why it works.] (S1, S2)
 
-### User Expectations (Table Stakes)
-- [Feature users expect to exist based on market norms]
+## Novel approaches
+- [Approach]: [Product] does [X]. [Why it's interesting.] (S3)
 
-### Platform Conventions
-- [Relevant HIG/Material/platform guidelines]
+## Table stakes
+- [Feature users expect based on market norms] (S1, S4)
 
-### Summary
-[1-2 paragraphs synthesizing what the research suggests for our implementation]
+## Platform conventions
+- [HIG / Material / platform guideline] ([link](url))
+
+## Implications
+[What this suggests for our design; the text the spec draws on]
+
+## Sources
+| ID | Product | Type | Link | Date | Version observed |
+|----|---------|------|------|------|------------------|
+| S1 | [Product A] | official docs / review / user thread / hands-on / HIG | [label](url) | [date] | [version] |
 ```
+
+Include the requirement × product matrix when three or more products are
+compared; keep cell values short. Every claim in Comparison, Common patterns,
+Novel approaches, and Table stakes cites a Sources row by ID.
 
 ## Constraints
 
@@ -79,7 +94,7 @@ Always write a durable artifact using [the shared research artifact contract](..
 - **Evidence-based.** Cite specific products and specific behaviors. Don't generalize without examples.
 - **User perspective.** Focus on what works for users, not what's technically clever.
 - **Include negative signals.** What users complain about is as valuable as what they like.
-- **Disposition:** `research-absorb` owns approved downstream distribution; this skill produces its proposed plan.
+- **Placement:** the document lives with the project it serves; nothing is distributed elsewhere.
 
 ## When NOT to Use
 
