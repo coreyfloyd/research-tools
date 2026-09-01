@@ -16,7 +16,7 @@ use `artifact_followup_destination`, never the wiki-maintenance route.
 
 ## Interface
 
-Input: a single durable research artifact with a **Decisions** section and its execution appendix.
+Input: a single durable research artifact with a **How to Absorb** section and its execution appendix.
 Output: an approved execution summary that names the final disposition of every
 row, then no remaining artifact.
 
@@ -29,8 +29,9 @@ filed follow-up task should own.
 
 1. Read the artifact and validate the artifact's scope, source provenance,
    destinations, and each requested target. Every execution row must derive
-   from a decision in the artifact's Decisions section; a row with no parent
-   decision is invalid. Correct an invalid plan in the
+   from an item in the artifact's How to Absorb section; a row with no parent
+   item is invalid. A row whose only outcome is staging a source is invalid —
+   staging is not a terminal disposition. Correct an invalid plan in the
    artifact only with the caller's direction; do not silently invent a new
    destination.
 2. Classify each row as ready, blocked, or needing a narrower decision. Present
@@ -44,10 +45,13 @@ filed follow-up task should own.
 
 ## Execute an approved plan
 
-- For a wiki row, place the selected external source material and provenance in
-  canonical `raw/research/` when it is not already there, then invoke
-  `research-to-wiki` on that curated subset. Do not send the report itself to
-  the compiler.
+- Wiki Additions and Document Updates always execute inline during absorption;
+  they never file a task. Only an Action may be filed as a task for another
+  session, and only when its own item says so.
+- For a Wiki Addition, place the selected external source material and
+  provenance in canonical `raw/research/` when it is not already there, then
+  invoke `research-to-wiki` on that curated subset. Do not send the report
+  itself to the compiler.
 - Update an explicitly named target document only when the approved row permits
   it and the target's own rules allow the mutation.
 - File a research-derived follow-up task when the plan calls for future work.
