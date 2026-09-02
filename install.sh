@@ -110,12 +110,21 @@ os.replace(temporary, current)
 PY
 }
 
+# A stored manifest is current if it matches the new hash, and legacy if it
+# matches the hash the pre-#6 installer wrote (no Finder-dropping exclusion).
+# Every comparison of a stored manifest against its release goes through here
+# so the install path and --verify cannot disagree on what "valid" means.
+manifest_matches_stored() {
+  release="$1"
+  stored="$(cat "$release/manifest")"
+  [ "$(manifest_hash "$release")" = "$stored" ] || [ "$(manifest_hash_legacy "$release")" = "$stored" ]
+}
+
 valid_release() {
   release="$1"
   [ "$(dirname "$release")" = "$RELEASE_ROOT" ] || return 1
   [ -d "$release" ] && [ -f "$release/manifest" ] || return 1
-  stored="$(cat "$release/manifest")"
-  [ "$(manifest_hash "$release")" = "$stored" ] || [ "$(manifest_hash_legacy "$release")" = "$stored" ]
+  manifest_matches_stored "$release"
 }
 
 CURRENT_RELEASE=""
@@ -212,9 +221,7 @@ if [ "${1:-}" = "--verify" ]; then
   reject_retired_links
   verify_check "current pointer" "$CURRENT_LINK" test -L "$CURRENT_LINK"
   verify_check "current manifest" "$CURRENT_LINK/manifest" test -f "$CURRENT_LINK/manifest"
-  current_manifest_hash="$(manifest_hash "$CURRENT_LINK")"
-  recorded_manifest_hash="$(cat "$CURRENT_LINK/manifest")"
-  verify_check "current manifest hash" "$CURRENT_LINK" test "$current_manifest_hash" = "$recorded_manifest_hash"
+  verify_check "current manifest hash" "$CURRENT_LINK" manifest_matches_stored "$CURRENT_LINK"
   verify_check "example profile" "$CURRENT_LINK/profiles/karpathy-wiki.example.md" test -f "$CURRENT_LINK/profiles/karpathy-wiki.example.md"
   verify_check "profile validator" "$CURRENT_LINK/scripts/validate_profile.py" test -f "$CURRENT_LINK/scripts/validate_profile.py"
   for name in "$ROOT"/skills/*; do
@@ -299,11 +306,21 @@ if [ ! -d "$RELEASE_DIR" ]; then
 else
   EXISTING_MANIFEST=""
   [ -f "$RELEASE_DIR/manifest" ] && EXISTING_MANIFEST="$(cat "$RELEASE_DIR/manifest")"
-  if [ -n "$EXISTING_MANIFEST" ] && [ "$(manifest_hash "$RELEASE_DIR")" = "$SOURCE_HASH" ]; then
-    if [ "$EXISTING_MANIFEST" != "$SOURCE_HASH" ]; then
+  if [ "$(manifest_hash "$RELEASE_DIR")" = "$SOURCE_HASH" ]; then
+    if [ "$EXISTING_MANIFEST" = "$SOURCE_HASH" ]; then
+      rm -rf "$TEMP_RELEASE"
+    elif [ -n "$EXISTING_MANIFEST" ] && [ "$EXISTING_MANIFEST" = "$(manifest_hash_legacy "$RELEASE_DIR")" ]; then
+      # The stored value is exactly what the pre-#6 installer would have
+      # written for this directory, so rewriting it is a manifest-format
+      # migration, not an acceptance of an unknown value.
       printf '%s\n' "$SOURCE_HASH" > "$RELEASE_DIR/manifest"
+      echo "migrated release manifest: $RELEASE_DIR" >&2
+      rm -rf "$TEMP_RELEASE"
+    else
+      echo "release manifest mismatch: $VERSION content matches this checkout but its stored manifest does not (move or remove $RELEASE_DIR and re-run install.sh)" >&2
+      rm -rf "$TEMP_RELEASE"
+      exit 1
     fi
-    rm -rf "$TEMP_RELEASE"
   else
     echo "release version collision: $VERSION has different content" >&2
     diff <(manifest_listing "$ROOT") <(manifest_listing "$RELEASE_DIR") >&2 || true
