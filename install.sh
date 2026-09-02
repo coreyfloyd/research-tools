@@ -15,15 +15,18 @@ RELEASE_DIR="$RELEASE_ROOT/$VERSION"
 LOCK_DIR="$HOME/.config/research-tools/.install-lock"
 CLAUDE_DIR="$HOME/.claude/skills"
 CODEX_DIR="${CODEX_HOME:-$HOME/.codex}/skills"
-manifest_hash() {
+manifest_listing() {
   manifest_root="${1:-$ROOT}"
   (
     cd "$manifest_root"
     manifest_paths="skills contracts"
     [ ! -d profiles ] || manifest_paths="$manifest_paths profiles"
     [ ! -f scripts/validate_profile.py ] || manifest_paths="$manifest_paths scripts/validate_profile.py"
-    find $manifest_paths -type f -not -path '*/.build/*' -exec cksum {} \; | LC_ALL=C sort | cksum | awk '{print $1 ":" $2}'
+    find $manifest_paths -type f -not -path '*/.build/*' -not -path '*/.Ulysses-*/*' -not -name '.DS_Store' -not -name '.Ulysses-*' -exec cksum {} \; | LC_ALL=C sort
   )
+}
+manifest_hash() {
+  manifest_listing "${1:-$ROOT}" | cksum | awk '{print $1 ":" $2}'
 }
 SOURCE_HASH="$(manifest_hash)"
 
@@ -33,7 +36,7 @@ copy_release_tree() {
   mkdir -p "$destination"
   (
     cd "$source"
-    tar --exclude='.build' -cf - .
+    tar --exclude='.build' --exclude='.DS_Store' --exclude='.Ulysses-*' -cf - .
   ) | (
     cd "$destination"
     tar -xf -
@@ -285,6 +288,7 @@ if [ ! -d "$RELEASE_DIR" ]; then
 else
   if [ ! -f "$RELEASE_DIR/manifest" ] || [ "$(cat "$RELEASE_DIR/manifest")" != "$SOURCE_HASH" ] || [ "$(manifest_hash "$RELEASE_DIR")" != "$SOURCE_HASH" ]; then
     echo "release version collision: $VERSION has different content" >&2
+    diff <(manifest_listing "$ROOT") <(manifest_listing "$RELEASE_DIR") >&2 || true
     rm -rf "$TEMP_RELEASE"
     exit 1
   fi

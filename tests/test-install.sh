@@ -20,7 +20,7 @@ release_manifest() {
     manifest_paths="skills contracts"
     [ ! -d profiles ] || manifest_paths="$manifest_paths profiles"
     [ ! -f scripts/validate_profile.py ] || manifest_paths="$manifest_paths scripts/validate_profile.py"
-    find $manifest_paths -type f -not -path '*/.build/*' -exec cksum {} \; | LC_ALL=C sort | cksum | awk '{print $1 ":" $2}'
+    find $manifest_paths -type f -not -path '*/.build/*' -not -path '*/.Ulysses-*/*' -not -name '.DS_Store' -not -name '.Ulysses-*' -exec cksum {} \; | LC_ALL=C sort | cksum | awk '{print $1 ":" $2}'
   )
 }
 HOME="$TEST_HOME" CODEX_HOME="$TEST_HOME/.codex" bash "$SOURCE_ROOT/install.sh"
@@ -204,3 +204,27 @@ if HOME="$REMEDY_HOME" CODEX_HOME="$REMEDY_HOME/.codex" bash "$SOURCE_ROOT/insta
 fi
 grep -Fq "collision: $REMEDY_HOME/.claude/skills/research-quick" "$REMEDY_STDERR"
 grep -Fq "move or remove it and re-run install.sh" "$REMEDY_STDERR"
+
+# F1: Finder droppings in the source tree must not change the manifest.
+DSSTORE_HOME="$(mktemp -d)"
+DSSTORE_SOURCE="$DSSTORE_HOME/source"
+cp -R "$SOURCE_ROOT" "$DSSTORE_SOURCE"
+HOME="$DSSTORE_HOME" CODEX_HOME="$DSSTORE_HOME/.codex" bash "$DSSTORE_SOURCE/install.sh"
+DSSTORE_MANIFEST_BEFORE="$(cat "$DSSTORE_HOME/.local/share/research-tools/releases/$VERSION/manifest")"
+touch "$DSSTORE_SOURCE/skills/.DS_Store"
+touch "$DSSTORE_SOURCE/skills/research-quick/.Ulysses-Group.plist"
+HOME="$DSSTORE_HOME" CODEX_HOME="$DSSTORE_HOME/.codex" bash "$DSSTORE_SOURCE/install.sh"
+DSSTORE_MANIFEST_AFTER="$(cat "$DSSTORE_HOME/.local/share/research-tools/releases/$VERSION/manifest")"
+test "$DSSTORE_MANIFEST_BEFORE" = "$DSSTORE_MANIFEST_AFTER"
+rm -rf "$DSSTORE_HOME"
+
+MODIFIED_HOME="$(mktemp -d)"
+MODIFIED_SOURCE="$MODIFIED_HOME/source"
+cp -R "$SOURCE_ROOT" "$MODIFIED_SOURCE"
+HOME="$MODIFIED_HOME" CODEX_HOME="$MODIFIED_HOME/.codex" bash "$MODIFIED_SOURCE/install.sh"
+printf x >> "$MODIFIED_SOURCE/skills/research-topic/SKILL.md"
+if HOME="$MODIFIED_HOME" CODEX_HOME="$MODIFIED_HOME/.codex" bash "$MODIFIED_SOURCE/install.sh" 2>"$MODIFIED_HOME/err.log"; then
+  exit 1
+fi
+grep -Fq "skills/research-topic/SKILL.md" "$MODIFIED_HOME/err.log"
+rm -rf "$MODIFIED_HOME"
