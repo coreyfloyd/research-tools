@@ -151,6 +151,22 @@ if ! grep -qi 'dirty' "$DIRTY_OUTPUT"; then
   exit 1
 fi
 
+# --- T7: tag-mismatch refusal ------------------------------------------------
+TAG_REPO="$TEST_DIR/tagmismatch"
+sandbox_repo "$TAG_REPO"
+(cd "$TAG_REPO" && git tag "v$VERSION")
+(cd "$TAG_REPO" && git commit --quiet --allow-empty -m 'second commit, past the release tag')
+TAG_OUTPUT="$TEST_DIR/tag-output.txt"
+if RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$TAG_REPO/scripts/build-release.sh" "$TAG_REPO/dist" >"$TAG_OUTPUT" 2>&1; then
+  echo 'build-release.sh built from a commit past the release tag' >&2
+  exit 1
+fi
+if ! grep -q "v$VERSION" "$TAG_OUTPUT"; then
+  echo 'build-release.sh tag-mismatch refusal did not name the tag' >&2
+  cat "$TAG_OUTPUT" >&2
+  exit 1
+fi
+
 # --- T6: install-release.sh rejects a multi-root archive --------------------
 TWO_DIR_SRC="$TEST_DIR/two-dir-src"
 mkdir -p "$TWO_DIR_SRC/research-tools" "$TWO_DIR_SRC/extra"

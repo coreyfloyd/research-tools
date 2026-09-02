@@ -236,12 +236,20 @@ test -z "$(printf '%s\n' "$ARCHIVE_LIST" | grep -v '^research-tools/')"
 printf '%s\n' "$ARCHIVE_LIST"
 ```
 
-`scripts/build-release.sh` builds with `git archive` against `HEAD`, refusing
-if the working tree is dirty or if `HEAD` is not the tag `v<VERSION>` when
-that tag exists. The archive is therefore provably equal to the tagged
-commit's tree: it can contain only tracked files (minus anything marked
-`export-ignore` in `.gitattributes`), rooted at a literal `research-tools/`
-prefix, never the build directory's basename.
+`scripts/build-release.sh` builds with `git archive` against `HEAD`. It
+refuses if any tracked file has been modified, staged, or deleted relative to
+`HEAD`; untracked files are ignored and are never packaged, since `git
+archive` can only ever include tracked content. It also refuses if a tag
+named `v<VERSION>` exists and `HEAD` is not that tag.
+
+The archive is therefore always equal to the tree at `HEAD`: it can contain
+only tracked files (minus anything marked `export-ignore` in
+`.gitattributes`), rooted at a literal `research-tools/` prefix, never the
+build directory's basename. When the release tag already exists, the gate
+above additionally guarantees `HEAD` is that tagged commit, which is what
+makes the archive the tagged release's tree rather than merely some
+commit's tree; a build run before the tag exists carries no such
+attestation.
 
 ## Publish on GitHub
 
