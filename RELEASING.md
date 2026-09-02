@@ -227,9 +227,21 @@ ls -l \
   keys/research-tools-release.asc
 ```
 
-The current scripts prove archive integrity and signer identity. They do not
-embed or independently attest the source commit; the clean, exact-tag checkout
-checks above are therefore part of the release contract.
+Inspect the archive's contents before publication: list it and assert its
+root directory:
+
+```bash
+ARCHIVE_LIST="$(tar -tzf "dist/research-tools-$VERSION_VALUE.tar.gz")"
+test -z "$(printf '%s\n' "$ARCHIVE_LIST" | grep -v '^research-tools/')"
+printf '%s\n' "$ARCHIVE_LIST"
+```
+
+`scripts/build-release.sh` builds with `git archive` against `HEAD`, refusing
+if the working tree is dirty or if `HEAD` is not the tag `v<VERSION>` when
+that tag exists. The archive is therefore provably equal to the tagged
+commit's tree: it can contain only tracked files (minus anything marked
+`export-ignore` in `.gitattributes`), rooted at a literal `research-tools/`
+prefix, never the build directory's basename.
 
 ## Publish on GitHub
 
