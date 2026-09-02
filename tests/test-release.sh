@@ -8,8 +8,59 @@ mkdir -m 700 "$GNUPGHOME"
 gpg --batch --passphrase '' --quick-generate-key 'research-tools test <test@example.invalid>' ed25519 sign 0 >/dev/null 2>&1
 KEY="$(gpg --batch --with-colons --list-secret-keys | awk -F: '$1 == "fpr" {print $10; exit}')"
 gpg --batch --armor --export "$KEY" > "$TEST_DIR/public.asc"
-RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$ROOT/scripts/build-release.sh" "$TEST_DIR/dist"
-ARCHIVE="$TEST_DIR/dist/research-tools-$(tr -d '[:space:]' < "$ROOT/VERSION").tar.gz"
+VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
+
+# Build tests run against a throwaway git repository containing a snapshot of
+# this worktree's current on-disk state (including any uncommitted edits to
+# scripts/build-release.sh under test), rather than against $ROOT's own git
+# history. That decouples the tests from $ROOT's actual branch/tag state
+# (which may be mid-development, ahead of the last release tag) and lets each
+# test control its own dirty/tag/basename conditions precisely.
+sandbox_repo() {
+  dest="$1"
+  mkdir -p "$dest"
+  (cd "$ROOT" && tar --exclude='.git' -cf - .) | (cd "$dest" && tar -xf -)
+  (
+    cd "$dest"
+    git init --quiet
+    git config user.email test@example.invalid
+    git config user.name 'research-tools test'
+    git add -A
+    git commit --quiet -m 'sandbox snapshot'
+  )
+}
+
+# --- T1 / T3 / T5: primary sandbox -----------------------------------------
+REPO="$TEST_DIR/repo"
+sandbox_repo "$REPO"
+
+# T3 setup: untracked files that must structurally be unable to reach the
+# archive, since git archive packages only tracked content.
+mkdir -p "$REPO/skills"
+: > "$REPO/skills/.DS_Store"
+printf 'junk\n' > "$REPO/skills/junk.txt"
+
+# T1: an in-tree, differently-named output directory must not leak into the
+# archive (no OUT-path refusal is needed because git archive only packages
+# tracked files).
+RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$REPO/scripts/build-release.sh" "$REPO/distcd"
+DISTCD_ARCHIVE="$REPO/distcd/research-tools-$VERSION.tar.gz"
+DISTCD_LIST="$TEST_DIR/distcd-list.txt"
+tar -tzf "$DISTCD_ARCHIVE" > "$DISTCD_LIST"
+if grep -q 'research-tools/distcd/' "$DISTCD_LIST"; then
+  echo 'release archive contains its own in-tree output directory' >&2
+  exit 1
+fi
+if grep -E 'distcd/' "$DISTCD_LIST" | grep -qE '\.(tar\.gz|asc|sha256)$'; then
+  echo 'release archive contains release-artifact entries' >&2
+  exit 1
+fi
+rm -rf "$REPO/distcd"
+
+# Primary archive for the Ulysses guard, T3, and the T5 round-trip cases.
+RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$REPO/scripts/build-release.sh" "$REPO/dist"
+ARCHIVE="$REPO/dist/research-tools-$VERSION.tar.gz"
+
 # Fail closed: `rg` is not POSIX and its absence made this guard pass vacuously.
 ARCHIVE_LIST="$TEST_DIR/archive-list.txt"
 tar -tzf "$ARCHIVE" > "$ARCHIVE_LIST"
@@ -20,12 +71,34 @@ case "$ulysses_status" in
   0) echo 'release archive contains .Ulysses- metadata' >&2; exit 1 ;;
   *) echo "archive metadata scan failed (grep exit $ulysses_status)" >&2; exit 1 ;;
 esac
+
+# T3: the archive's file entries equal `git ls-files` (minus export-ignored
+# paths), each prefixed with research-tools/, so untracked files structurally
+# cannot appear.
+EXPECTED_LIST="$TEST_DIR/expected-list.txt"
+(cd "$REPO" && git ls-files) \
+  | grep -vE '(^|/)\.Ulysses-(Settings|Group)\.plist$' \
+  | grep -vE '(^|/)\.DS_Store$' \
+  | sed 's#^#research-tools/#' | sort > "$EXPECTED_LIST"
+ACTUAL_LIST="$TEST_DIR/actual-list.txt"
+grep -v '/$' "$ARCHIVE_LIST" | sort > "$ACTUAL_LIST"
+diff "$EXPECTED_LIST" "$ACTUAL_LIST"
+if grep -q 'skills/\.DS_Store$' "$ARCHIVE_LIST"; then
+  echo 'release archive contains an untracked .DS_Store' >&2
+  exit 1
+fi
+if grep -q 'skills/junk\.txt$' "$ARCHIVE_LIST"; then
+  echo 'release archive contains an untracked file' >&2
+  exit 1
+fi
+
+# T5: existing round-trip, wrong-key, two-key, and tamper cases, unchanged.
 bash "$ROOT/scripts/verify-release.sh" "$ARCHIVE" "$TEST_DIR/public.asc" "$KEY"
 gpg --batch --passphrase '' --quick-generate-key 'other test <other@example.invalid>' ed25519 sign 0 >/dev/null 2>&1
 OTHER_KEY="$(gpg --batch --with-colons --list-secret-keys | awk -F: '$1 == "fpr" {last=$10} END {print last}')"
 gpg --batch --armor --export "$OTHER_KEY" > "$TEST_DIR/other.asc"
-RESEARCH_TOOLS_GPG_KEY="$OTHER_KEY" bash "$ROOT/scripts/build-release.sh" "$TEST_DIR/other-dist"
-OTHER_ARCHIVE="$TEST_DIR/other-dist/research-tools-$(tr -d '[:space:]' < "$ROOT/VERSION").tar.gz"
+RESEARCH_TOOLS_GPG_KEY="$OTHER_KEY" bash "$REPO/scripts/build-release.sh" "$REPO/other-dist"
+OTHER_ARCHIVE="$REPO/other-dist/research-tools-$VERSION.tar.gz"
 if bash "$ROOT/scripts/verify-release.sh" "$OTHER_ARCHIVE" "$TEST_DIR/other.asc" "$KEY"; then
   exit 1
 fi
@@ -46,5 +119,83 @@ if HOME="$INSTALL_HOME" CODEX_HOME="$INSTALL_HOME/.codex" bash "$ROOT/install.sh
 fi
 printf x >> "$ARCHIVE"
 if bash "$ROOT/scripts/verify-release.sh" "$ARCHIVE" "$TEST_DIR/public.asc" "$KEY"; then
+  exit 1
+fi
+
+# --- T2: basename independence ----------------------------------------------
+# Build from a checkout whose directory basename is not "research-tools" and
+# assert every archive entry is still rooted at research-tools/.
+V042_REPO="$TEST_DIR/v042"
+sandbox_repo "$V042_REPO"
+RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$V042_REPO/scripts/build-release.sh" "$V042_REPO/dist"
+V042_ARCHIVE="$V042_REPO/dist/research-tools-$VERSION.tar.gz"
+V042_LIST="$TEST_DIR/v042-list.txt"
+tar -tzf "$V042_ARCHIVE" > "$V042_LIST"
+if grep -qv '^research-tools/' "$V042_LIST"; then
+  echo 'release archive root depends on the build directory basename' >&2
+  exit 1
+fi
+
+# --- T4: dirty tree refusal --------------------------------------------------
+DIRTY_REPO="$TEST_DIR/dirty"
+sandbox_repo "$DIRTY_REPO"
+printf '\nlocal edit\n' >> "$DIRTY_REPO/README.md"
+DIRTY_OUTPUT="$TEST_DIR/dirty-output.txt"
+if RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$DIRTY_REPO/scripts/build-release.sh" "$DIRTY_REPO/dist" >"$DIRTY_OUTPUT" 2>&1; then
+  echo 'build-release.sh built from a dirty working tree' >&2
+  exit 1
+fi
+if ! grep -qi 'dirty' "$DIRTY_OUTPUT"; then
+  echo 'build-release.sh dirty-tree refusal did not mention "dirty"' >&2
+  cat "$DIRTY_OUTPUT" >&2
+  exit 1
+fi
+
+# --- T7: tag gate, exercised with an annotated tag (releases use `git tag -a`,
+# not lightweight tags; see "Push and tag the exact commit" in RELEASING.md) -
+TAG_REPO="$TEST_DIR/tagmismatch"
+sandbox_repo "$TAG_REPO"
+(cd "$TAG_REPO" && git tag -a "v$VERSION" -m "research-tools $VERSION")
+
+# Positive case: HEAD at the annotated release tag builds successfully. This
+# is what catches an unpeeled tag comparison: `refs/tags/$TAG` alone resolves
+# to the annotated tag OBJECT, not the commit it points at, so a build-script
+# regression that dropped `^{commit}` peeling would refuse a legitimate build
+# right here.
+RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$TAG_REPO/scripts/build-release.sh" "$TAG_REPO/dist"
+test -f "$TAG_REPO/dist/research-tools-$VERSION.tar.gz"
+
+# Negative case: a second commit past the annotated tag refuses, naming the tag.
+(cd "$TAG_REPO" && git commit --quiet --allow-empty -m 'second commit, past the release tag')
+TAG_OUTPUT="$TEST_DIR/tag-output.txt"
+if RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$TAG_REPO/scripts/build-release.sh" "$TAG_REPO/dist2" >"$TAG_OUTPUT" 2>&1; then
+  echo 'build-release.sh built from a commit past the release tag' >&2
+  exit 1
+fi
+if ! grep -q "v$VERSION" "$TAG_OUTPUT"; then
+  echo 'build-release.sh tag-mismatch refusal did not name the tag' >&2
+  cat "$TAG_OUTPUT" >&2
+  exit 1
+fi
+
+# --- T6: install-release.sh rejects a multi-root archive --------------------
+TWO_DIR_SRC="$TEST_DIR/two-dir-src"
+mkdir -p "$TWO_DIR_SRC/research-tools" "$TWO_DIR_SRC/extra"
+: > "$TWO_DIR_SRC/research-tools/VERSION"
+: > "$TWO_DIR_SRC/research-tools/install.sh"
+: > "$TWO_DIR_SRC/extra/file.txt"
+TWO_DIR_ARCHIVE="$TEST_DIR/research-tools-two-dir.tar.gz"
+(cd "$TWO_DIR_SRC" && tar -czf "$TWO_DIR_ARCHIVE" research-tools extra)
+(cd "$TEST_DIR" && shasum -a 256 "$(basename "$TWO_DIR_ARCHIVE")") > "$TWO_DIR_ARCHIVE.sha256"
+gpg --batch --yes --local-user "$KEY" --detach-sign --armor --output "$TWO_DIR_ARCHIVE.asc" "$TWO_DIR_ARCHIVE.sha256"
+TWO_DIR_HOME="$TEST_DIR/two-dir-home"
+TWO_DIR_OUTPUT="$TEST_DIR/two-dir-output.txt"
+if HOME="$TWO_DIR_HOME" CODEX_HOME="$TWO_DIR_HOME/.codex" bash "$ROOT/scripts/install-release.sh" "$TWO_DIR_ARCHIVE" "$TEST_DIR/public.asc" "$KEY" >"$TWO_DIR_OUTPUT" 2>&1; then
+  echo 'install-release.sh accepted an archive with two top-level directories' >&2
+  exit 1
+fi
+if ! grep -qi 'top-level' "$TWO_DIR_OUTPUT"; then
+  echo 'install-release.sh rejection message did not mention the top-level directory problem' >&2
+  cat "$TWO_DIR_OUTPUT" >&2
   exit 1
 fi

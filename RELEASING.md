@@ -50,9 +50,11 @@ gate working, not as a problem to solve.
 - Install Bash, GnuPG, GitHub CLI, Python 3, Swift, and the standard macOS
   `shasum` utility.
 - Review `RELEASE_CANDIDATE.md` and prepare its release-note draft.
-- Ensure every intended change is committed. The archive builder packages the
-  working tree, including untracked files not covered by its exclusions, so a
-  clean tree is a release-integrity requirement.
+- Ensure every intended change is committed. `scripts/build-release.sh` (see
+  "Build, sign, and verify" below) refuses to run against a dirty tracked
+  tree and packages only the git tree at `HEAD`, so an uncommitted tracked
+  change blocks the build outright, and an uncommitted untracked file is
+  simply never packaged rather than shipped by accident.
 
 Check the environment without changing remote state:
 
@@ -227,9 +229,29 @@ ls -l \
   keys/research-tools-release.asc
 ```
 
-The current scripts prove archive integrity and signer identity. They do not
-embed or independently attest the source commit; the clean, exact-tag checkout
-checks above are therefore part of the release contract.
+Inspect the archive's contents before publication: list it and assert its
+root directory:
+
+```bash
+ARCHIVE_LIST="$(tar -tzf "dist/research-tools-$VERSION_VALUE.tar.gz")"
+test -z "$(printf '%s\n' "$ARCHIVE_LIST" | grep -v '^research-tools/')"
+printf '%s\n' "$ARCHIVE_LIST"
+```
+
+`scripts/build-release.sh` builds with `git archive` against `HEAD`. It
+refuses if any tracked file has been modified, staged, or deleted relative to
+`HEAD`; untracked files are ignored and are never packaged, since `git
+archive` can only ever include tracked content. It also refuses if a tag
+named `v<VERSION>` exists and `HEAD` is not that tag.
+
+The archive is therefore always equal to the tree at `HEAD`: it can contain
+only tracked files (minus anything marked `export-ignore` in
+`.gitattributes`), rooted at a literal `research-tools/` prefix, never the
+build directory's basename. When the release tag already exists, the gate
+above additionally guarantees `HEAD` is that tagged commit, which is what
+makes the archive the tagged release's tree rather than merely some
+commit's tree; a build run before the tag exists carries no such
+attestation.
 
 ## Publish on GitHub
 
