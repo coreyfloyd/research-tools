@@ -15,7 +15,14 @@ research-tools-<version>.tar.gz
 research-tools-<version>.tar.gz.sha256
 research-tools-<version>.tar.gz.asc
 research-tools-release.asc
+install-release.sh
+verify-release.sh
 ```
+
+`install-release.sh` and `verify-release.sh` are published unmodified from
+`scripts/` so that someone holding only the published assets can install and
+verify a release without first cloning the repository or extracting the
+unverified archive.
 
 The checksum is signed, not the archive directly. The expected public signing
 fingerprint is stored in `RELEASE_SIGNING_FINGERPRINT`; the matching public key
@@ -219,14 +226,16 @@ bash scripts/verify-release.sh \
   "$FINGERPRINT"
 ```
 
-Review the four exact upload paths before publication:
+Review the six exact upload paths before publication:
 
 ```bash
 ls -l \
   "dist/research-tools-$VERSION_VALUE.tar.gz" \
   "dist/research-tools-$VERSION_VALUE.tar.gz.sha256" \
   "dist/research-tools-$VERSION_VALUE.tar.gz.asc" \
-  keys/research-tools-release.asc
+  keys/research-tools-release.asc \
+  scripts/install-release.sh \
+  scripts/verify-release.sh
 ```
 
 Inspect the archive's contents before publication: list it and assert its
@@ -265,6 +274,8 @@ gh release create "$TAG" \
   "dist/research-tools-$VERSION_VALUE.tar.gz.sha256" \
   "dist/research-tools-$VERSION_VALUE.tar.gz.asc" \
   keys/research-tools-release.asc \
+  scripts/install-release.sh \
+  scripts/verify-release.sh \
   --title "$TAG" \
   --notes-file /path/to/reviewed-release-notes.md
 ```
@@ -282,8 +293,10 @@ contract consumers receive:
 VERIFY_DIR="$(mktemp -d)"
 gh release download "$TAG" --dir "$VERIFY_DIR"
 
-test "$(find "$VERIFY_DIR" -maxdepth 1 -type f | wc -l | tr -d ' ')" = 4
+test "$(find "$VERIFY_DIR" -maxdepth 1 -type f | wc -l | tr -d ' ')" = 6
 cmp "$VERIFY_DIR/research-tools-release.asc" keys/research-tools-release.asc
+cmp "$VERIFY_DIR/install-release.sh" scripts/install-release.sh
+cmp "$VERIFY_DIR/verify-release.sh" scripts/verify-release.sh
 bash scripts/verify-release.sh \
   "$VERIFY_DIR/research-tools-$VERSION_VALUE.tar.gz" \
   "$VERIFY_DIR/research-tools-release.asc" \

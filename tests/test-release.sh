@@ -123,6 +123,27 @@ test -f "$INSTALL_HOME/.local/share/research-tools/current/scripts/validate_prof
 if HOME="$INSTALL_HOME" CODEX_HOME="$INSTALL_HOME/.codex" bash "$ROOT/install.sh" --verify; then
   exit 1
 fi
+
+# The documented published-release flow runs install-release.sh from a
+# directory holding only the published assets (the archive, its .sha256 and
+# .asc, the maintainer key, and the two scripts) with no access to the rest
+# of the checkout. Guard that seam directly instead of only exercising the
+# scripts from inside the repository tree.
+PUBLISHED_DIR="$TEST_DIR/published"
+mkdir "$PUBLISHED_DIR"
+cp "$ARCHIVE" "$ARCHIVE.sha256" "$ARCHIVE.asc" "$PUBLISHED_DIR/"
+cp "$TEST_DIR/public.asc" "$PUBLISHED_DIR/research-tools-release.asc"
+cp "$ROOT/scripts/install-release.sh" "$ROOT/scripts/verify-release.sh" "$PUBLISHED_DIR/"
+PUBLISHED_ARCHIVE_NAME="$(basename "$ARCHIVE")"
+PUBLISHED_INSTALL_HOME="$TEST_DIR/published-install-home"
+(
+  cd "$PUBLISHED_DIR" &&
+  HOME="$PUBLISHED_INSTALL_HOME" CODEX_HOME="$PUBLISHED_INSTALL_HOME/.codex" \
+    bash ./install-release.sh "$PUBLISHED_ARCHIVE_NAME" research-tools-release.asc "$KEY"
+)
+test -L "$PUBLISHED_INSTALL_HOME/.claude/skills/research-topic"
+test -f "$PUBLISHED_INSTALL_HOME/.local/share/research-tools/current/scripts/validate_profile.py"
+
 printf x >> "$ARCHIVE"
 if bash "$ROOT/scripts/verify-release.sh" "$ARCHIVE" "$TEST_DIR/public.asc" "$KEY"; then
   exit 1

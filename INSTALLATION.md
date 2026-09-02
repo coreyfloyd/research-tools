@@ -102,16 +102,26 @@ The validated frontmatter schema is currently `profile_version: 4`.
 
 ## Install a published release
 
-Each published GitHub Release will provide four matching assets: the versioned
-archive, its SHA-256 file, a detached signature for that checksum file, and the
-maintainer public key.
+Each published GitHub Release will provide six matching assets: the versioned
+archive, its SHA-256 file, a detached signature for that checksum file, the
+maintainer public key, and the `install-release.sh` and `verify-release.sh`
+scripts themselves. The scripts are published unmodified so that a release can
+be installed and verified using only the published assets, without first
+cloning the repository or extracting the unverified archive. Releases through
+v0.5.0 predate this contract and carry only the first four assets; neither
+script is published there. To install one of those releases, clone the
+repository and run `bash scripts/install-release.sh` against the downloaded
+assets.
 
 Obtain the expected maintainer fingerprint from an independent,
 maintainer-controlled channel before downloading the assets. Then verify and
-install from local copies:
+install from local copies, with all six downloaded assets in the same
+directory (`install-release.sh` looks for `verify-release.sh` beside it, and
+`verify-release.sh` looks for the archive's `.sha256` and `.asc` files beside
+the archive):
 
 ```bash
-bash scripts/install-release.sh \
+bash install-release.sh \
   research-tools-<version>.tar.gz \
   research-tools-release.asc \
   <maintainer-fingerprint>

@@ -18,6 +18,7 @@ and `docs/` directories plus the three state files already exist:
 
 ```yaml
 profile_version: 4
+knowledge_root: /absolute/path/to/knowledge
 hot_file: wiki/hot.md
 operation_log_file: docs/log.md
 decision_log_file: docs/DECISIONS.md
