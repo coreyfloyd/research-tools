@@ -4,6 +4,12 @@ Installation makes the skills available to Claude Code and Codex. Configuration
 is a separate, guided step that chooses where the system stores knowledge and
 how agents route follow-up work.
 
+## Prerequisites
+
+`install.sh` requires `bash`, `python3`, and `tar` on `PATH`; it refuses to run
+without `python3` rather than leaving a partial install behind. The signed-release
+route (`scripts/install-release.sh`) additionally requires `gpg`.
+
 ## Installed package
 
 A successful installation creates immutable per-version package storage, one

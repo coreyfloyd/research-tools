@@ -10,7 +10,7 @@ mkdir -p "$(dirname "$BUILD_SENTINEL")"
 touch "$BUILD_SENTINEL"
 cleanup() {
   status=$?
-  rm -rf "$TEST_HOME" "${COLLISION_HOME:-}" "${PROFILE_HOME:-}" "${CONCURRENT_HOME:-}" "${TAMPER_HOME:-}" "${UPGRADE_HOME:-}" "${BROKEN_HOME:-}" "${CURRENT_DIR_HOME:-}" "${RETIRED_HOME:-}" "$BUILD_SENTINEL"
+  rm -rf "$TEST_HOME" "${COLLISION_HOME:-}" "${PROFILE_HOME:-}" "${CONCURRENT_HOME:-}" "${TAMPER_HOME:-}" "${UPGRADE_HOME:-}" "${BROKEN_HOME:-}" "${CURRENT_DIR_HOME:-}" "${RETIRED_HOME:-}" "${NOPY_HOME:-}" "${MISSINGLINK_HOME:-}" "${REMEDY_HOME:-}" "$BUILD_SENTINEL"
   exit "$status"
 }
 trap cleanup EXIT
@@ -168,3 +168,39 @@ if HOME="$TAMPER_HOME" CODEX_HOME="$TAMPER_HOME/.codex" bash "$SOURCE_ROOT/insta
   exit 1
 fi
 rm -rf "$TAMPER_HOME"
+
+# F2: no python3 on PATH must refuse before any filesystem changes, naming the tool.
+NOPY_HOME="$(mktemp -d)"
+NOPY_BIN="$NOPY_HOME/bin"
+mkdir -p "$NOPY_BIN" "$NOPY_HOME/home"
+ln -s "$(command -v bash)" "$NOPY_BIN/bash"
+NOPY_STDERR="$NOPY_HOME/stderr.log"
+if PATH="$NOPY_BIN" HOME="$NOPY_HOME/home" CODEX_HOME="$NOPY_HOME/home/.codex" bash "$SOURCE_ROOT/install.sh" 2>"$NOPY_STDERR"; then
+  exit 1
+fi
+grep -q python3 "$NOPY_STDERR"
+test ! -e "$NOPY_HOME/home/.local/share/research-tools/releases"
+
+# F3: --verify must name a missing client skill link instead of failing silently.
+MISSINGLINK_HOME="$(mktemp -d)"
+mkdir -p "$MISSINGLINK_HOME/.config/research-tools" "$MISSINGLINK_HOME/knowledge/raw" "$MISSINGLINK_HOME/knowledge/wiki" "$MISSINGLINK_HOME/knowledge/output" "$MISSINGLINK_HOME/knowledge/docs"
+touch "$MISSINGLINK_HOME/knowledge/wiki/hot.md" "$MISSINGLINK_HOME/knowledge/docs/log.md" "$MISSINGLINK_HOME/knowledge/docs/DECISIONS.md"
+sed "s|/absolute/path/to/knowledge|$MISSINGLINK_HOME/knowledge|" "$SOURCE_ROOT/profiles/karpathy-wiki.example.md" > "$MISSINGLINK_HOME/.config/research-tools/profile.md"
+HOME="$MISSINGLINK_HOME" CODEX_HOME="$MISSINGLINK_HOME/.codex" bash "$SOURCE_ROOT/install.sh"
+MISSINGLINK_PATH="$MISSINGLINK_HOME/.claude/skills/research-quick"
+rm -f "$MISSINGLINK_PATH"
+MISSINGLINK_STDERR="$MISSINGLINK_HOME/stderr.log"
+if HOME="$MISSINGLINK_HOME" CODEX_HOME="$MISSINGLINK_HOME/.codex" bash "$SOURCE_ROOT/install.sh" --verify 2>"$MISSINGLINK_STDERR"; then
+  exit 1
+fi
+grep -Fq "$MISSINGLINK_PATH" "$MISSINGLINK_STDERR"
+
+# F7: refusal messages must carry a remedy.
+REMEDY_HOME="$(mktemp -d)"
+mkdir -p "$REMEDY_HOME/.claude/skills/research-quick"
+REMEDY_STDERR="$REMEDY_HOME/stderr.log"
+if HOME="$REMEDY_HOME" CODEX_HOME="$REMEDY_HOME/.codex" bash "$SOURCE_ROOT/install.sh" 2>"$REMEDY_STDERR"; then
+  exit 1
+fi
+grep -Fq "collision: $REMEDY_HOME/.claude/skills/research-quick" "$REMEDY_STDERR"
+grep -Fq "move or remove it and re-run install.sh" "$REMEDY_STDERR"

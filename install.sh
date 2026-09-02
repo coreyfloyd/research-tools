@@ -1,6 +1,11 @@
 #!/bin/bash
 set -euo pipefail
 
+if ! command -v python3 >/dev/null 2>&1; then
+  echo "install.sh: python3 is required but was not found on PATH" >&2
+  exit 1
+fi
+
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 RELEASE_ROOT="$HOME/.local/share/research-tools/releases"
 CURRENT_LINK="$HOME/.local/share/research-tools/current"
@@ -122,7 +127,7 @@ reject_retired_links() {
       [ -L "$target" ] || continue
       skill="$(basename "$target")"
       if is_package_release_link "$target" "$skill" && [ ! -f "$ROOT/skills/$skill/SKILL.md" ]; then
-        echo "retired package skill: $target" >&2
+        echo "retired package skill: $target (move or remove it and re-run install.sh)" >&2
         return 1
       fi
     done
@@ -179,21 +184,35 @@ acquire_lock() {
   trap 'interrupted 143' TERM
 }
 
+verify_check() {
+  what="$1"
+  path="$2"
+  shift 2
+  if ! "$@"; then
+    echo "verify failed: $what $path" >&2
+    exit 1
+  fi
+}
+
 if [ "${1:-}" = "--verify" ]; then
   reject_retired_links
-  test -L "$CURRENT_LINK"
-  test -f "$CURRENT_LINK/manifest"
-  test "$(manifest_hash "$CURRENT_LINK")" = "$(cat "$CURRENT_LINK/manifest")"
-  test -f "$CURRENT_LINK/profiles/karpathy-wiki.example.md"
-  test -f "$CURRENT_LINK/scripts/validate_profile.py"
+  verify_check "current pointer" "$CURRENT_LINK" test -L "$CURRENT_LINK"
+  verify_check "current manifest" "$CURRENT_LINK/manifest" test -f "$CURRENT_LINK/manifest"
+  current_manifest_hash="$(manifest_hash "$CURRENT_LINK")"
+  recorded_manifest_hash="$(cat "$CURRENT_LINK/manifest")"
+  verify_check "current manifest hash" "$CURRENT_LINK" test "$current_manifest_hash" = "$recorded_manifest_hash"
+  verify_check "example profile" "$CURRENT_LINK/profiles/karpathy-wiki.example.md" test -f "$CURRENT_LINK/profiles/karpathy-wiki.example.md"
+  verify_check "profile validator" "$CURRENT_LINK/scripts/validate_profile.py" test -f "$CURRENT_LINK/scripts/validate_profile.py"
   for name in "$ROOT"/skills/*; do
     [ -f "$name/SKILL.md" ] || continue
     skill="$(basename "$name")"
-    test -L "$CLAUDE_DIR/$skill"
-    test "$(readlink "$CLAUDE_DIR/$skill")" = "$CURRENT_LINK/skills/$skill"
-    test -f "$CURRENT_LINK/contracts/karpathy-wiki.md"
-    test -L "$CODEX_DIR/$skill"
-    test "$(readlink "$CODEX_DIR/$skill")" = "$CURRENT_LINK/skills/$skill"
+    verify_check "claude skill link" "$CLAUDE_DIR/$skill" test -L "$CLAUDE_DIR/$skill"
+    claude_link_target="$(readlink "$CLAUDE_DIR/$skill")"
+    verify_check "claude skill target" "$CLAUDE_DIR/$skill" test "$claude_link_target" = "$CURRENT_LINK/skills/$skill"
+    verify_check "wiki contract" "$CURRENT_LINK/contracts/karpathy-wiki.md" test -f "$CURRENT_LINK/contracts/karpathy-wiki.md"
+    verify_check "codex skill link" "$CODEX_DIR/$skill" test -L "$CODEX_DIR/$skill"
+    codex_link_target="$(readlink "$CODEX_DIR/$skill")"
+    verify_check "codex skill target" "$CODEX_DIR/$skill" test "$codex_link_target" = "$CURRENT_LINK/skills/$skill"
   done
   validate_profile
   exit 0
@@ -237,7 +256,7 @@ for name in "$ROOT"/skills/*; do
         esac
         continue
       fi
-      echo "collision: $target" >&2
+      echo "collision: $target (move or remove it and re-run install.sh)" >&2
       exit 1
     fi
     :
