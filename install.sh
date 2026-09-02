@@ -28,6 +28,16 @@ manifest_listing() {
 manifest_hash() {
   manifest_listing "${1:-$ROOT}" | cksum | awk '{print $1 ":" $2}'
 }
+manifest_hash_legacy() {
+  manifest_root="${1:-$ROOT}"
+  (
+    cd "$manifest_root"
+    manifest_paths="skills contracts"
+    [ ! -d profiles ] || manifest_paths="$manifest_paths profiles"
+    [ ! -f scripts/validate_profile.py ] || manifest_paths="$manifest_paths scripts/validate_profile.py"
+    find $manifest_paths -type f -not -path '*/.build/*' -exec cksum {} \; | LC_ALL=C sort | cksum | awk '{print $1 ":" $2}'
+  )
+}
 SOURCE_HASH="$(manifest_hash)"
 
 copy_release_tree() {
@@ -104,7 +114,8 @@ valid_release() {
   release="$1"
   [ "$(dirname "$release")" = "$RELEASE_ROOT" ] || return 1
   [ -d "$release" ] && [ -f "$release/manifest" ] || return 1
-  [ "$(manifest_hash "$release")" = "$(cat "$release/manifest")" ]
+  stored="$(cat "$release/manifest")"
+  [ "$(manifest_hash "$release")" = "$stored" ] || [ "$(manifest_hash_legacy "$release")" = "$stored" ]
 }
 
 CURRENT_RELEASE=""
@@ -286,13 +297,19 @@ if [ ! -d "$RELEASE_DIR" ]; then
   printf '%s\n' "$SOURCE_HASH" > "$TEMP_RELEASE/manifest"
   mv "$TEMP_RELEASE" "$RELEASE_DIR"
 else
-  if [ ! -f "$RELEASE_DIR/manifest" ] || [ "$(cat "$RELEASE_DIR/manifest")" != "$SOURCE_HASH" ] || [ "$(manifest_hash "$RELEASE_DIR")" != "$SOURCE_HASH" ]; then
+  EXISTING_MANIFEST=""
+  [ -f "$RELEASE_DIR/manifest" ] && EXISTING_MANIFEST="$(cat "$RELEASE_DIR/manifest")"
+  if [ -n "$EXISTING_MANIFEST" ] && [ "$(manifest_hash "$RELEASE_DIR")" = "$SOURCE_HASH" ]; then
+    if [ "$EXISTING_MANIFEST" != "$SOURCE_HASH" ]; then
+      printf '%s\n' "$SOURCE_HASH" > "$RELEASE_DIR/manifest"
+    fi
+    rm -rf "$TEMP_RELEASE"
+  else
     echo "release version collision: $VERSION has different content" >&2
     diff <(manifest_listing "$ROOT") <(manifest_listing "$RELEASE_DIR") >&2 || true
     rm -rf "$TEMP_RELEASE"
     exit 1
   fi
-  rm -rf "$TEMP_RELEASE"
 fi
 if [ -n "$OLD_RELEASE" ]; then
   if [ -z "$CURRENT_RELEASE" ]; then

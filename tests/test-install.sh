@@ -23,6 +23,15 @@ release_manifest() {
     find $manifest_paths -type f -not -path '*/.build/*' -not -path '*/.Ulysses-*/*' -not -name '.DS_Store' -not -name '.Ulysses-*' -exec cksum {} \; | LC_ALL=C sort | cksum | awk '{print $1 ":" $2}'
   )
 }
+release_manifest_legacy() {
+  (
+    cd "$1"
+    manifest_paths="skills contracts"
+    [ ! -d profiles ] || manifest_paths="$manifest_paths profiles"
+    [ ! -f scripts/validate_profile.py ] || manifest_paths="$manifest_paths scripts/validate_profile.py"
+    find $manifest_paths -type f -not -path '*/.build/*' -exec cksum {} \; | LC_ALL=C sort | cksum | awk '{print $1 ":" $2}'
+  )
+}
 HOME="$TEST_HOME" CODEX_HOME="$TEST_HOME/.codex" bash "$SOURCE_ROOT/install.sh"
 if HOME="$TEST_HOME" CODEX_HOME="$TEST_HOME/.codex" bash "$SOURCE_ROOT/install.sh" --verify; then
   exit 1
@@ -228,3 +237,41 @@ if HOME="$MODIFIED_HOME" CODEX_HOME="$MODIFIED_HOME/.codex" bash "$MODIFIED_SOUR
 fi
 grep -Fq "skills/research-topic/SKILL.md" "$MODIFIED_HOME/err.log"
 rm -rf "$MODIFIED_HOME"
+
+MIGRATE_HOME="$(mktemp -d)"
+MIGRATE_SOURCE="$MIGRATE_HOME/source"
+cp -R "$SOURCE_ROOT" "$MIGRATE_SOURCE"
+mkdir -p "$MIGRATE_HOME/.config/research-tools" "$MIGRATE_HOME/knowledge/raw" "$MIGRATE_HOME/knowledge/wiki" "$MIGRATE_HOME/knowledge/output" "$MIGRATE_HOME/knowledge/docs"
+touch "$MIGRATE_HOME/knowledge/wiki/hot.md" "$MIGRATE_HOME/knowledge/docs/log.md" "$MIGRATE_HOME/knowledge/docs/DECISIONS.md"
+sed "s|/absolute/path/to/knowledge|$MIGRATE_HOME/knowledge|" "$MIGRATE_SOURCE/profiles/karpathy-wiki.example.md" > "$MIGRATE_HOME/.config/research-tools/profile.md"
+# Build a release exactly as main's (pre-#6) install.sh would have produced
+# from a tree with .DS_Store present: the copied tree kept it (no tar
+# exclusion) and the stored manifest was computed over it (no find
+# exclusion). MIGRATE_SOURCE itself has since been cleaned (no .DS_Store) --
+# the most likely real upgrade path (Finder cleanup, `git clean`, a fresh
+# clone), not an edge case, and the harder of the two: it requires content
+# equivalence to be judged by what's actually on disk now, not by replaying
+# the legacy exclusion rules against a tree that no longer has the junk.
+MIGRATE_RELEASE="$MIGRATE_HOME/.local/share/research-tools/releases/$VERSION"
+mkdir -p "$MIGRATE_RELEASE" "$MIGRATE_HOME/.claude/skills" "$MIGRATE_HOME/.codex/skills"
+cp -R "$MIGRATE_SOURCE/skills" "$MIGRATE_RELEASE/skills"
+touch "$MIGRATE_RELEASE/skills/.DS_Store"
+cp -R "$MIGRATE_SOURCE/contracts" "$MIGRATE_RELEASE/contracts"
+cp -R "$MIGRATE_SOURCE/profiles" "$MIGRATE_RELEASE/profiles"
+mkdir -p "$MIGRATE_RELEASE/scripts"
+cp -p "$MIGRATE_SOURCE/scripts/validate_profile.py" "$MIGRATE_RELEASE/scripts/validate_profile.py"
+release_manifest_legacy "$MIGRATE_RELEASE" > "$MIGRATE_RELEASE/manifest"
+MIGRATE_LEGACY_MANIFEST="$(cat "$MIGRATE_RELEASE/manifest")"
+ln -s "$MIGRATE_RELEASE" "$MIGRATE_HOME/.local/share/research-tools/current"
+for skill in "$ROOT"/skills/*; do
+  test -f "$skill/SKILL.md" || continue
+  name="$(basename "$skill")"
+  ln -s "$MIGRATE_HOME/.local/share/research-tools/current/skills/$name" "$MIGRATE_HOME/.claude/skills/$name"
+  ln -s "$MIGRATE_HOME/.local/share/research-tools/current/skills/$name" "$MIGRATE_HOME/.codex/skills/$name"
+done
+HOME="$MIGRATE_HOME" CODEX_HOME="$MIGRATE_HOME/.codex" bash "$MIGRATE_SOURCE/install.sh"
+test "$(cat "$MIGRATE_RELEASE/manifest")" != "$MIGRATE_LEGACY_MANIFEST"
+test -L "$MIGRATE_HOME/.local/share/research-tools/current"
+test -d "$(readlink "$MIGRATE_HOME/.local/share/research-tools/current")"
+HOME="$MIGRATE_HOME" CODEX_HOME="$MIGRATE_HOME/.codex" bash "$MIGRATE_SOURCE/install.sh" --verify
+rm -rf "$MIGRATE_HOME"
