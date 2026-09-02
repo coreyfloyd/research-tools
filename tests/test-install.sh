@@ -10,11 +10,20 @@ mkdir -p "$(dirname "$BUILD_SENTINEL")"
 touch "$BUILD_SENTINEL"
 cleanup() {
   status=$?
-  rm -rf "$TEST_HOME" "${COLLISION_HOME:-}" "${PROFILE_HOME:-}" "${CONCURRENT_HOME:-}" "${TAMPER_HOME:-}" "${UPGRADE_HOME:-}" "${BROKEN_HOME:-}" "${CURRENT_DIR_HOME:-}" "${RETIRED_HOME:-}" "${NOPY_HOME:-}" "${MISSINGLINK_HOME:-}" "${REMEDY_HOME:-}" "$BUILD_SENTINEL"
+  rm -rf "$TEST_HOME" "${COLLISION_HOME:-}" "${PROFILE_HOME:-}" "${CONCURRENT_HOME:-}" "${TAMPER_HOME:-}" "${UPGRADE_HOME:-}" "${BROKEN_HOME:-}" "${CURRENT_DIR_HOME:-}" "${RETIRED_HOME:-}" "${NOPY_HOME:-}" "${MISSINGLINK_HOME:-}" "${REMEDY_HOME:-}" "${DSSTORE_HOME:-}" "${MODIFIED_HOME:-}" "${MIGRATE_HOME:-}" "${DIRTY_HOME:-}" "${JUNK_HOME:-}" "$BUILD_SENTINEL"
   exit "$status"
 }
 trap cleanup EXIT
 release_manifest() {
+  (
+    cd "$1"
+    manifest_paths="skills contracts"
+    [ ! -d profiles ] || manifest_paths="$manifest_paths profiles"
+    [ ! -f scripts/validate_profile.py ] || manifest_paths="$manifest_paths scripts/validate_profile.py"
+    find $manifest_paths -type f -not -path '*/.build/*' -not -path '*/.Ulysses-*/*' -not -name '.DS_Store' -not -name '.Ulysses-*' -exec cksum {} \; | LC_ALL=C sort | cksum | awk '{print $1 ":" $2}'
+  )
+}
+release_manifest_legacy() {
   (
     cd "$1"
     manifest_paths="skills contracts"
@@ -204,3 +213,125 @@ if HOME="$REMEDY_HOME" CODEX_HOME="$REMEDY_HOME/.codex" bash "$SOURCE_ROOT/insta
 fi
 grep -Fq "collision: $REMEDY_HOME/.claude/skills/research-quick" "$REMEDY_STDERR"
 grep -Fq "move or remove it and re-run install.sh" "$REMEDY_STDERR"
+
+# F1: Finder droppings in the source tree must not change the manifest.
+DSSTORE_HOME="$(mktemp -d)"
+DSSTORE_SOURCE="$DSSTORE_HOME/source"
+cp -R "$SOURCE_ROOT" "$DSSTORE_SOURCE"
+HOME="$DSSTORE_HOME" CODEX_HOME="$DSSTORE_HOME/.codex" bash "$DSSTORE_SOURCE/install.sh"
+DSSTORE_MANIFEST_BEFORE="$(cat "$DSSTORE_HOME/.local/share/research-tools/releases/$VERSION/manifest")"
+touch "$DSSTORE_SOURCE/skills/.DS_Store"
+touch "$DSSTORE_SOURCE/skills/research-quick/.Ulysses-Group.plist"
+HOME="$DSSTORE_HOME" CODEX_HOME="$DSSTORE_HOME/.codex" bash "$DSSTORE_SOURCE/install.sh"
+DSSTORE_MANIFEST_AFTER="$(cat "$DSSTORE_HOME/.local/share/research-tools/releases/$VERSION/manifest")"
+test "$DSSTORE_MANIFEST_BEFORE" = "$DSSTORE_MANIFEST_AFTER"
+rm -rf "$DSSTORE_HOME"
+
+MODIFIED_HOME="$(mktemp -d)"
+MODIFIED_SOURCE="$MODIFIED_HOME/source"
+cp -R "$SOURCE_ROOT" "$MODIFIED_SOURCE"
+HOME="$MODIFIED_HOME" CODEX_HOME="$MODIFIED_HOME/.codex" bash "$MODIFIED_SOURCE/install.sh"
+printf x >> "$MODIFIED_SOURCE/skills/research-topic/SKILL.md"
+if HOME="$MODIFIED_HOME" CODEX_HOME="$MODIFIED_HOME/.codex" bash "$MODIFIED_SOURCE/install.sh" 2>"$MODIFIED_HOME/err.log"; then
+  exit 1
+fi
+grep -Fq "skills/research-topic/SKILL.md" "$MODIFIED_HOME/err.log"
+rm -rf "$MODIFIED_HOME"
+
+MIGRATE_HOME="$(mktemp -d)"
+MIGRATE_SOURCE="$MIGRATE_HOME/source"
+cp -R "$SOURCE_ROOT" "$MIGRATE_SOURCE"
+mkdir -p "$MIGRATE_HOME/.config/research-tools" "$MIGRATE_HOME/knowledge/raw" "$MIGRATE_HOME/knowledge/wiki" "$MIGRATE_HOME/knowledge/output" "$MIGRATE_HOME/knowledge/docs"
+touch "$MIGRATE_HOME/knowledge/wiki/hot.md" "$MIGRATE_HOME/knowledge/docs/log.md" "$MIGRATE_HOME/knowledge/docs/DECISIONS.md"
+sed "s|/absolute/path/to/knowledge|$MIGRATE_HOME/knowledge|" "$MIGRATE_SOURCE/profiles/karpathy-wiki.example.md" > "$MIGRATE_HOME/.config/research-tools/profile.md"
+# Build a release exactly as main's (pre-#6) install.sh would have produced
+# from a tree with .DS_Store present: the copied tree kept it (no tar
+# exclusion) and the stored manifest was computed over it (no find
+# exclusion). MIGRATE_SOURCE itself has since been cleaned (no .DS_Store) --
+# the most likely real upgrade path (Finder cleanup, `git clean`, a fresh
+# clone), not an edge case, and the harder of the two: it requires content
+# equivalence to be judged by what's actually on disk now, not by replaying
+# the legacy exclusion rules against a tree that no longer has the junk.
+MIGRATE_RELEASE="$MIGRATE_HOME/.local/share/research-tools/releases/$VERSION"
+mkdir -p "$MIGRATE_RELEASE" "$MIGRATE_HOME/.claude/skills" "$MIGRATE_HOME/.codex/skills"
+cp -R "$MIGRATE_SOURCE/skills" "$MIGRATE_RELEASE/skills"
+touch "$MIGRATE_RELEASE/skills/.DS_Store"
+cp -R "$MIGRATE_SOURCE/contracts" "$MIGRATE_RELEASE/contracts"
+cp -R "$MIGRATE_SOURCE/profiles" "$MIGRATE_RELEASE/profiles"
+mkdir -p "$MIGRATE_RELEASE/scripts"
+cp -p "$MIGRATE_SOURCE/scripts/validate_profile.py" "$MIGRATE_RELEASE/scripts/validate_profile.py"
+release_manifest_legacy "$MIGRATE_RELEASE" > "$MIGRATE_RELEASE/manifest"
+MIGRATE_LEGACY_MANIFEST="$(cat "$MIGRATE_RELEASE/manifest")"
+ln -s "$MIGRATE_RELEASE" "$MIGRATE_HOME/.local/share/research-tools/current"
+for skill in "$ROOT"/skills/*; do
+  test -f "$skill/SKILL.md" || continue
+  name="$(basename "$skill")"
+  ln -s "$MIGRATE_HOME/.local/share/research-tools/current/skills/$name" "$MIGRATE_HOME/.claude/skills/$name"
+  ln -s "$MIGRATE_HOME/.local/share/research-tools/current/skills/$name" "$MIGRATE_HOME/.codex/skills/$name"
+done
+# --verify is documented as a standalone check, so it must accept a legacy
+# install before any install.sh run has had a chance to heal the manifest.
+HOME="$MIGRATE_HOME" CODEX_HOME="$MIGRATE_HOME/.codex" bash "$MIGRATE_SOURCE/install.sh" --verify
+test "$(cat "$MIGRATE_RELEASE/manifest")" = "$MIGRATE_LEGACY_MANIFEST"
+HOME="$MIGRATE_HOME" CODEX_HOME="$MIGRATE_HOME/.codex" bash "$MIGRATE_SOURCE/install.sh" 2>"$MIGRATE_HOME/err.log"
+grep -Fq "migrated release manifest: $MIGRATE_RELEASE" "$MIGRATE_HOME/err.log"
+test "$(cat "$MIGRATE_RELEASE/manifest")" != "$MIGRATE_LEGACY_MANIFEST"
+test -L "$MIGRATE_HOME/.local/share/research-tools/current"
+test -d "$(readlink "$MIGRATE_HOME/.local/share/research-tools/current")"
+HOME="$MIGRATE_HOME" CODEX_HOME="$MIGRATE_HOME/.codex" bash "$MIGRATE_SOURCE/install.sh" --verify
+rm -rf "$MIGRATE_HOME"
+
+# The other legacy upgrade path: the source tree still carries the droppings.
+# Both must migrate, because the legacy hash is computed over the release
+# directory on disk, which kept whatever the old tar copied into it.
+DIRTY_HOME="$(mktemp -d)"
+DIRTY_SOURCE="$DIRTY_HOME/source"
+cp -R "$SOURCE_ROOT" "$DIRTY_SOURCE"
+touch "$DIRTY_SOURCE/skills/.DS_Store" "$DIRTY_SOURCE/skills/research-quick/.Ulysses-Group.plist"
+mkdir -p "$DIRTY_HOME/.config/research-tools" "$DIRTY_HOME/knowledge/raw" "$DIRTY_HOME/knowledge/wiki" "$DIRTY_HOME/knowledge/output" "$DIRTY_HOME/knowledge/docs"
+touch "$DIRTY_HOME/knowledge/wiki/hot.md" "$DIRTY_HOME/knowledge/docs/log.md" "$DIRTY_HOME/knowledge/docs/DECISIONS.md"
+sed "s|/absolute/path/to/knowledge|$DIRTY_HOME/knowledge|" "$DIRTY_SOURCE/profiles/karpathy-wiki.example.md" > "$DIRTY_HOME/.config/research-tools/profile.md"
+DIRTY_RELEASE="$DIRTY_HOME/.local/share/research-tools/releases/$VERSION"
+mkdir -p "$DIRTY_RELEASE/scripts" "$DIRTY_HOME/.claude/skills" "$DIRTY_HOME/.codex/skills"
+# The pre-#6 tar excluded only .build, so the release kept both droppings.
+cp -R "$DIRTY_SOURCE/skills" "$DIRTY_RELEASE/skills"
+cp -R "$DIRTY_SOURCE/contracts" "$DIRTY_RELEASE/contracts"
+cp -R "$DIRTY_SOURCE/profiles" "$DIRTY_RELEASE/profiles"
+cp -p "$DIRTY_SOURCE/scripts/validate_profile.py" "$DIRTY_RELEASE/scripts/validate_profile.py"
+release_manifest_legacy "$DIRTY_RELEASE" > "$DIRTY_RELEASE/manifest"
+DIRTY_LEGACY_MANIFEST="$(cat "$DIRTY_RELEASE/manifest")"
+ln -s "$DIRTY_RELEASE" "$DIRTY_HOME/.local/share/research-tools/current"
+for skill in "$ROOT"/skills/*; do
+  test -f "$skill/SKILL.md" || continue
+  name="$(basename "$skill")"
+  ln -s "$DIRTY_HOME/.local/share/research-tools/current/skills/$name" "$DIRTY_HOME/.claude/skills/$name"
+  ln -s "$DIRTY_HOME/.local/share/research-tools/current/skills/$name" "$DIRTY_HOME/.codex/skills/$name"
+done
+HOME="$DIRTY_HOME" CODEX_HOME="$DIRTY_HOME/.codex" bash "$DIRTY_SOURCE/install.sh" --verify
+HOME="$DIRTY_HOME" CODEX_HOME="$DIRTY_HOME/.codex" bash "$DIRTY_SOURCE/install.sh"
+test "$(cat "$DIRTY_RELEASE/manifest")" != "$DIRTY_LEGACY_MANIFEST"
+HOME="$DIRTY_HOME" CODEX_HOME="$DIRTY_HOME/.codex" bash "$DIRTY_SOURCE/install.sh" --verify
+rm -rf "$DIRTY_HOME"
+
+# A stored manifest that is neither the current nor the legacy hash must be
+# refused even when the release content matches this checkout. There is no
+# current pointer and no client link, so the run reaches the same-version
+# branch rather than being stopped by the current-pointer check first.
+JUNK_HOME="$(mktemp -d)"
+JUNK_SOURCE="$JUNK_HOME/source"
+cp -R "$SOURCE_ROOT" "$JUNK_SOURCE"
+JUNK_RELEASE="$JUNK_HOME/.local/share/research-tools/releases/$VERSION"
+mkdir -p "$JUNK_RELEASE/scripts"
+cp -R "$JUNK_SOURCE/skills" "$JUNK_RELEASE/skills"
+cp -R "$JUNK_SOURCE/contracts" "$JUNK_RELEASE/contracts"
+cp -R "$JUNK_SOURCE/profiles" "$JUNK_RELEASE/profiles"
+cp -p "$JUNK_SOURCE/scripts/validate_profile.py" "$JUNK_RELEASE/scripts/validate_profile.py"
+test "$(release_manifest "$JUNK_RELEASE")" = "$(release_manifest "$JUNK_SOURCE")"
+printf 'ATTACKER:0\n' > "$JUNK_RELEASE/manifest"
+if HOME="$JUNK_HOME" CODEX_HOME="$JUNK_HOME/.codex" bash "$JUNK_SOURCE/install.sh" 2>"$JUNK_HOME/err.log"; then
+  exit 1
+fi
+grep -Fq "release manifest mismatch: $VERSION" "$JUNK_HOME/err.log"
+grep -Fq "move or remove $JUNK_RELEASE and re-run install.sh" "$JUNK_HOME/err.log"
+test "$(cat "$JUNK_RELEASE/manifest")" = "ATTACKER:0"
+rm -rf "$JUNK_HOME"
