@@ -226,3 +226,21 @@ if ! grep -qi 'top-level' "$TWO_DIR_OUTPUT"; then
   cat "$TWO_DIR_OUTPUT" >&2
   exit 1
 fi
+
+# gpg preflight (#5): a missing gpg must be named, not surface as exit 127.
+NOGPG_BIN="$TEST_DIR/nogpg-bin"
+mkdir -p "$NOGPG_BIN"
+for tool in bash sh awk tr shasum tar mktemp dirname basename rm test cd printf head find wc; do
+  path="$(command -v "$tool" || true)"
+  [ -n "$path" ] && [ -f "$path" ] && ln -s "$path" "$NOGPG_BIN/$tool"
+done
+NOGPG_OUTPUT="$TEST_DIR/nogpg-output.txt"
+if env -i HOME="$TEST_DIR" PATH="$NOGPG_BIN" bash "$ROOT/scripts/verify-release.sh" "$ARCHIVE" "$TEST_DIR/public.asc" "$KEY" >"$NOGPG_OUTPUT" 2>&1; then
+  echo 'verify-release.sh succeeded without gpg on PATH' >&2
+  exit 1
+fi
+if ! grep -q 'gpg is required' "$NOGPG_OUTPUT"; then
+  echo 'verify-release.sh did not name gpg as the missing prerequisite' >&2
+  cat "$NOGPG_OUTPUT" >&2
+  exit 1
+fi

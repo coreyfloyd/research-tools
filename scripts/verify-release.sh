@@ -4,6 +4,12 @@ set -euo pipefail
 ARCHIVE="${1:?archive required}"
 KEYRING="${2:?keyring required}"
 EXPECTED_FINGERPRINT="${3:?expected signing fingerprint required}"
+for tool in gpg shasum tar; do
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    echo "verify-release.sh: $tool is required but was not found on PATH" >&2
+    exit 1
+  fi
+done
 test -f "$ARCHIVE" && test -f "$ARCHIVE.sha256" && test -f "$ARCHIVE.asc"
 GNUPGHOME="$(mktemp -d)"
 trap 'rm -rf "$GNUPGHOME"' EXIT
