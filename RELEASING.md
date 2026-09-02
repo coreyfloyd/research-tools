@@ -50,9 +50,11 @@ gate working, not as a problem to solve.
 - Install Bash, GnuPG, GitHub CLI, Python 3, Swift, and the standard macOS
   `shasum` utility.
 - Review `RELEASE_CANDIDATE.md` and prepare its release-note draft.
-- Ensure every intended change is committed. The archive builder packages the
-  working tree, including untracked files not covered by its exclusions, so a
-  clean tree is a release-integrity requirement.
+- Ensure every intended change is committed. `scripts/build-release.sh` (see
+  "Build, sign, and verify" below) refuses to run against a dirty tracked
+  tree and packages only the git tree at `HEAD`, so an uncommitted tracked
+  change blocks the build outright, and an uncommitted untracked file is
+  simply never packaged rather than shipped by accident.
 
 Check the environment without changing remote state:
 

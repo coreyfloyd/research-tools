@@ -151,13 +151,24 @@ if ! grep -qi 'dirty' "$DIRTY_OUTPUT"; then
   exit 1
 fi
 
-# --- T7: tag-mismatch refusal ------------------------------------------------
+# --- T7: tag gate, exercised with an annotated tag (releases use `git tag -a`,
+# not lightweight tags; see "Push and tag the exact commit" in RELEASING.md) -
 TAG_REPO="$TEST_DIR/tagmismatch"
 sandbox_repo "$TAG_REPO"
-(cd "$TAG_REPO" && git tag "v$VERSION")
+(cd "$TAG_REPO" && git tag -a "v$VERSION" -m "research-tools $VERSION")
+
+# Positive case: HEAD at the annotated release tag builds successfully. This
+# is what catches an unpeeled tag comparison: `refs/tags/$TAG` alone resolves
+# to the annotated tag OBJECT, not the commit it points at, so a build-script
+# regression that dropped `^{commit}` peeling would refuse a legitimate build
+# right here.
+RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$TAG_REPO/scripts/build-release.sh" "$TAG_REPO/dist"
+test -f "$TAG_REPO/dist/research-tools-$VERSION.tar.gz"
+
+# Negative case: a second commit past the annotated tag refuses, naming the tag.
 (cd "$TAG_REPO" && git commit --quiet --allow-empty -m 'second commit, past the release tag')
 TAG_OUTPUT="$TEST_DIR/tag-output.txt"
-if RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$TAG_REPO/scripts/build-release.sh" "$TAG_REPO/dist" >"$TAG_OUTPUT" 2>&1; then
+if RESEARCH_TOOLS_GPG_KEY="$KEY" bash "$TAG_REPO/scripts/build-release.sh" "$TAG_REPO/dist2" >"$TAG_OUTPUT" 2>&1; then
   echo 'build-release.sh built from a commit past the release tag' >&2
   exit 1
 fi
