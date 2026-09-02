@@ -101,7 +101,11 @@ archive, its SHA-256 file, a detached signature for that checksum file, the
 maintainer public key, and the `install-release.sh` and `verify-release.sh`
 scripts themselves. The scripts are published unmodified so that a release can
 be installed and verified using only the published assets, without first
-cloning the repository or extracting the unverified archive.
+cloning the repository or extracting the unverified archive. Releases through
+v0.5.0 predate this contract and carry only the first four assets; neither
+script is published there. To install one of those releases, clone the
+repository and run `bash scripts/install-release.sh` against the downloaded
+assets.
 
 Obtain the expected maintainer fingerprint from an independent,
 maintainer-controlled channel before downloading the assets. Then verify and
