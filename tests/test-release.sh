@@ -19,7 +19,13 @@ VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
 sandbox_repo() {
   dest="$1"
   mkdir -p "$dest"
-  (cd "$ROOT" && tar --exclude='.git' -cf - .) | (cd "$dest" && tar -xf -)
+  # Snapshot only what a clean clone would hold: Finder and editor droppings,
+  # build output, nested worktrees, and release output are never tracked, and
+  # committing them here would make the sandbox's tracked state depend on the
+  # developer's checkout (a tracked .DS_Store that T3 later truncates reads as
+  # a dirty tree).
+  (cd "$ROOT" && tar --exclude='.git' --exclude='.worktrees' --exclude='.DS_Store' \
+      --exclude='.Ulysses-*' --exclude='.build' --exclude='dist' -cf - .) | (cd "$dest" && tar -xf -)
   (
     cd "$dest"
     git init --quiet
