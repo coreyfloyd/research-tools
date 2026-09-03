@@ -75,10 +75,13 @@ skills to use:
 
 ```bash
 RESEARCH_KNOWLEDGE_ROOT=/absolute/path/to/knowledge
-mkdir -p "$RESEARCH_KNOWLEDGE_ROOT"/{raw,wiki,output,docs}
-touch "$RESEARCH_KNOWLEDGE_ROOT/wiki/hot.md"
+mkdir -p "$RESEARCH_KNOWLEDGE_ROOT"/{raw,output,docs}
 touch "$RESEARCH_KNOWLEDGE_ROOT/docs/log.md"
 touch "$RESEARCH_KNOWLEDGE_ROOT/docs/DECISIONS.md"
+
+# Only when using the wiki, which is enabled by default:
+mkdir -p "$RESEARCH_KNOWLEDGE_ROOT/wiki"
+touch "$RESEARCH_KNOWLEDGE_ROOT/wiki/hot.md"
 
 mkdir -p ~/.config/research-tools
 cp ~/.local/share/research-tools/current/profiles/karpathy-wiki.example.md \
@@ -88,13 +91,18 @@ cp ~/.local/share/research-tools/current/profiles/karpathy-wiki.example.md \
 Edit `~/.config/research-tools/profile.md` and set:
 
 - `knowledge_root` to the existing absolute root;
-- `hot_file`, `operation_log_file`, and `decision_log_file` to existing files
-  relative to that root;
-- `wiki_followup_destination` to the route for knowledge-base maintenance;
+- `operation_log_file` and `decision_log_file` to existing files relative to
+  that root;
 - `artifact_followup_destination` to the route for research findings that
   require work elsewhere.
 
-The two follow-up destinations are intentionally independent. Replace the
+The wiki is enabled by default. To use it, also set `hot_file` to an existing
+file relative to the root and `wiki_followup_destination` to the route for
+knowledge-base maintenance. To skip the wiki, add `wiki_enabled: false` to the
+profile and omit both wiki fields; the `wiki/` directory is then neither
+required nor created, and `research-to-wiki` and `wiki-audit` refuse to run.
+
+The follow-up destinations are intentionally independent. Replace the
 instructional placeholders with routes another agent can actually follow. The
 profile's free-form Markdown body can define local taxonomy, source-library
 routing, output naming, log formats, and other policy for this knowledge root.

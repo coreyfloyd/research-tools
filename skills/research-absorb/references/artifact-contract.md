@@ -62,6 +62,12 @@ Routing knowledge into the knowledge base or into a standing document is never
 an Action. When a class has no items, say so in one line — that is the whole
 subsection.
 
+The Wiki Additions class exists only for wiki-enabled profiles. Check the
+profile before writing How to Absorb: when it records the wiki as disabled, a
+wiki-disabled artifact omits the Wiki Additions class entirely — not even an
+empty-class line — and any candidate that would have gone there is a Document
+Update or discarded instead.
+
 **Absorb or discard; never stage.** Staging a source without absorbing it is a
 failure state, not an option. No item may propose an outcome that leaves
 knowledge parked.
@@ -191,3 +197,4 @@ parent item is invalid.
   provenance in canonical `raw/research/`, then use `research-to-wiki` for the
   curated subset. Promote a report to derived material only when it is itself a
   required durable transformation and approval covers that promotion.
+- When the profile records the wiki as disabled, `research-absorb` does not stage source provenance into `raw/research/` for compilation and never invokes `research-to-wiki`.
