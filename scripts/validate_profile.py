@@ -25,7 +25,7 @@ def parse(path):
             return values
         if not line:
             continue
-        if line.lstrip().startswith("#"):
+        if line.startswith("#"):
             continue
         if line.startswith(" "):
             fail("nested profile fields are not supported")
@@ -89,6 +89,10 @@ def main():
         fail("wiki_enabled must be true or false")
     wiki_enabled = wiki_value != "false"
 
+    # Checks common to both wiki states run first, so a profile missing more
+    # than one canonical directory or file may report a different offender
+    # than a pre-#12 profile would have (message ordering only; a single
+    # defect still fails with the same message either way).
     for key in ("raw", "output", "docs"):
         contained(root, root / key, key)
     for key in ("operation_log_file", "decision_log_file"):
@@ -102,8 +106,12 @@ def main():
         if not values.get("wiki_followup_destination"):
             fail("missing wiki_followup_destination")
     else:
+        # Check presence, not truthiness: a wiki-only key whose value was
+        # emptied (e.g. a bare `hot_file:` line left behind by an edit) is
+        # still the key being present, and must still fail as a
+        # contradiction rather than being silently treated as absent.
         for key in ("hot_file", "wiki_followup_destination"):
-            if values.get(key):
+            if key in values:
                 fail(f"{key} must be absent when wiki_enabled is false")
         if require_wiki:
             fail(

@@ -6,7 +6,9 @@ operation_log_file: docs/log.md
 decision_log_file: docs/DECISIONS.md
 wiki_followup_destination: "Describe the backlog or task route for knowledge-base maintenance."
 artifact_followup_destination: "Describe the task system and routing rule for research findings that affect another project."
-# wiki_enabled: true  # optional; omit to keep the wiki enabled (default). Set to false to disable the wiki and drop hot_file and wiki_followup_destination.
+# The wiki is optional and enabled by default. To disable it, uncomment the
+# line below exactly as written, and remove hot_file and wiki_followup_destination.
+# wiki_enabled: false
 ---
 
 Copy to `~/.config/research-tools/profile.md` and set `knowledge_root`.
