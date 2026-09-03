@@ -2,10 +2,11 @@
 
 ## Topology
 
-A knowledge root contains the canonical directories `raw/`, `wiki/`, `output/`,
-and `docs/`. A valid profile resolves those canonical directories beneath the
-canonicalized root. Their names are part of the supported Karpathy-wiki
-contract, not per-installation topology settings.
+A knowledge root always contains the canonical directories `raw/`, `output/`,
+and `docs/`. It contains `wiki/` only when the profile records the wiki as
+enabled, which is the default. A valid profile resolves whichever canonical
+directories apply beneath the canonicalized root. Their names are part of the
+supported Karpathy-wiki contract, not per-installation topology settings.
 
 The profile's YAML frontmatter is the portable, validated root and workflow-state
 contract.
@@ -13,6 +14,20 @@ After the closing frontmatter delimiter, it may contain a free-form local policy
 body only to the configured knowledge root. The body can declare a personal
 taxonomy, local operations conventions, or optional source-library routing; it
 is deliberately local configuration, not package content.
+
+## Optional wiki
+
+The wiki is optional. `research-tools-set-up` explains both the wiki and the
+no-wiki alternative in neutral terms, with no default lean, and can enable or
+disable the wiki later without disturbing the rest of an existing
+configuration. `research-to-wiki` and `wiki-audit` gate on the profile
+validator's `--require-wiki` option and relay its refusal verbatim; neither
+skill judges wiki state by reading the profile itself. A wiki-disabled profile
+has no `wiki/` directory, no `hot_file`, and no `wiki_followup_destination`,
+and no Wiki Additions class appears in any research artifact or
+knowledge-capture proposal it produces.
+
+Disabling the wiki never deletes or modifies an existing `wiki/` directory or anything in it; only `research-tools-set-up`'s own enable/disable conversation changes the profile fields, and only after the user approves.
 
 ## Navigation and links
 
@@ -29,16 +44,18 @@ provide Obsidian's native link resolution or graph view.
 
 ## Workflow state and routing
 
-Every profile declares root-relative files for a session cache, operation log,
-and decision log, plus independent wiki follow-up destination and artifact
-follow-up destination declarations. At the start of a wiki
-operation, read the session cache and recent operation history. After an
-approved non-exploratory compile, update the session cache and append an
-operation entry. Record an approved taxonomy or policy decision in the decision
-log. Route an actionable wiki-maintenance follow-up according to the configured
-wiki follow-up destination; a roadmap is one possible task system, not a
-requirement. Research-derived follow-ups use the artifact follow-up destination.
-The package must not infer that the two destinations are the same.
+Every profile declares root-relative files for an operation log and decision
+log, plus an artifact follow-up destination. When the wiki is enabled, the
+profile also declares a session cache file (`hot_file`) and an independent
+wiki follow-up destination; a wiki-disabled profile has neither. At the start
+of a wiki operation, read the session cache and recent operation history.
+After an approved non-exploratory compile, update the session cache and append
+an operation entry. Record an approved taxonomy or policy decision in the
+decision log. Route an actionable wiki-maintenance follow-up according to the
+configured wiki follow-up destination; a roadmap is one possible task system,
+not a requirement. Research-derived follow-ups use the artifact follow-up
+destination. The package must not infer that the two destinations are the
+same.
 
 The profile body may define the precise entry formats and routing distinctions.
 An audit remains read-only: it proposes its operation entry and wiki follow-up

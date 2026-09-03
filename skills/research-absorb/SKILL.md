@@ -51,7 +51,10 @@ filed follow-up task should own.
 - For a Wiki Addition, place the selected external source material and
   provenance in canonical `raw/research/` when it is not already there, then
   invoke `research-to-wiki` on that curated subset. Do not send the report
-  itself to the compiler.
+  itself to the compiler. Wiki Additions apply only when the profile records
+  the wiki as enabled: when it is disabled, the artifact has no Wiki Additions
+  class, and this workflow stages no provenance for compilation and never
+  invokes `research-to-wiki`.
 - Update an explicitly named target document only when the approved row permits
   it and the target's own rules allow the mutation.
 - File a research-derived follow-up task when the plan calls for future work.

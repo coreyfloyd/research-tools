@@ -67,21 +67,29 @@ These skills help you get research filed where it belongs.
 
 ## Knowledge store
 
-The system has four built in directories to hold all the created artifacts:
+The wiki is optional. The system always creates three directories, plus a
+fourth for the compiled knowledge base when `research-tools-set-up` configures
+the wiki as enabled:
 
 ```text
 <knowledge-root>/
 ├── raw/       # source material and provenance
-├── wiki/      # compiled synthesis, topic indexes, and master index
 ├── output/    # research artifacts and audit reports
-└── docs/      # AI-maintained operation history and durable decisions
+├── docs/      # AI-maintained operation history and durable decisions
+└── wiki/      # compiled synthesis, topic indexes, and master index (only when the wiki is enabled)
 ```
 
-The directory names are part of the public
-[Karpathy-wiki contract][2]. The organization of the `wiki/`is customizable,
-but relies on internal wikilinks for traversal by AI and wikilink-aware tools.
+`raw/`, `output/`, and `docs/` are always present. `wiki/` and its two
+profile fields exist only when the wiki is enabled; declining it at setup
+skips the wiki folder, its profile fields, wiki routing in absorption plans
+and knowledge captures, and the `research-to-wiki` / `wiki-audit` skills,
+which refuse to run without it. The wiki can be turned on or off later
+through `research-tools-set-up` alone. The directory names are part of the
+public [Karpathy-wiki contract][2]. The organization of the `wiki/`is
+customizable, but relies on internal wikilinks for traversal by AI and
+wikilink-aware tools.
 
-### Index files
+### Index files (wiki enabled)
 
 The wiki maintains three kinds of Markdown index so an agent (or you) can find the
 right article without scanning every file. This keeps context small and searches

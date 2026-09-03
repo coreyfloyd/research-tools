@@ -56,6 +56,45 @@ capabilities:\
 if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/inert-capabilities.md"; then exit 1; fi
 sed '/wiki_followup_destination:/d' "$PROFILE_ROOT/valid.md" > "$PROFILE_ROOT/missing-wiki-followup.md"
 if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/missing-wiki-followup.md"; then exit 1; fi
+
+# Optional wiki: a profile may record the wiki as disabled.
+mkdir -p "$PROFILE_ROOT/disabled-root/raw" "$PROFILE_ROOT/disabled-root/output" "$PROFILE_ROOT/disabled-root/docs"
+touch "$PROFILE_ROOT/disabled-root/docs/log.md" "$PROFILE_ROOT/disabled-root/docs/DECISIONS.md"
+sed -e "s|/absolute/path/to/knowledge|$PROFILE_ROOT/disabled-root|" \
+    -e '/^hot_file:/d' \
+    -e '/^wiki_followup_destination:/d' \
+    "$PROFILE_ROOT/valid.md" > "$PROFILE_ROOT/disabled-base.md"
+sed '2a\
+wiki_enabled: false' "$PROFILE_ROOT/disabled-base.md" > "$PROFILE_ROOT/disabled.md"
+# Validates with no wiki/ directory required or present.
+if [ -e "$PROFILE_ROOT/disabled-root/wiki" ]; then exit 1; fi
+python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/disabled.md" >/dev/null
+# A wiki-disabled profile that still names a wiki field fails, naming the contradiction.
+sed '2a\
+hot_file: wiki/hot.md' "$PROFILE_ROOT/disabled.md" > "$PROFILE_ROOT/disabled-with-hot-file.md"
+DISABLED_HOTFILE_ERR="$PROFILE_ROOT/disabled-hot-file.err"
+if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/disabled-with-hot-file.md" 2>"$DISABLED_HOTFILE_ERR"; then exit 1; fi
+grep -Fq 'hot_file' "$DISABLED_HOTFILE_ERR"
+sed '2a\
+wiki_followup_destination: "route"' "$PROFILE_ROOT/disabled.md" > "$PROFILE_ROOT/disabled-with-followup.md"
+DISABLED_FOLLOWUP_ERR="$PROFILE_ROOT/disabled-followup.err"
+if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/disabled-with-followup.md" 2>"$DISABLED_FOLLOWUP_ERR"; then exit 1; fi
+grep -Fq 'wiki_followup_destination' "$DISABLED_FOLLOWUP_ERR"
+# An invalid wiki_enabled value fails.
+sed 's/wiki_enabled: false/wiki_enabled: maybe/' "$PROFILE_ROOT/disabled.md" > "$PROFILE_ROOT/invalid-wiki-value.md"
+if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/invalid-wiki-value.md"; then exit 1; fi
+# An explicit wiki_enabled: true behaves exactly like the absent field.
+sed '2a\
+wiki_enabled: true' "$PROFILE_ROOT/valid.md" > "$PROFILE_ROOT/explicit-enabled.md"
+python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/explicit-enabled.md" >/dev/null
+# --require-wiki fails closed on a disabled profile and relays a remedy, but
+# passes through unaffected on an enabled one (absent field, and explicit true).
+REQUIRE_WIKI_ERR="$PROFILE_ROOT/require-wiki.err"
+if python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/disabled.md" --require-wiki 2>"$REQUIRE_WIKI_ERR"; then exit 1; fi
+grep -Fq 'research-tools-set-up' "$REQUIRE_WIKI_ERR"
+python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/valid.md" --require-wiki >/dev/null
+python3 "$ROOT/scripts/validate_profile.py" "$PROFILE_ROOT/explicit-enabled.md" --require-wiki >/dev/null
+
 for skill in research-to-wiki wiki-audit; do
   grep -Fq 'Karpathy-wiki contract' "$ROOT/skills/$skill/SKILL.md" || exit 1
   grep -Fq '~/.config/research-tools/profile.md' "$ROOT/skills/$skill/SKILL.md" || exit 1
@@ -97,5 +136,37 @@ done
 grep -Fq 'profiles/karpathy-wiki.example.md' "$ROOT/skills/research-tools-set-up/SKILL.md"
 grep -Fq 'scripts/validate_profile.py' "$ROOT/skills/research-tools-set-up/SKILL.md"
 grep -Fq 'Do not write or change configuration until the user approves' "$ROOT/skills/research-tools-set-up/SKILL.md"
+
+# Optional wiki: setup asks with no lean, gates wiki-only questions, and can
+# flip the wiki state later without redoing the rest of setup.
+grep -Fq 'Neither option is the default or the recommendation' "$ROOT/skills/research-tools-set-up/SKILL.md"
+grep -Fq 'no `wiki/hot.md`, no `hot_file`, and no `wiki_followup_destination`' "$ROOT/skills/research-tools-set-up/SKILL.md"
+grep -Fq '## Enable or disable the wiki later' "$ROOT/skills/research-tools-set-up/SKILL.md"
+grep -Fq 'Never delete or modify `wiki/`' "$ROOT/skills/research-tools-set-up/SKILL.md"
+
+# The wiki skills gate on the validator's require-wiki option, not their own
+# judgment, and relay its refusal back to setup.
+for skill in research-to-wiki wiki-audit; do
+  grep -Fq -- '--require-wiki' "$ROOT/skills/$skill/SKILL.md" || exit 1
+  grep -Fq 'research-tools-set-up enables' "$ROOT/skills/$skill/SKILL.md" || exit 1
+done
+
+# A wiki-disabled artifact has no Wiki Additions class, and research-absorb
+# neither stages provenance nor invokes the compiler.
+grep -Fq 'exists only for wiki-enabled profiles' "$ROOT/skills/research-absorb/references/artifact-contract.md"
+grep -Fq 'never invokes `research-to-wiki`' "$ROOT/skills/research-absorb/references/artifact-contract.md"
+
+# knowledge-capture offers no wiki classification when the wiki is disabled.
+grep -Fq 'offers no wiki classification' "$ROOT/skills/knowledge-capture/SKILL.md"
+
+# The contract, README, INSTALLATION, and MIGRATION describe the wiki as optional.
+grep -Fq 'wiki is optional' "$CONTRACT"
+grep -Fq -- '--require-wiki' "$CONTRACT"
+grep -Fq 'never deletes or modifies an existing `wiki/`' "$CONTRACT"
+grep -Fq 'wiki is optional' "$ROOT/README.md"
+grep -Fq 'wiki is enabled by default' "$ROOT/INSTALLATION.md"
+grep -Fq 'wiki_enabled: false' "$ROOT/INSTALLATION.md"
+grep -Fq 'Existing version-4 profiles need no change' "$ROOT/MIGRATION.md"
+
 scan 'private vault vocabulary' -rnE 'unified Obsidian vault|AI-vault|writing-corpus|R-004|wiki/people/' "$ROOT/skills" "$ROOT/contracts" "$ROOT/profiles" "$ROOT/README.md"
 scan 'private paths and names' -rnE --exclude='*.swift' 'claude-dotfiles|research-skills|~/Obsidian|Corey|~/[.]claude/skills|~/Development|wiki/CLAUDE[.]md|wiki/AGENTS[.]md' "$ROOT/skills" "$ROOT/contracts" "$ROOT/profiles" "$ROOT/README.md"

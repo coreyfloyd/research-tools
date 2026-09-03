@@ -29,4 +29,12 @@ artifact_followup_destination: Describe the task system and routing rule for res
 The two follow-up destinations are intentionally independent and may name
 external systems. The profile body defines entry formats and any routing
 distinctions. State-file locations are configurable within the knowledge root;
-the four canonical directories are not.
+the canonical directories are not.
+
+## Optional wiki
+
+`raw/`, `output/`, and `docs/` are always required; `wiki/` and its two
+profile fields (`hot_file` and `wiki_followup_destination`) are required only
+when the wiki is enabled, which is the default.
+
+Existing version-4 profiles need no change: an absent `wiki_enabled` field means the wiki stays enabled exactly as it worked before this field existed. A profile only needs `wiki_enabled: false` when a user later chooses to disable the wiki through `research-tools-set-up`.
