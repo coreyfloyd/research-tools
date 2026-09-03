@@ -4,11 +4,44 @@ Installation makes the skills available to Claude Code and Codex. Configuration
 is a separate, guided step that chooses where the system stores knowledge and
 how agents route follow-up work.
 
+Installation is supported on macOS and Linux. Native Windows is not supported;
+Windows users can instead run research-tools and their agent client inside the
+same WSL Linux distribution.
+
 ## Prerequisites
 
 `install.sh` requires `bash`, `python3`, and `tar` on `PATH`; it refuses to run
-without `python3` rather than leaving a partial install behind. The signed-release
-route (`scripts/install-release.sh`) additionally requires `gpg`.
+without `python3` rather than leaving a partial install behind. Cloning the
+checkout also requires `git`. The signed-release route
+(`scripts/install-release.sh`) additionally requires `gpg` and `shasum`.
+GnuPG verifies that the checksum file was signed by the expected maintainer
+before `shasum` checks the archive and the installer extracts it.
+
+macOS includes `bash`, `tar`, and `shasum`. With Homebrew, install the remaining
+prerequisites for the route you choose:
+
+```bash
+brew install git python3       # checkout
+brew install python3 gnupg     # signed release
+```
+
+On Debian or Ubuntu:
+
+```bash
+sudo apt-get update
+sudo apt-get install bash git python3 tar                       # checkout
+sudo apt-get install bash python3 tar gnupg libdigest-sha-perl # signed release
+```
+
+On Fedora:
+
+```bash
+sudo dnf install bash git python3 tar                    # checkout
+sudo dnf install bash python3 tar gnupg2 perl-Digest-SHA # signed release
+```
+
+On another Linux distribution, install packages that provide the commands
+required by the route you choose.
 
 ## Installed package
 

@@ -293,9 +293,10 @@ Audit the configured wiki with wiki-audit. Do not modify it.
 
 ## Installation and configuration
 
-See [Installation and configuration][6] for the installed layout,
-checkout and signed-release installation, the guided configuration workflow,
-manual configuration, and verification commands.
+See [Installation and configuration][6] for supported platforms and
+prerequisites, the installed layout, checkout and signed-release installation,
+the guided configuration workflow, manual configuration, and verification
+commands.
 
 [1]:	https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
 [2]:	contracts/karpathy-wiki.md
