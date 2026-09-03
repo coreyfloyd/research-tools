@@ -2,89 +2,71 @@
 
 ## Scope
 
-`0.5.0` release of the research and knowledge system. It restructures the
-shared research artifact around three questions — what the sources say, whether
-they can be trusted, and what to do with them — and replaces the two-class
-decision surface with three absorption classes split by what the result
-touches. `research-absorb` follows the restructured artifact and refuses
-staging as an outcome. `research-feature` and `research-feedback` leave the
-absorption lifecycle and define their own deliverables.
+`0.6.0` release of the research and knowledge system. It makes the compiled
+wiki optional to configure and to use, hardens the release build and install
+path, and tightens the layout rule for absorption items in the research
+artifact.
 
 ## Included
 
-- **Content separated from commentary**: a new required **Source Summary**
-  section carries what the sources actually say — the claims, frameworks,
-  lists, and arguments themselves — in enough detail that every later section
-  can be read and judged without opening a source. **Source findings** is
-  renamed **Source Assessment** and scoped to source trust alone: reliability,
-  method, contradictions, confidence, provenance caveats. **Applicability** is
-  deleted as duplicative, because each absorption item now carries its own
-  baseline in a `What exists now` field.
-- **Three absorption classes**: **Decisions** becomes **How to Absorb**, split
-  into **Actions** (anything that is not a document), **Wiki Additions** (the
-  compiled knowledge base only), and **Document Updates** (every other file).
-  Routing knowledge into a standing document can no longer be filed as an
-  operational change. Every item has the same shape — What exists now /
-  Change / Why / Confidence, plus Rejected when alternatives were declined —
-  and options with a recommendation appear only when a genuine choice exists.
-- **Absorb or discard; never stage**: staging a source without absorbing it is
-  a failure state rather than an option, and `research-absorb` invalidates any
-  execution row whose only outcome is staging. Wiki Additions and Document
-  Updates always execute inline on approval; only an Action may be filed as a
-  task for another session.
-- **Reach the named target**: when the document the evidence is meant to serve
-  does not exist yet, the knowledge routes into the standing document that
-  does. A knowledge-base compile alone leaves the material invisible to the
-  work that consumes it.
-- **Evidence Record**: **Sources and provenance** and the `0.4.2` **Search
-  record** merge into one section with one entry per source, so no retrieval
-  fact appears twice. It still records what was searched beyond the supplied
-  sources, how verified negatives were confirmed, channels skipped because the
-  runtime is blocked or the cost exceeded the stakes, and whether a local-policy
-  route for a blocked channel was used.
-- **Gaps name their follow-up**: every gap states the follow-up that would close
-  it, including an explicit **none** with its reason — unclosable, tracked
-  elsewhere, or not worth the cost.
-- **Writing rules**: every item must be answerable from the artifact itself,
-  abbreviations are expanded on first use, three or more items become a list,
-  absorption items and gaps are tables, and table cells carry no unbreakable
-  tokens.
-- **One definition of the section list**: producer skills no longer restate it.
-  Four partial copies had already drifted from the contract.
-- **Documentation alignment**: the README's artifact-structure diagram, its
-  workflow steps, and its decision-class prose match the restructured contract,
-  and a new section shows the `research-feature` and `research-feedback`
-  document structures the same way — previously the README detailed one
-  deliverable shape and left the other two to the skill files.
-- **Feature and feedback research are deliverables, not handoffs**:
-  `research-feature` writes a design input document into the project beside
-  the requirements it answers, with a per-claim sources table. `research-feedback`
-  writes a decision memo — bottom line, hard constraints, community read,
-  ranked issues, communities to watch, sources — that is read once and deleted,
-  or filed with the project it serves (competitor research). Neither uses the
-  shared artifact contract or `research-absorb`; each defines its document in
-  its own SKILL.md, so the section list still lives in exactly one place per
-  type.
+- **Optional wiki**: setup describes the wiki and the no-wiki alternative in
+  neutral terms and asks the user to choose. A user who declines gets a
+  knowledge root with `raw/`, `output/`, and `docs/` only, a profile that
+  validates without `hot_file` or `wiki_followup_destination`, absorption plans
+  and captures with no Wiki Additions class and no raw provenance staging, and
+  a clear refusal from `research-to-wiki` and `wiki-audit` that points back to
+  `research-tools-set-up`. The wiki can be enabled or disabled later through
+  the same setup conversation; disabling never deletes an existing `wiki/`.
+- **`wiki_enabled` profile field**: optional, lowercase `true` or `false`,
+  absent means enabled. When `false`, either wiki-only field being present is a
+  validation error, including a key left in place with its value emptied, so
+  an accidental edit fails loudly instead of silently changing mode. The
+  validator accepts full-line `#` comments in the frontmatter so the example
+  profile can ship the disable line commented out.
+- **`validate_profile.py --require-wiki`**: the two wiki skills validate with
+  this flag and relay its refusal verbatim. Every other skill validates without
+  it and is unaffected by the wiki state.
+- **Release archive built from git**: `scripts/build-release.sh` packages the
+  tree at `HEAD` with `git archive`, refuses a dirty tracked tree, and refuses
+  when a `v<VERSION>` tag exists that `HEAD` is not. Untracked files can never
+  be packaged.
+- **Manifest ignores Finder droppings**: the release manifest excludes
+  `.DS_Store` and `.Ulysses-*`, every stored-manifest check goes through one
+  predicate, and manifests written by releases before this rule migrate
+  instead of colliding.
+- **Install and verify scripts as release assets**: `install-release.sh` and
+  `verify-release.sh` are published unmodified alongside the four existing
+  assets, so a release can be installed and verified from the published assets
+  alone. `verify-release.sh` names a missing `gpg`, `shasum`, or `tar` before
+  verifying.
+- **Install preflight**: `install.sh` checks for `python3` up front, names the
+  specific `--verify` check that failed, and states the remedy in each refusal.
+- **Absorption item layout**: each item in a research artifact is a level-4
+  heading naming the literal target path over a two-column `Field | Detail`
+  table. The path never sits inside the table, because a long path in a header
+  cell squeezes the field column.
+- **Documentation alignment**: the Karpathy-wiki contract, README,
+  INSTALLATION, and MIGRATION describe `raw/`, `output/`, and `docs/` as
+  always present and `wiki/` plus its two profile fields as present only when
+  the wiki is enabled. `MIGRATION.md`'s profile block is corrected.
 
 ## Compatibility
 
-No profile schema change and no installation or upgrade change: version-4
-profiles remain valid and every `0.4.2` installation upgrades with no migration.
+Existing version-4 profiles need no change. An absent `wiki_enabled` field
+means the wiki stays enabled exactly as before, and every profile that
+validated under `0.5.0` validates under `0.6.0` with the same result. The
+profile version stays 4.
 
-Two consumer-visible breaks, both affecting artifacts already sitting in
-`output/` rather than the installation itself.
+Installation and upgrade are unchanged for a repository clone. Published
+releases through `v0.5.0` carry four assets and no install or verify script;
+`v0.6.0` is the first release carrying all six, so it is the first that can be
+installed from published assets alone.
 
-`research-absorb` now validates against a **How to Absorb** section, so a
-research artifact written under `0.4.2` or earlier — one carrying a
-**Decisions** section — is no longer a valid input. Absorb any in-flight
-artifact before upgrading, or reshape it to the new contract afterward.
-
-`research-feature` and `research-feedback` output is no longer absorbable at
-all. Their `0.4.2` artifacts went through `research-absorb`; their `0.5.0`
-deliverables are read and filed or deleted. An in-flight artifact from either
-skill should be absorbed before upgrading, or handled by hand afterward.
-
-Artifacts produced by `0.5.0` are unaffected by both.
+One consumer-visible change to research artifacts: the absorption item layout
+moved the target path from the table header to a heading above the table. An
+artifact written under `0.5.0` still carries every field `research-absorb`
+reads, so in-flight artifacts remain valid input; only new artifacts use the
+new layout.
 
 ## Verification
 
@@ -94,85 +76,54 @@ Artifacts produced by `0.5.0` are unaffected by both.
 - `swift test` in `skills/transcribe/tools/apple-speech`
 - `git diff --check`
 
-On 2026-08-31, all three shell suites, the five Apple Speech tests, and
-`git diff --check` passed from the clean, pushed release commit
-`9e014c263cb382e897e92b0401cfef7f5756963e` before tagging.
+Results are recorded in the publication record below against the exact
+release commit.
 
 ## Release-note draft
 
-`v0.5.0` restructures the research artifact around three questions: what the
-sources say, whether they can be trusted, and what to do with them.
+`v0.6.0` makes the wiki optional. Setup now explains the compiled knowledge
+base and the report-and-absorb workflow without it, and asks which you want.
+Decline, and your knowledge root has `raw/`, `output/`, and `docs/` only, your
+profile needs neither wiki field, absorption plans carry no Wiki Additions and
+stage nothing into `raw/`, and `research-to-wiki` and `wiki-audit` refuse with
+a pointer back to setup. Change your mind later and setup enables it, asking
+only the wiki questions. Disabling never deletes an existing `wiki/`.
 
-A new **Source Summary** section carries the content itself — the claims,
-frameworks, and arguments — in enough detail that the rest of the artifact can
-be judged without opening a source. **Source findings** becomes **Source
-Assessment** and covers source trust alone. **Applicability** is gone, because
-every absorption item now states the target's current state itself.
+The switch is one optional profile field, `wiki_enabled`, which defaults to
+enabled when absent. Setting it to `false` while leaving a wiki field in the
+profile is a validation error, so an accidental edit fails instead of quietly
+changing mode. Existing version-4 profiles need no change.
 
-**Decisions** becomes **How to Absorb**, split by what the result touches:
-**Actions** for anything that is not a document, **Wiki Additions** for the
-compiled knowledge base, and **Document Updates** for everything else. Routing
-knowledge into a standing document is no longer filed as an operational change.
-Items share one shape — what exists now, the change, why, and confidence — and
-present options with a recommendation only when a real choice exists.
+The release path is hardened. Archives are built from the git tree at `HEAD`,
+never from the working directory, and the build refuses a dirty tree or a
+mismatched tag. The release manifest ignores Finder droppings, and manifests
+from earlier releases migrate. `install-release.sh` and `verify-release.sh`
+are now published as release assets, so this is the first release that can be
+installed and verified from the published assets alone. `install.sh` checks
+for `python3` first and names the failing check and its remedy when it
+refuses.
 
-Staging is now a failure state. An item may not propose an outcome that leaves
-knowledge parked, and `research-absorb` rejects any execution row whose only
-outcome is staging a source. Wiki Additions and Document Updates execute inline
-on approval; only an Action may be filed as a task. When the document the
-evidence serves does not exist yet, the knowledge routes into the standing
-document that does.
-
-**Sources and provenance** and `0.4.2`'s **Search record** merge into a single
-**Evidence Record** with one entry per source, so no retrieval fact is written
-twice. Every evidence gap must name the follow-up that would close it, including
-an explicit *none* with its reason.
-
-`research-feature` and `research-feedback` leave the absorption lifecycle.
-Feature research is a design input document written into the project beside
-its requirements; feedback research is a decision memo read once and deleted,
-or filed with the project it serves. Neither goes through `research-absorb`.
-
-Profiles, installation, and upgrade are unchanged from `0.4.2`. Two breaks,
-both affecting artifacts already sitting in `output/` rather than the
-installation itself. `research-absorb` validates against **How to Absorb**, so
-an un-absorbed artifact written under `0.4.2` is no longer valid input. And
-`research-feature` and `research-feedback` output is no longer absorbable at
-all — their `0.4.2` artifacts went through `research-absorb`, their `0.5.0`
-deliverables are read and filed or deleted. Absorb any in-flight artifact
-before upgrading, or handle it by hand afterward.
+Research artifacts put each absorption item's target path in a heading above
+its table instead of in the table header, which stops long paths from
+squeezing the field column. Artifacts written under `0.5.0` remain valid
+input to `research-absorb`.
 
 ## Publication checklist
 
-- [x] Commit the complete candidate and push `main`.
-- [x] Capture the final commit in the release-session evidence and rerun every
+- [ ] Commit the complete candidate and push `main`.
+- [ ] Capture the final commit in the release-session evidence and rerun every
   verification command from that exact clean commit.
-- [x] Follow `RELEASING.md` to create and push the annotated `v0.5.0` tag.
-- [x] Build, sign, and locally verify the four release assets.
-- [x] Publish the GitHub release with the reviewed notes above.
-- [x] Redownload and verify the public assets.
-- [x] Record the final commit, release URL, and public-asset verification
+- [ ] Follow `RELEASING.md` to create and push the annotated `v0.6.0` tag.
+- [ ] Build, sign, and locally verify the six release assets.
+- [ ] Publish the GitHub release with the reviewed notes above.
+- [ ] Redownload and verify the public assets.
+- [ ] Record the final commit, release URL, and public-asset verification
   below in a post-publication follow-up commit.
 
 ## Publication record
 
-- Target commit: `9e014c263cb382e897e92b0401cfef7f5756963e`
-- Tag: annotated `v0.5.0`, resolving to the target commit above
-- Release URL:
-  <https://github.com/coreyfloyd/research-tools/releases/tag/v0.5.0>
-- Published asset verification: completed 2026-08-31; all four expected assets
-  were downloaded, the public key byte-matched the repository key, the detached
-  signature and SHA-256 checksum passed verification, and the extracted archive
-  compared equal to `git archive v0.5.0`.
-- Tag history: `v0.5.0` was created and deleted twice before publication, at
-  `7f7ddce` and `b22eb4b`, because further changes landed after each tagging.
-  No GitHub release existed at either point, and `gh release view` was re-run
-  immediately before each deletion. The published tag has not moved.
-- Release-note correction: the draft above originally said "One break" while
-  the Compatibility section said two. The published notes carry the corrected
-  two-break text; the draft is corrected here to match.
+Pending.
 
 ## Release status
 
-Versions `0.1.0` through `0.5.0` are published. The `v0.5.0` public assets
-were downloaded and verified after publication.
+Versions `0.1.0` through `0.5.0` are published. `0.6.0` is in preparation.
