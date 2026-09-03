@@ -76,8 +76,9 @@ new layout.
 - `swift test` in `skills/transcribe/tools/apple-speech`
 - `git diff --check`
 
-Results are recorded in the publication record below against the exact
-release commit.
+On 2026-09-03, all three shell suites, the five Apple Speech tests, and
+`git diff --check` passed from the clean, pushed release commit
+`2ce2061c1a1125ff1fd18af35c154206bf6c2b47` before tagging.
 
 ## Release-note draft
 
@@ -110,20 +111,32 @@ input to `research-absorb`.
 
 ## Publication checklist
 
-- [ ] Commit the complete candidate and push `main`.
-- [ ] Capture the final commit in the release-session evidence and rerun every
+- [x] Commit the complete candidate and push `main`.
+- [x] Capture the final commit in the release-session evidence and rerun every
   verification command from that exact clean commit.
-- [ ] Follow `RELEASING.md` to create and push the annotated `v0.6.0` tag.
-- [ ] Build, sign, and locally verify the six release assets.
-- [ ] Publish the GitHub release with the reviewed notes above.
-- [ ] Redownload and verify the public assets.
-- [ ] Record the final commit, release URL, and public-asset verification
+- [x] Follow `RELEASING.md` to create and push the annotated `v0.6.0` tag.
+- [x] Build, sign, and locally verify the six release assets.
+- [x] Publish the GitHub release with the reviewed notes above.
+- [x] Redownload and verify the public assets.
+- [x] Record the final commit, release URL, and public-asset verification
   below in a post-publication follow-up commit.
 
 ## Publication record
 
-Pending.
+- Target commit: `2ce2061c1a1125ff1fd18af35c154206bf6c2b47`
+- Tag: annotated `v0.6.0`, resolving to the target commit above
+- Release URL:
+  <https://github.com/coreyfloyd/research-tools/releases/tag/v0.6.0>
+- Published asset verification: completed 2026-09-03; all six expected assets
+  were downloaded, the public key and both scripts byte-matched the repository
+  copies, the detached signature and SHA-256 checksum passed verification, and
+  the downloaded archive compared equal to the locally built one.
+- Release-note correction: the release was first created with an empty body
+  because the notes extraction command failed silently. The notes above were
+  applied with `gh release edit` within two minutes of publication, before the
+  publication record was written. Tag and assets were not touched.
 
 ## Release status
 
-Versions `0.1.0` through `0.5.0` are published. `0.6.0` is in preparation.
+Versions `0.1.0` through `0.6.0` are published. The `v0.6.0` public assets
+were downloaded and verified after publication.
