@@ -157,9 +157,11 @@ minute is worth naming precisely, with the exact step.
   malformed.
 - **Expand every abbreviation on first use.**
 - **Three or more items is a list**, never prose inside a paragraph.
-- **Absorption items and the gap list are tables.** Use a two-column table per
-  item whose header names the literal target path, and a two-column
-  gap/follow-up table for the gaps.
+- **Absorption items and the gap list are tables.** Each item is a level-4
+  heading naming the literal target path, followed by a two-column table with
+  the header `| Field | Detail |` and one row per field. The path never sits
+  inside the table: a long path in a header cell squeezes the field column and
+  wraps badly. The gaps are one two-column gap/follow-up table.
 - **No bare URLs or long inline-code spans inside table cells.** Use a linked
   label. An unbreakable token sets a minimum column width that squeezes every
   row of the table, not just the cell containing it.
