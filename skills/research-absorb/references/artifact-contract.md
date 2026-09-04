@@ -10,6 +10,9 @@ then be executed and deleted.
 This contract is the only place the artifact's sections are defined. A producing
 skill adds requirements of its own; it does not restate the section list.
 
+A complete artifact in this shape, sanitized from a real session:
+`docs/examples/2026-09-03-fable-5-1-model-routing.md` at the repo root.
+
 ## Required sections
 
 1. **Question and Scope** — two required subsections, in this order:
