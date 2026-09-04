@@ -2,6 +2,7 @@
 title: Fable 5.1 — performance, cost, and how it changes model routing
 created: 2026-09-03
 author: research-sources (Claude Fable 5.1, interactive session)
+notebook: https://notebook.google.com/notebook/6df011dc-7391-4399-919f-345b6067e29f (public, view-only)
 supplied_sources: 2 YouTube videos (Chase AI; Nate Herk)
 added_sources: 11 (official docs, independent evaluators, practitioner tests, community)
 promotable_to: wiki/ai/claude-5-model-family.md, wiki/ai/agent-model-assignment.md
@@ -238,7 +239,7 @@ None. The benchmark harness README already states the question the action above 
 
 ## 5. Evidence Record
 
-NotebookLM notebook "Research: Fable 5.1 performance and model routing." 13 sources indexed. Firecrawl was configured but its MCP server failed to connect this session, so every web page was read with the native fetch tool.
+NotebookLM notebook ["Research: Fable 5.1 performance and model routing"](https://notebook.google.com/notebook/6df011dc-7391-4399-919f-345b6067e29f), shared publicly so the evidence layer is inspectable. 13 sources indexed. Firecrawl was configured but its MCP server failed to connect this session, so every web page was read with the native fetch tool.
 
 | # | Source | Type | How obtained and verified |
 |---|---|---|---|

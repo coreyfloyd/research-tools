@@ -154,7 +154,8 @@ output/2026-08-28-example.md
 
 The Answer is the first thing a reader judges and must stand without the
 later sections. A complete artifact in this shape, sanitized from a real
-session, is at [docs/examples/2026-09-03-fable-5-1-model-routing.md][10].
+session, is at [docs/examples/2026-09-03-fable-5-1-model-routing.md][10],
+and the [public Gemini Notebook][11] it was grounded in is open for inspection.
 
 The summary and assessment sections feed the absorption plan, whose items are
 split by what the result touches: **Actions** — anything that is not a document,
@@ -312,5 +313,6 @@ commands.
 [6]:	INSTALLATION.md
 [7]:	https://obsidian.md
 [10]:	docs/examples/2026-09-03-fable-5-1-model-routing.md
+[11]:	https://notebook.google.com/notebook/6df011dc-7391-4399-919f-345b6067e29f
 [8]:	https://notebooklm.google.com
 [9]:	https://firecrawl.dev
