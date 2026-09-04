@@ -136,8 +136,6 @@ capture task.
 
 ### Durable research and distribution
 
-![A question and its evidence become a durable staging report whose approved rows are integrated, compiled into an optional wiki, filed as follow-up work, or discarded; the report is deleted when every row is terminal.](docs/images/artifact-disposition.svg)
-
 These two skills share the [research artifact contract][3]. Every artifact
 is one Markdown file in `output/` with the same documented structure:
 
