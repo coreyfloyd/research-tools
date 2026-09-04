@@ -1,18 +1,28 @@
 # research-tools
 
-`research-tools` is an opinionated research and knowledge system for
-Claude Code and Codex. It provides skills for multiple types of research and workflows that span quick, in-chat research, reports, updating existing documentation, and creating a curated Karpathy-style wiki. It works with documents, websites, videos, and audio (Podcasts).
+AI makes it easy to open a hundred curiosity loops and leave the useful answers
+behind in old chats. `research-tools` closes those loops by moving a question
+through a grounded answer to an explicit action.
+
+Here, research means looking things up and organizing the evidence to make a
+decision. It can start with a broad question or with sources you already have:
+documents, websites, videos, audio, or saved notes.
+
+![A broad question or selected sources move through Question, Answer, and Action, then into documents, follow-up work, an optional wiki, or a deliberate discard.](docs/images/question-answer-action.svg)
+
+The system organizes that work around three stages:
+
+1. **Question** names the decision and scope, and identifies any evidence you
+   are starting with.
+2. **Answer** grounds the result in cited evidence, assesses the sources, and
+   makes gaps visible.
+3. **Action** gives the result a terminal disposition: use it, integrate it into
+   documents, file follow-up work, compile selected sources into an optional
+   wiki, or discard it and close the loop.
+
+**Everything the system stores is plain Markdown on your disk.** Research artifacts, wiki articles, indexes, and operation logs are all `.md` files under one knowledge root you choose. There is no database, no proprietary format, and no lock-in. That is a deliberate assumption about how you work: you own the files, read and edit them in any editor, browse them in [Obsidian][7] or a Git host, version-control them, and keep them long after the conversation that produced them is gone. The same files are the AI's working set and yours.
 
 This is the system I developed for my own personal research - much of it was built to learn about AI itself. My favorite use case is ingesting knowledge from YouTube videos and podcasts in order to plan improvements to my AI systems.
-
-**Everything the system produces is plain Markdown files on your disk.** Research artifacts, wiki articles, indexes, and operation logs are all `.md` files under one knowledge root you choose. There is no database, no proprietary format, and no lock-in. That is a deliberate assumption about how you work: you own the files, read and edit them in any editor, browse them in [Obsidian][7] or a Git host, version-control them, and keep them long after the conversation that produced them is gone. The same files are the AI's working set and yours.
-
-The system is based around a workflow with three types of activity:
-
-1. **Research** gathers and evaluates evidence. Quick work stays in the
-   conversation; substantial work produces a durable research artifact.
-2. **Knowledge Distribution & Follow Up** updates existing documents and your personal AI context, or creates todos from useful knowledge in the current conversation.
-3. **Personal Knowledge Curation** turns selected sources into atomic, linked wiki articles — for both yourself and your agents.
 
 Substantial research is grounded in **Gemini Notebook** (Google's product
 formerly named NotebookLM). This is a deliberate design choice, not just a
@@ -125,16 +135,6 @@ Inline research does not automatically create a notebook, file, or knowledge
 capture task.
 
 ### Durable research and distribution
-
-```text
-question or supplied evidence
-  -> research-sources | research-topic
-  -> durable research artifact in output/
-  -> review its absorption plan: Actions, Wiki Additions, and Document Updates
-  -> research-absorb approval gate
-  -> integrate | update named target | file follow-up task | discard
-  -> delete the artifact after every row reaches a terminal disposition
-```
 
 These two skills share the [research artifact contract][3]. Every artifact
 is one Markdown file in `output/` with the same documented structure:
@@ -293,9 +293,10 @@ Audit the configured wiki with wiki-audit. Do not modify it.
 
 ## Installation and configuration
 
-See [Installation and configuration][6] for the installed layout,
-checkout and signed-release installation, the guided configuration workflow,
-manual configuration, and verification commands.
+See [Installation and configuration][6] for supported platforms and
+prerequisites, the installed layout, checkout and signed-release installation,
+the guided configuration workflow, manual configuration, and verification
+commands.
 
 [1]:	https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
 [2]:	contracts/karpathy-wiki.md

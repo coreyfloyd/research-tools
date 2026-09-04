@@ -12,8 +12,17 @@ skill adds requirements of its own; it does not restate the section list.
 
 ## Required sections
 
-1. **Question and Scope** — the decision, target, or question addressed, plus
-   the answer when the evidence supports one.
+1. **Question and Scope** — two required subsections, in this order:
+   - `### Question` — the decision, target, or question addressed. Three or
+     more questions get short codes (`Q1`, `Q2`). State scope and what is
+     deliberately out of scope.
+   - `### Answer` — one entry per question, answer first. Follow the entries
+     with a **Confidence** line stating how much to trust the answer and what
+     that rests on, and a **What would change the answer** line naming the
+     evidence that would flip it. When the evidence does not support an
+     answer, say so here and point to the Evidence Gaps row that would close
+     it. The Answer is the first thing the user judges; it must be readable
+     without opening any later section.
 2. **Source Summary** — what the sources actually say. The claims, frameworks,
    lists, and arguments themselves, in enough detail that every later section
    can be read and judged without opening a source. This section carries
@@ -39,8 +48,10 @@ skill adds requirements of its own; it does not restate the section list.
 
 ### Sizing rule
 
-Source Summary sizes to the content: anything a later section relies on must be
-stated there. Every other section sizes to the decisions the artifact must
+The Answer subsection sizes to the question set: one entry per question, and
+the Confidence and What-would-change lines are single sentences or short
+bullets, never a restatement of Source Assessment. Source Summary sizes to the
+content: anything a later section relies on must be stated there. Every other section sizes to the decisions the artifact must
 enable — not to source volume, and not to analysis effort expended. Write one
 assessment per claim that changes how a source is trusted, and one item per
 thing to absorb. Verification work that succeeded collapses to a line in the
