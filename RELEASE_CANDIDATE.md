@@ -54,7 +54,9 @@ execution rows, which the change does not touch, so an artifact written under
 - `swift test` in `skills/transcribe/tools/apple-speech`
 - `git diff --check`
 
-Results are recorded below once run from the clean, pushed release commit.
+On 2026-09-04, all three shell suites, the five Apple Speech tests, and
+`git diff --check` passed from the clean, pushed release commit
+`52d9384cfd3414c5011188c3fee3f6e3e794447a` before tagging.
 
 ## Release-note draft
 
@@ -81,21 +83,28 @@ remain valid input to `research-absorb`.
 
 ## Publication checklist
 
-- [ ] Commit the complete candidate and push `main`.
-- [ ] Capture the final commit in the release-session evidence and rerun every
+- [x] Commit the complete candidate and push `main`.
+- [x] Capture the final commit in the release-session evidence and rerun every
   verification command from that exact clean commit.
-- [ ] Follow `RELEASING.md` to create and push the annotated `v0.7.0` tag.
-- [ ] Build, sign, and locally verify the six release assets.
-- [ ] Publish the GitHub release with the reviewed notes above.
-- [ ] Redownload and verify the public assets.
-- [ ] Record the final commit, release URL, and public-asset verification
+- [x] Follow `RELEASING.md` to create and push the annotated `v0.7.0` tag.
+- [x] Build, sign, and locally verify the six release assets.
+- [x] Publish the GitHub release with the reviewed notes above.
+- [x] Redownload and verify the public assets.
+- [x] Record the final commit, release URL, and public-asset verification
   below in a post-publication follow-up commit.
 
 ## Publication record
 
-Pending.
+- Target commit: `52d9384cfd3414c5011188c3fee3f6e3e794447a`
+- Tag: annotated `v0.7.0`, resolving to the target commit above
+- Release URL:
+  <https://github.com/coreyfloyd/research-tools/releases/tag/v0.7.0>
+- Published asset verification: completed 2026-09-04; all six expected assets
+  were downloaded, the public key and both scripts byte-matched the repository
+  copies, the detached signature and SHA-256 checksum passed verification, and
+  the downloaded archive compared equal to the locally built one.
 
 ## Release status
 
-Versions `0.1.0` through `0.6.0` are published. `0.7.0` is the current
-candidate.
+Versions `0.1.0` through `0.7.0` are published. The `v0.7.0` public assets
+were downloaded and verified after publication.
