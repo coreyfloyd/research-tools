@@ -141,7 +141,9 @@ is one Markdown file in `output/` with the same documented structure:
 
 ```text
 output/2026-08-28-example.md
-├── Question and Scope   # the decision, target, or question addressed
+├── Question and Scope   # two required subsections
+│   ├── Question         # the decision, target, or question addressed, and scope
+│   └── Answer           # answer first, then confidence and what would change it
 ├── Source Summary       # what the sources actually say, in enough detail to judge
 ├── Source Assessment    # whether those sources can be trusted
 ├── How to Absorb        # what the report exists to enable (below)
@@ -149,6 +151,10 @@ output/2026-08-28-example.md
 ├── Evidence Gaps        # what remains unanswered, and the follow-up that closes it
 └── Execution Appendix   # machine-actionable rows for research-absorb
 ```
+
+The Answer is the first thing a reader judges and must stand without the
+later sections. A complete artifact in this shape, sanitized from a real
+session, is at [docs/examples/2026-09-03-fable-5-1-model-routing.md][10].
 
 The summary and assessment sections feed the absorption plan, whose items are
 split by what the result touches: **Actions** — anything that is not a document,
@@ -305,5 +311,6 @@ commands.
 [5]:	https://github.com/yt-dlp/yt-dlp
 [6]:	INSTALLATION.md
 [7]:	https://obsidian.md
+[10]:	docs/examples/2026-09-03-fable-5-1-model-routing.md
 [8]:	https://notebooklm.google.com
 [9]:	https://firecrawl.dev
