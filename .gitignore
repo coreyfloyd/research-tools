@@ -1,3 +1,5 @@
 dist/
 .Ulysses-*
 .worktrees/
+.DS_Store
+.vscode/
